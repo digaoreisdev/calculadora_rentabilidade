@@ -1,92 +1,161 @@
 /**
- * Açougue Pro - Interface do Usuário e Controladores de Tela
- * Padrão de Engenharia: Funções com no máximo 30 linhas e código defensivo
+ * Açougue Pro - Controlador de Interface e Gestão Multi-Peças
+ * Regra de Engenharia: Funções focadas com no máximo 30 linhas e código defensivo
  */
 
-const estado = {
-  nomePeca: 'Dianteiro Bovino',
-  custoKgEntrada: 21.45,
-  amostras: [
-    {
-      id: 'amostra-1',
-      nome: 'Amostra 1 (Média)',
-      pesoTotal: 43.396,
-      tempo: '00:27:02',
-      cortes: {
-        'Cebo e Osso': 8.318,
-        'Agulha C/ Osso': 6.045,
-        'Agulha S/ Osso': 3.984,
-        'Agulha Especial': 1.768,
-        'Costela Dianteiro': 1.782,
-        'Paleta C/ Sete': 1.682,
-        'Paleta Osso Redondo': 3.932,
-        'Paleta S/ Osso': 4.784,
-        'Peito Costela': 4.104,
-        'Músculo': 1.480,
-        'Moída de Primeira': 1.182,
-        'Moída de Segunda': 4.330
+// Catálogo padrão caso o LocalStorage esteja vazio
+const PECAS_INICIAIS = [
+  {
+    id: 'dianteiro-bovino',
+    nome: 'Dianteiro Bovino',
+    custoKgEntrada: 21.45,
+    margemPadraoPerc: 30.0,
+    modoCusto: 'peca_chave',
+    modoMargem: 'individual',
+    cortesCatalogo: [
+      { nome: 'Cebo e Osso', tipo: 'subproduto', precoVendaPadrao: 1.48 },
+      { nome: 'Agulha C/ Osso', tipo: 'com_osso', precoVendaPadrao: 24.90 },
+      { nome: 'Agulha S/ Osso', tipo: 'nobre', precoVendaPadrao: 32.90 },
+      { nome: 'Agulha Especial', tipo: 'nobre', precoVendaPadrao: 36.90 },
+      { nome: 'Costela Dianteiro', tipo: 'com_osso', precoVendaPadrao: 23.90 },
+      { nome: 'Paleta C/ Sete', tipo: 'com_osso', precoVendaPadrao: 27.90 },
+      { nome: 'Paleta Osso Redondo', tipo: 'com_osso', precoVendaPadrao: 26.90 },
+      { nome: 'Paleta S/ Osso', tipo: 'nobre', precoVendaPadrao: 34.90 },
+      { nome: 'Peito Costela', tipo: 'com_osso', precoVendaPadrao: 25.90 },
+      { nome: 'Músculo', tipo: 'nobre', precoVendaPadrao: 33.90 },
+      { nome: 'Moída de Primeira', tipo: 'nobre', precoVendaPadrao: 35.90 },
+      { nome: 'Moída de Segunda', tipo: 'comum', precoVendaPadrao: 26.90 }
+    ],
+    amostras: [
+      {
+        id: 'amostra-1',
+        nome: 'Amostra 1 (Média)',
+        pesoTotal: 43.396,
+        tempo: '00:27:02',
+        cortes: {
+          'Cebo e Osso': 8.318,
+          'Agulha C/ Osso': 6.045,
+          'Agulha S/ Osso': 3.984,
+          'Agulha Especial': 1.768,
+          'Costela Dianteiro': 1.782,
+          'Paleta C/ Sete': 1.682,
+          'Paleta Osso Redondo': 3.932,
+          'Paleta S/ Osso': 4.784,
+          'Peito Costela': 4.104,
+          'Músculo': 1.480,
+          'Moída de Primeira': 1.182,
+          'Moída de Segunda': 4.330
+        }
+      },
+      {
+        id: 'amostra-2',
+        nome: 'Amostra 2 (Grande)',
+        pesoTotal: 44.338,
+        tempo: '00:25:35',
+        cortes: {
+          'Cebo e Osso': 8.862,
+          'Agulha C/ Osso': 5.592,
+          'Agulha S/ Osso': 3.812,
+          'Agulha Especial': 1.696,
+          'Costela Dianteiro': 1.628,
+          'Paleta C/ Sete': 1.886,
+          'Paleta Osso Redondo': 3.924,
+          'Paleta S/ Osso': 4.680,
+          'Peito Costela': 5.174,
+          'Músculo': 1.010,
+          'Moída de Primeira': 0.892,
+          'Moída de Segunda': 5.178
+        }
+      },
+      {
+        id: 'amostra-3',
+        nome: 'Amostra 3 (Pequena)',
+        pesoTotal: 32.178,
+        tempo: '00:23:15',
+        cortes: {
+          'Cebo e Osso': 4.874,
+          'Agulha C/ Osso': 4.828,
+          'Agulha S/ Osso': 3.344,
+          'Agulha Especial': 1.582,
+          'Costela Dianteiro': 0.970,
+          'Paleta C/ Sete': 1.192,
+          'Paleta Osso Redondo': 2.890,
+          'Paleta S/ Osso': 3.680,
+          'Peito Costela': 3.680,
+          'Músculo': 0.998,
+          'Moída de Primeira': 0.720,
+          'Moída de Segunda': 3.416
+        }
       }
+    ],
+    precosVendaSugeridos: {
+      'Cebo e Osso': 1.48,
+      'Agulha C/ Osso': 24.90,
+      'Agulha S/ Osso': 32.90,
+      'Agulha Especial': 36.90,
+      'Costela Dianteiro': 23.90,
+      'Paleta C/ Sete': 27.90,
+      'Paleta Osso Redondo': 26.90,
+      'Paleta S/ Osso': 34.90,
+      'Peito Costela': 25.90,
+      'Músculo': 33.90,
+      'Moída de Primeira': 35.90,
+      'Moída de Segunda': 26.90
     },
-    {
-      id: 'amostra-2',
-      nome: 'Amostra 2 (Grande)',
-      pesoTotal: 44.338,
-      tempo: '00:25:35',
-      cortes: {
-        'Cebo e Osso': 8.862,
-        'Agulha C/ Osso': 5.592,
-        'Agulha S/ Osso': 3.812,
-        'Agulha Especial': 1.696,
-        'Costela Dianteiro': 1.628,
-        'Paleta C/ Sete': 1.886,
-        'Paleta Osso Redondo': 3.924,
-        'Paleta S/ Osso': 4.680,
-        'Peito Costela': 5.174,
-        'Músculo': 1.010,
-        'Moída de Primeira': 0.892,
-        'Moída de Segunda': 5.178
-      }
-    },
-    {
-      id: 'amostra-3',
-      nome: 'Amostra 3 (Pequena)',
-      pesoTotal: 32.178,
-      tempo: '00:23:15',
-      cortes: {
-        'Cebo e Osso': 4.874,
-        'Agulha C/ Osso': 4.828,
-        'Agulha S/ Osso': 3.344,
-        'Agulha Especial': 1.582,
-        'Costela Dianteiro': 0.970,
-        'Paleta C/ Sete': 1.192,
-        'Paleta Osso Redondo': 2.890,
-        'Paleta S/ Osso': 3.680,
-        'Peito Costela': 3.680,
-        'Músculo': 0.998,
-        'Moída de Primeira': 0.720,
-        'Moída de Segunda': 3.416
-      }
-    }
-  ],
-  precosVenda: {
-    'Cebo e Osso': 1.50,
-    'Agulha C/ Osso': 24.90,
-    'Agulha S/ Osso': 32.90,
-    'Agulha Especial': 36.90,
-    'Costela Dianteiro': 23.90,
-    'Paleta C/ Sete': 27.90,
-    'Paleta Osso Redondo': 26.90,
-    'Paleta S/ Osso': 34.90,
-    'Peito Costela': 25.90,
-    'Músculo': 33.90,
-    'Moída de Primeira': 35.90,
-    'Moída de Segunda': 26.90
+    historicoDesossas: []
   },
+  {
+    id: 'patinho-bovino',
+    nome: 'Patinho Bovino (Peça Bruta)',
+    custoKgEntrada: 28.50,
+    margemPadraoPerc: 30.0,
+    modoCusto: 'peca_chave',
+    modoMargem: 'individual',
+    cortesCatalogo: [
+      { nome: 'Sangue e Líquidos', tipo: 'perda_liquida', precoVendaPadrao: 0.00 },
+      { nome: 'Cebo e Osso', tipo: 'subproduto', precoVendaPadrao: 1.48 },
+      { nome: 'Moída de Segunda', tipo: 'comum', precoVendaPadrao: 26.90 },
+      { nome: 'Moída de Primeira', tipo: 'nobre', precoVendaPadrao: 37.90 },
+      { nome: 'Patinho Limpo', tipo: 'nobre', precoVendaPadrao: 42.90 }
+    ],
+    amostras: [
+      {
+        id: 'amostra-patinho-1',
+        nome: 'Amostra 1 (Peça 11,5 kg)',
+        pesoTotal: 11.500,
+        tempo: '00:08:45',
+        cortes: {
+          'Sangue e Líquidos': 0.180,
+          'Cebo e Osso': 1.450,
+          'Moída de Segunda': 0.950,
+          'Moída de Primeira': 1.320,
+          'Patinho Limpo': 7.590
+        }
+      }
+    ],
+    precosVendaSugeridos: {
+      'Sangue e Líquidos': 0.00,
+      'Cebo e Osso': 1.48,
+      'Moída de Segunda': 26.90,
+      'Moída de Primeira': 37.90,
+      'Patinho Limpo': 42.90
+    },
+    historicoDesossas: []
+  }
+];
+
+// Estado global do app
+const banco = {
+  pecas: JSON.parse(JSON.stringify(PECAS_INICIAIS)),
+  idPecaAtiva: 'dianteiro-bovino',
   volumeSimuladoKg: 1000,
   custoSimuladoKg: 21.45
 };
 
-const ESTADO_PADRAO = JSON.parse(JSON.stringify(estado));
+function obterPecaAtiva() {
+  const p = banco.pecas.find((item) => item.id === banco.idPecaAtiva);
+  return p || banco.pecas[0];
+}
 
 function avaliarExpressaoNumerica(str) {
   if (typeof str !== 'string') return Number(str) || 0;
@@ -132,47 +201,42 @@ function formatarSegundosEmTempo(seg) {
   return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
-function obterListaCortes() {
-  const nomes = new Set();
-  estado.amostras.forEach((a) => {
-    Object.keys(a.cortes).forEach((nome) => nomes.add(nome));
+function obterListaCortesPeca(peca) {
+  const setNomes = new Set();
+  (peca.cortesCatalogo || []).forEach((c) => setNomes.add(c.nome));
+  (peca.amostras || []).forEach((a) => {
+    Object.keys(a.cortes || {}).forEach((n) => setNomes.add(n));
   });
-  return Array.from(nomes);
+  return Array.from(setNomes);
 }
 
-function processarAmostraIndividual(amostra, cortes, totaisCortes) {
-  let somaCortes = 0;
-  cortes.forEach((nome) => {
-    const peso = amostra.cortes[nome] || 0;
-    somaCortes += peso;
-    totaisCortes[nome] = (totaisCortes[nome] || 0) + peso;
-  });
-  const quebraKg = arredondar(amostra.pesoTotal - somaCortes, 3);
-  const quebraPerc = amostra.pesoTotal > 0 ? arredondar((quebraKg / amostra.pesoTotal) * 100, 2) : 0;
-  const seg = parseTempoEmSegundos(amostra.tempo);
-  return { ...amostra, somaCortes, quebraKg, quebraPerc, tempoSegundos: seg };
-}
-
-function calcularMetricasGlobais() {
-  const cortes = obterListaCortes();
+function calcularMetricasPeca(peca) {
+  const cortes = obterListaCortesPeca(peca);
   const totaisCortes = {};
   cortes.forEach((c) => { totaisCortes[c] = 0; });
-
   let somaPesoTotal = 0;
   let somaTempoSegundos = 0;
 
-  const detalhesAmostras = estado.amostras.map((a) => {
+  const detalhesAmostras = (peca.amostras || []).map((a) => {
     somaPesoTotal += a.pesoTotal;
-    const processada = processarAmostraIndividual(a, cortes, totaisCortes);
-    somaTempoSegundos += processada.tempoSegundos;
-    return processada;
+    const seg = parseTempoEmSegundos(a.tempo);
+    somaTempoSegundos += seg;
+    let somaCortes = 0;
+    cortes.forEach((nome) => {
+      const p = a.cortes[nome] || 0;
+      somaCortes += p;
+      totaisCortes[nome] += p;
+    });
+    const quebraKg = arredondar(a.pesoTotal - somaCortes, 3);
+    const quebraPerc = a.pesoTotal > 0 ? arredondar((quebraKg / a.pesoTotal) * 100, 2) : 0;
+    return { ...a, somaCortes, quebraKg, quebraPerc, tempoSegundos: seg };
   });
 
-  return consolidarMetricasAmostras(cortes, totaisCortes, detalhesAmostras, somaPesoTotal, somaTempoSegundos);
+  return consolidarMetricasFinais(peca, cortes, totaisCortes, detalhesAmostras, somaPesoTotal, somaTempoSegundos);
 }
 
-function consolidarMetricasAmostras(cortes, totaisCortes, detalhesAmostras, somaPeso, somaTempo) {
-  const qtd = estado.amostras.length || 1;
+function consolidarMetricasFinais(peca, cortes, totaisCortes, detalhesAmostras, somaPeso, somaTempo) {
+  const qtd = peca.amostras.length || 1;
   const pesoMedioPeca = arredondar(somaPeso / qtd, 3);
   const tempoMedioSeg = Math.round(somaTempo / qtd);
   const produtividadeKgHora = somaTempo > 0 ? arredondar(somaPeso / (somaTempo / 3600), 2) : 0;
@@ -190,158 +254,191 @@ function consolidarMetricasAmostras(cortes, totaisCortes, detalhesAmostras, soma
   return { somaPesoTotal: somaPeso, pesoMedioPeca, tempoMedioSeg, produtividadeKgHora, quebraGlobalKg, quebraGlobalPerc, detalhesAmostras, cortesConsolidados };
 }
 
-function calcularCustosERentabilidade(metricas) {
+function calcularCusteioPecaChave(peca, metricas) {
   const pesoBase = metricas.pesoMedioPeca;
-  const custoTotalPeca = arredondar(pesoBase * estado.custoKgEntrada, 2);
+  const custoBaseKg = peca.custoKgEntrada;
+  const custoTotalPeca = arredondar(pesoBase * custoBaseKg, 2);
+  const usarPecaChave = peca.modoCusto !== 'livre';
 
-  const cortesComPreco = metricas.cortesConsolidados.map((c) => {
-    const precoVenda = estado.precosVenda[c.nome] || 0;
-    const pesoEstimado = arredondar((pesoBase * c.rendimentoPerc) / 100, 3);
-    const faturamento = arredondar(pesoEstimado * precoVenda, 2);
-    return { ...c, pesoEstimado, precoVenda, faturamento };
+  const cortesProcessados = metricas.cortesConsolidados.map((c) => {
+    const precoVenda = peca.precosVendaSugeridos[c.nome] ?? 0;
+    const custoItemKg = usarPecaChave ? custoBaseKg : (peca.custosIndividuais?.[c.nome] ?? custoBaseKg);
+    const pesoEst = arredondar((pesoBase * c.rendimentoPerc) / 100, 3);
+    const fat = arredondar(pesoEst * precoVenda, 2);
+    const custoEst = arredondar(pesoEst * custoItemKg, 2);
+    const lucroKg = arredondar(precoVenda - custoItemKg, 2);
+    const margemPerc = precoVenda > 0 ? arredondar((lucroKg / precoVenda) * 100, 2) : (custoItemKg > 0 ? -100 : 0);
+    return { ...c, pesoEst, precoVenda, custoItemKg, fat, custoEst, lucroKg, lucroEst: arredondar(fat - custoEst, 2), margemPerc };
   });
 
-  const faturamentoTotalPeca = arredondar(cortesComPreco.reduce((acc, c) => acc + c.faturamento, 0), 2);
-  const lucroBrutoPeca = arredondar(faturamentoTotalPeca - custoTotalPeca, 2);
-  const margemGlobalPerc = faturamentoTotalPeca > 0 ? arredondar((lucroBrutoPeca / faturamentoTotalPeca) * 100, 2) : 0;
-  const fatorCusto = 1 - (margemGlobalPerc / 100);
-
-  const cortesFinalizados = cortesComPreco.map((c) => ({
-    ...c,
-    custoRealKg: arredondar(c.precoVenda * fatorCusto, 2),
-    lucroKg: arredondar(c.precoVenda - (c.precoVenda * fatorCusto), 2),
-    margemPerc: c.precoVenda > 0 ? arredondar(((c.precoVenda - (c.precoVenda * fatorCusto)) / c.precoVenda) * 100, 2) : 0
-  }));
-
-  return { custoTotalPeca, faturamentoTotalPeca, lucroBrutoPeca, margemGlobalPerc, cortes: cortesFinalizados };
+  const faturamentoTotal = arredondar(cortesProcessados.reduce((a, b) => a + b.fat, 0), 2);
+  const lucroLiquidoPeca = arredondar(faturamentoTotal - custoTotalPeca, 2);
+  const margemGlobalPerc = faturamentoTotal > 0 ? arredondar((lucroLiquidoPeca / faturamentoTotal) * 100, 2) : 0;
+  return { custoTotalPeca, faturamentoTotal, lucroLiquidoPeca, margemGlobalPerc, cortes: cortesProcessados };
 }
 
 function gerarBadgeQuebra(quebraKg, quebraPerc) {
-  if (quebraKg < 0) {
-    return `<span class="badge badge-danger">⚠️ +${formatarKg(Math.abs(quebraKg))} (${quebraPerc}%)</span>`;
-  }
-  if (quebraPerc <= 0.5) {
-    return `<span class="badge badge-success">✓ ${formatarKg(quebraKg)} (${quebraPerc}%)</span>`;
-  }
-  if (quebraPerc <= 1.5) {
-    return `<span class="badge badge-warning">! ${formatarKg(quebraKg)} (${quebraPerc}%)</span>`;
-  }
+  if (quebraKg < 0) return `<span class="badge badge-danger">⚠️ +${formatarKg(Math.abs(quebraKg))} (${quebraPerc}%)</span>`;
+  if (quebraPerc <= 0.5) return `<span class="badge badge-success">✓ ${formatarKg(quebraKg)} (${quebraPerc}%)</span>`;
+  if (quebraPerc <= 1.5) return `<span class="badge badge-warning">! ${formatarKg(quebraKg)} (${quebraPerc}%)</span>`;
   return `<span class="badge badge-danger">⚠️ ${formatarKg(quebraKg)} (${quebraPerc}%)</span>`;
 }
 
-function criarLinhaLancamento(corte) {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td><strong>${corte.nome}</strong></td>
-    <td class="text-center">
-      <input type="text" class="form-input form-input-calc input-corte-peso" data-amostra="0" data-corte="${corte.nome}"
-             value="${estado.amostras[0]?.cortes[corte.nome] ?? ''}" style="width: 100px; text-align:right;">
-    </td>
-    <td class="text-center">
-      <input type="text" class="form-input form-input-calc input-corte-peso" data-amostra="1" data-corte="${corte.nome}"
-             value="${estado.amostras[1]?.cortes[corte.nome] ?? ''}" style="width: 100px; text-align:right;">
-    </td>
-    <td class="text-center">
-      <input type="text" class="form-input form-input-calc input-corte-peso" data-amostra="2" data-corte="${corte.nome}"
-             value="${estado.amostras[2]?.cortes[corte.nome] ?? ''}" style="width: 100px; text-align:right;">
-    </td>
-    <td class="text-right font-bold">${formatarKg(corte.pesoMedio)}</td>
-    <td class="text-right"><span class="badge badge-neutral font-bold">${formatarPerc(corte.rendimentoPerc)}</span></td>
-    <td class="text-center">
-      <button class="btn btn-sm btn-secondary btn-remover-corte" data-corte="${corte.nome}" title="Excluir" style="padding:2px 6px; color:#b91c1c;">✕</button>
-    </td>
-  `;
-  return tr;
-}
-
-function renderizarTabelaLancamento(metricas) {
-  const tbody = document.getElementById('corpo-tabela-cortes');
-  tbody.innerHTML = '';
-  metricas.cortesConsolidados.forEach((c) => tbody.appendChild(criarLinhaLancamento(c)));
-  atualizarRodapeLancamento(metricas);
-}
-
-function atualizarRodapeLancamento(metricas) {
-  metricas.detalhesAmostras.forEach((det, i) => {
-    document.getElementById(`soma-cortes-amostra-${i}`).innerText = formatarKg(det.somaCortes);
-    document.getElementById(`quebra-amostra-${i}`).innerHTML = gerarBadgeQuebra(det.quebraKg, det.quebraPerc);
+function renderizarSeletorPecas() {
+  const select = document.getElementById('select-peca');
+  select.innerHTML = '';
+  banco.pecas.forEach((p) => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.innerText = p.nome;
+    if (p.id === banco.idPecaAtiva) opt.selected = true;
+    select.appendChild(opt);
   });
-  const somaCortesMedia = arredondar(metricas.cortesConsolidados.reduce((acc, c) => acc + c.pesoMedio, 0), 3);
-  const somaRendimentoPerc = arredondar(metricas.cortesConsolidados.reduce((acc, c) => acc + c.rendimentoPerc, 0), 2);
-  document.getElementById('soma-cortes-media').innerText = formatarKg(somaCortesMedia);
-  document.getElementById('soma-cortes-rend-perc').innerText = formatarPerc(somaRendimentoPerc);
-  document.getElementById('quebra-media-kg').innerText = formatarKg(metricas.quebraGlobalKg / (estado.amostras.length || 1));
-  document.getElementById('quebra-media-perc').innerHTML = gerarBadgeQuebra(metricas.quebraGlobalKg, metricas.quebraGlobalPerc);
 }
 
-function criarLinhaPrecificacao(corte) {
-  const tr = document.createElement('tr');
-  const isSub = corte.nome.toLowerCase().includes('osso') || corte.nome.toLowerCase().includes('cebo') || corte.nome.toLowerCase().includes('sebo');
-  tr.innerHTML = `
-    <td><strong>${corte.nome}</strong>${isSub ? '<span class="badge badge-neutral" style="margin-left:6px; font-size:0.7rem;">Subproduto</span>' : ''}</td>
-    <td class="text-right">${formatarPerc(corte.rendimentoPerc)}</td>
-    <td class="text-right text-muted">${formatarKg(corte.pesoEstimado)}</td>
-    <td class="text-right">
-      <div style="display:inline-flex; align-items:center; gap:4px;">
-        <span style="font-size:0.8rem; color:var(--text-muted);">R$</span>
-        <input type="number" step="0.10" class="form-input input-preco-venda" data-corte="${corte.nome}"
-               value="${corte.precoVenda}" style="width: 85px; text-align:right; font-weight:700;">
-      </div>
-    </td>
-    <td class="text-right font-bold" style="background:#fef3c7; color:var(--primary);">${formatarMoeda(corte.custoRealKg)}</td>
-    <td class="text-right font-bold ${corte.lucroKg >= 0 ? 'text-success' : 'text-danger'}">${formatarMoeda(corte.lucroKg)}</td>
-    <td class="text-right">
-      <span class="badge ${corte.margemPerc >= 20 ? 'badge-success' : (corte.margemPerc > 0 ? 'badge-warning' : 'badge-danger')}">
-        ${formatarPerc(corte.margemPerc)}
-      </span>
-    </td>
-    <td class="text-right font-bold">${formatarMoeda(corte.faturamento)}</td>
-  `;
-  return tr;
+function renderizarTabelaDesossa(peca, metricas) {
+  renderizarCabecalhoDesossa(peca);
+  renderizarCorpoDesossa(peca, metricas);
+  renderizarRodapeDesossa(peca, metricas);
 }
 
-function renderizarTabelaPrecificacao(custos) {
-  const tbody = document.getElementById('corpo-tabela-precificacao');
+function renderizarCabecalhoDesossa(peca) {
+  const thead = document.getElementById('cabecalho-tabela-desossa');
+  let html = `<tr><th style="min-width: 170px;">Corte / Rendimento / Perda</th>`;
+  peca.amostras.forEach((a, i) => {
+    html += `
+      <th class="text-center" style="background:${obterCorColuna(i)}; min-width: 180px;">
+        Peça ${i + 1}
+        <div style="font-size:0.75rem; font-weight:normal; margin-top:4px;">
+          Total: <input type="text" class="form-input form-input-calc input-amostra-peso" data-idx="${i}"
+                        value="${a.pesoTotal}" style="width: 80px; padding:2px 4px; display:inline;"> kg<br>
+          Tempo: <input type="text" class="form-input input-amostra-tempo" data-idx="${i}"
+                        value="${a.tempo}" style="width: 75px; padding:2px 4px; display:inline; margin-top:2px;">
+        </div>
+      </th>
+    `;
+  });
+  html += `
+    <th class="text-right" style="background:#f8fafc; min-width: 100px;">Média (kg)</th>
+    <th class="text-right" style="background:#f8fafc; min-width: 95px;">Rend. (%)</th>
+    <th class="text-center" style="width: 35px;"></th>
+  </tr>`;
+  thead.innerHTML = html;
+}
+
+function obterCorColuna(i) {
+  const cores = ['#e0f2fe', '#fef3c7', '#dcfce7', '#f3e8ff', '#ffe4e6'];
+  return cores[i % cores.length];
+}
+
+function renderizarCorpoDesossa(peca, metricas) {
+  const tbody = document.getElementById('corpo-tabela-desossa');
   tbody.innerHTML = '';
-  custos.cortes.forEach((c) => tbody.appendChild(criarLinhaPrecificacao(c)));
-  atualizarTotaisPrecificacao(custos);
+  metricas.cortesConsolidados.forEach((corte) => {
+    const tr = document.createElement('tr');
+    let tds = `<td><strong>${corte.nome}</strong></td>`;
+    peca.amostras.forEach((a, i) => {
+      const v = a.cortes[corte.nome] ?? '';
+      tds += `
+        <td class="text-center">
+          <input type="text" class="form-input form-input-calc input-corte-peso" data-idx="${i}" data-corte="${corte.nome}"
+                 value="${v}" style="width: 95px; text-align:right;">
+        </td>
+      `;
+    });
+    tds += `
+      <td class="text-right font-bold">${formatarKg(corte.pesoMedio)}</td>
+      <td class="text-right"><span class="badge badge-neutral font-bold">${formatarPerc(corte.rendimentoPerc)}</span></td>
+      <td class="text-center">
+        <button class="btn btn-sm btn-secondary btn-remover-corte" data-corte="${corte.nome}" style="padding:2px 6px; color:#b91c1c;">✕</button>
+      </td>
+    `;
+    tr.innerHTML = tds;
+    tbody.appendChild(tr);
+  });
 }
 
-function atualizarTotaisPrecificacao(custos) {
-  const somaRend = arredondar(custos.cortes.reduce((acc, c) => acc + c.rendimentoPerc, 0), 2);
-  const somaPeso = arredondar(custos.cortes.reduce((acc, c) => acc + c.pesoEstimado, 0), 3);
-  document.getElementById('total-rend-prec').innerText = formatarPerc(somaRend);
-  document.getElementById('total-peso-prec').innerText = formatarKg(somaPeso);
-  document.getElementById('total-custo-peca').innerText = formatarMoeda(custos.custoTotalPeca);
-  document.getElementById('total-lucro-peca').innerText = formatarMoeda(custos.lucroBrutoPeca);
-  document.getElementById('total-margem-peca').innerHTML = `<span class="badge badge-success font-bold">${formatarPerc(custos.margemGlobalPerc)}</span>`;
-  document.getElementById('total-faturamento-peca').innerText = formatarMoeda(custos.faturamentoTotalPeca);
+function renderizarRodapeDesossa(peca, metricas) {
+  const tfoot = document.getElementById('rodape-tabela-desossa');
+  let trSoma = `<tr style="background:#f1f5f9; font-weight:700;"><td>Soma dos Cortes (kg)</td>`;
+  let trQuebra = `<tr style="background:#fff; font-weight:700;"><td>Quebra de Desossa</td>`;
+  metricas.detalhesAmostras.forEach((det) => {
+    trSoma += `<td class="text-center">${formatarKg(det.somaCortes)}</td>`;
+    trQuebra += `<td class="text-center">${gerarBadgeQuebra(det.quebraKg, det.quebraPerc)}</td>`;
+  });
+  const somaMedia = arredondar(metricas.cortesConsolidados.reduce((acc, c) => acc + c.pesoMedio, 0), 3);
+  const somaRend = arredondar(metricas.cortesConsolidados.reduce((acc, c) => acc + c.rendimentoPerc, 0), 2);
+  trSoma += `<td class="text-right">${formatarKg(somaMedia)}</td><td class="text-right">${formatarPerc(somaRend)}</td><td></td></tr>`;
+  trQuebra += `<td class="text-right">${formatarKg(metricas.quebraGlobalKg / (peca.amostras.length || 1))}</td><td class="text-right">${gerarBadgeQuebra(metricas.quebraGlobalKg, metricas.quebraGlobalPerc)}</td><td></td></tr>`;
+  tfoot.innerHTML = trSoma + trQuebra;
 }
 
-function renderizarSimuladorEstoque(metricas, custos) {
-  const volCompra = Number.parseFloat(document.getElementById('input-volume-compra')?.value) || estado.volumeSimuladoKg;
-  const custoKg = Number.parseFloat(document.getElementById('input-custo-simulado')?.value) || estado.custoSimuladoKg;
+function renderizarTabelaCusteio(peca, custeio) {
+  const tbody = document.getElementById('corpo-tabela-custeio');
+  tbody.innerHTML = '';
+  custeio.cortes.forEach((c) => {
+    const isPrej = c.lucroKg < 0;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <strong>${c.nome}</strong>
+        ${isPrej ? '<span class="badge badge-prejuizo" style="margin-left:6px; font-size:0.7rem;">PREJUÍZO</span>' : ''}
+      </td>
+      <td class="text-right">${formatarPerc(c.rendimentoPerc)}</td>
+      <td class="text-right text-muted">${formatarKg(c.pesoEst)}</td>
+      <td class="text-right font-bold" style="background:#fef3c7; color:var(--primary);">${formatarMoeda(c.custoItemKg)}</td>
+      <td class="text-right">
+        <div style="display:inline-flex; align-items:center; gap:3px;">
+          <span style="font-size:0.75rem; color:var(--text-muted);">R$</span>
+          <input type="number" step="0.10" class="form-input input-preco-venda-custeio" data-corte="${c.nome}"
+                 value="${c.precoVenda}" style="width: 80px; text-align:right; font-weight:700;">
+        </div>
+      </td>
+      <td class="text-right font-bold ${isPrej ? 'text-danger' : 'text-success'}">${formatarMoeda(c.lucroKg)}</td>
+      <td class="text-right"><span class="badge ${isPrej ? 'badge-danger' : 'badge-success'}">${formatarPerc(c.margemPerc)}</span></td>
+      <td class="text-right font-bold">${formatarMoeda(c.fat)}</td>
+      <td class="text-right font-bold ${c.lucroEst >= 0 ? 'text-success' : 'text-danger'}">${formatarMoeda(c.lucroEst)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  atualizarTotaisCusteio(custeio);
+}
+
+function atualizarTotaisCusteio(custeio) {
+  const somaRend = arredondar(custeio.cortes.reduce((a, b) => a + b.rendimentoPerc, 0), 2);
+  const somaPeso = arredondar(custeio.cortes.reduce((a, b) => a + b.pesoEst, 0), 3);
+  document.getElementById('custo-total-rend').innerText = formatarPerc(somaRend);
+  document.getElementById('custo-total-peso').innerText = formatarKg(somaPeso);
+  document.getElementById('custo-total-lucro-kg').innerText = formatarMoeda(custeio.lucroLiquidoPeca / (somaPeso || 1));
+  document.getElementById('custo-total-margem-perc').innerHTML = `<span class="badge badge-success font-bold">${formatarPerc(custeio.margemGlobalPerc)}</span>`;
+  document.getElementById('custo-total-faturamento').innerText = formatarMoeda(custeio.faturamentoTotal);
+  document.getElementById('custo-total-lucro-liquido').innerText = formatarMoeda(custeio.lucroLiquidoPeca);
+}
+
+function renderizarSimulador(peca, metricas) {
+  const volCompra = Number.parseFloat(document.getElementById('input-volume-compra')?.value) || banco.volumeSimuladoKg;
+  const custoKg = Number.parseFloat(document.getElementById('input-custo-simulado')?.value) || peca.custoKgEntrada;
   const custoTotalLote = arredondar(volCompra * custoKg, 2);
   const tbody = document.getElementById('corpo-tabela-estoque');
   tbody.innerHTML = '';
 
-  let faturamentoTotalLote = 0;
-  metricas.cortesConsolidados.forEach((corte) => {
-    const precoVenda = estado.precosVenda[corte.nome] || 0;
-    const pesoEstoqueKg = arredondar((volCompra * corte.rendimentoPerc) / 100, 3);
-    const faturamento = arredondar(pesoEstoqueKg * precoVenda, 2);
-    faturamentoTotalLote += faturamento;
+  let faturamentoTotal = 0;
+  metricas.cortesConsolidados.forEach((c) => {
+    const preco = peca.precosVendaSugeridos[c.nome] || 0;
+    const pesoEstoque = arredondar((volCompra * c.rendimentoPerc) / 100, 3);
+    const fat = arredondar(pesoEstoque * preco, 2);
+    faturamentoTotal += fat;
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><strong>${corte.nome}</strong></td>
-      <td class="text-right">${formatarPerc(corte.rendimentoPerc)}</td>
-      <td class="text-right font-bold" style="color:var(--secondary);">${formatarKg(pesoEstoqueKg)}</td>
-      <td class="text-right text-muted">${formatarMoeda(precoVenda)}</td>
-      <td class="text-right font-bold">${formatarMoeda(faturamento)}</td>
+      <td><strong>${c.nome}</strong></td>
+      <td class="text-right">${formatarPerc(c.rendimentoPerc)}</td>
+      <td class="text-right font-bold">${formatarKg(pesoEstoque)}</td>
+      <td class="text-right text-muted">${formatarMoeda(preco)}</td>
+      <td class="text-right font-bold">${formatarMoeda(fat)}</td>
     `;
     tbody.appendChild(tr);
   });
-  atualizarCardsSimulacao(volCompra, custoTotalLote, faturamentoTotalLote);
+  atualizarCardsSimulacao(volCompra, custoTotalLote, faturamentoTotal);
 }
 
 function atualizarCardsSimulacao(vol, custo, fat) {
@@ -354,118 +451,379 @@ function atualizarCardsSimulacao(vol, custo, fat) {
   document.getElementById('sim-margem-perc').innerText = `Margem Projetada: ${formatarPerc(margem)}`;
 }
 
-function atualizarMetricasTop(metricas, custos) {
-  document.getElementById('metrica-peso-total').innerText = formatarKg(metricas.somaPesoTotal);
-  document.getElementById('metrica-peso-medio').innerText = `Média: ${formatarKg(metricas.pesoMedioPeca)} / peça`;
+function renderizarHistorico(peca) {
+  const tbody = document.getElementById('corpo-tabela-historico');
+  const count = peca.historicoDesossas?.length || 0;
+  document.getElementById('badge-historico-count').innerText = count;
+  tbody.innerHTML = '';
+  if (count === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted" style="padding:1.5rem;">Nenhum recebimento arquivado para esta peça.</td></tr>`;
+    return;
+  }
+  peca.historicoDesossas.forEach((h, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${h.data}</strong></td>
+      <td>${h.fornecedor || 'Padrão'}</td>
+      <td class="text-center font-bold">${h.qtdPecas}</td>
+      <td class="text-right font-bold">${formatarKg(h.pesoTotal)}</td>
+      <td class="text-right text-muted">${formatarKg(h.pesoMedio)}</td>
+      <td class="text-right">${gerarBadgeQuebra(h.quebraKg, h.quebraPerc)}</td>
+      <td class="text-right font-bold text-success">${formatarMoeda(h.faturamentoEstimado)}</td>
+      <td class="text-center">
+        <button class="btn btn-sm btn-secondary btn-carregar-hist" data-idx="${idx}" title="Carregar no lançador">Abrir</button>
+        <button class="btn btn-sm btn-danger btn-excluir-hist" data-idx="${idx}" title="Excluir">✕</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function atualizarMetricasTopGeral(peca, metricas, custeio) {
+  document.getElementById('metrica-qtd-pecas').innerText = `${peca.amostras.length} peças`;
+  document.getElementById('metrica-peso-total').innerText = `Total: ${formatarKg(metricas.somaPesoTotal)}`;
   document.getElementById('metrica-quebra-total').innerText = formatarKg(metricas.quebraGlobalKg);
   document.getElementById('metrica-quebra-perc').innerText = `${formatarPerc(metricas.quebraGlobalPerc)} de perda global`;
   document.getElementById('metrica-produtividade').innerText = `${metricas.produtividadeKgHora} kg/h`;
   document.getElementById('metrica-tempo-medio').innerText = `Tempo médio: ${formatarSegundosEmTempo(metricas.tempoMedioSeg)}`;
-  document.getElementById('metrica-margem-global').innerText = formatarPerc(custos.margemGlobalPerc);
-  document.getElementById('metrica-faturamento-medio').innerText = `Faturamento: ${formatarMoeda(custos.faturamentoTotalPeca)} / peça`;
+  document.getElementById('metrica-lucro-peca').innerText = formatarMoeda(custeio.lucroLiquidoPeca);
+  document.getElementById('metrica-margem-global').innerText = `Margem Geral: ${formatarPerc(custeio.margemGlobalPerc)}`;
 }
 
-function salvarNoLocalStorageSilencioso() {
+function salvarNoLocalStorage() {
   try {
-    localStorage.setItem('acougue_pro_estado_v1', JSON.stringify(estado));
+    localStorage.setItem('acougue_pro_multibi_v2', JSON.stringify(banco));
   } catch (e) {
-    console.error('Erro ao salvar LocalStorage:', e);
+    console.error('Erro LocalStorage:', e);
   }
 }
 
 function carregarDoLocalStorage() {
   try {
-    const salvo = localStorage.getItem('acougue_pro_estado_v1');
-    if (salvo) Object.assign(estado, JSON.parse(salvo));
+    const salvo = localStorage.getItem('acougue_pro_multibi_v2');
+    if (salvo) Object.assign(banco, JSON.parse(salvo));
   } catch (e) {
     console.warn('Erro ao carregar LocalStorage:', e);
   }
 }
 
 function atualizarTela() {
-  const metricas = calcularMetricasGlobais();
-  const custos = calcularCustosERentabilidade(metricas);
-  atualizarMetricasTop(metricas, custos);
-  renderizarTabelaLancamento(metricas);
-  renderizarTabelaPrecificacao(custos);
-  renderizarSimuladorEstoque(metricas, custos);
-  salvarNoLocalStorageSilencioso();
+  const peca = obterPecaAtiva();
+  sincronizarCamposPecaAtiva(peca);
+  renderizarSeletorPecas();
+  const metricas = calcularMetricasPeca(peca);
+  const custeio = calcularCusteioPecaChave(peca, metricas);
+  atualizarMetricasTopGeral(peca, metricas, custeio);
+  renderizarTabelaDesossa(peca, metricas);
+  renderizarTabelaCusteio(peca, custeio);
+  renderizarSimulador(peca, metricas);
+  renderizarHistorico(peca);
+  salvarNoLocalStorage();
 }
 
-function vincularEventosConfiguracao() {
-  document.getElementById('input-nome-peca').addEventListener('input', (e) => { estado.nomePeca = e.target.value; });
-  document.getElementById('input-custo-compra-kg').addEventListener('input', (e) => {
-    estado.custoKgEntrada = Number.parseFloat(e.target.value) || 0;
-    document.getElementById('input-custo-simulado').value = estado.custoKgEntrada;
+function sincronizarCamposPecaAtiva(peca) {
+  document.getElementById('input-custo-compra-kg').value = peca.custoKgEntrada;
+  document.getElementById('input-margem-padrao-peca').value = peca.margemPadraoPerc;
+  document.getElementById('input-custo-simulado').value = peca.custoKgEntrada;
+  document.getElementById('check-custo-peca-chave').checked = peca.modoCusto !== 'livre';
+}
+
+function vincularEventosAbas() {
+  document.querySelectorAll('.tab-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach((c) => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+}
+
+function vincularEventosPeca() {
+  document.getElementById('select-peca').addEventListener('change', (e) => {
+    banco.idPecaAtiva = e.target.value;
     atualizarTela();
   });
-  for (let i = 0; i < 3; i++) {
-    document.getElementById(`peso-total-amostra-${i}`)?.addEventListener('change', (e) => {
-      estado.amostras[i].pesoTotal = avaliarExpressaoNumerica(e.target.value);
-      e.target.value = estado.amostras[i].pesoTotal;
-      atualizarTela();
-    });
-    document.getElementById(`tempo-amostra-${i}`)?.addEventListener('change', (e) => {
-      estado.amostras[i].tempo = e.target.value;
-      atualizarTela();
-    });
-  }
+  document.getElementById('input-custo-compra-kg').addEventListener('input', (e) => {
+    const peca = obterPecaAtiva();
+    peca.custoKgEntrada = Number.parseFloat(e.target.value) || 0;
+    document.getElementById('input-custo-simulado').value = peca.custoKgEntrada;
+    atualizarTela();
+  });
+  document.getElementById('input-margem-padrao-peca').addEventListener('input', (e) => {
+    const peca = obterPecaAtiva();
+    peca.margemPadraoPerc = Number.parseFloat(e.target.value) || 0;
+    atualizarTela();
+  });
+  document.getElementById('check-custo-peca-chave').addEventListener('change', (e) => {
+    const peca = obterPecaAtiva();
+    peca.modoCusto = e.target.checked ? 'peca_chave' : 'livre';
+    atualizarTela();
+  });
 }
 
-function vincularEventosTabela() {
-  document.getElementById('corpo-tabela-cortes').addEventListener('change', (e) => {
+function vincularEventosAmostras() {
+  document.getElementById('btn-add-amostra').addEventListener('click', () => {
+    const peca = obterPecaAtiva();
+    const num = peca.amostras.length + 1;
+    peca.amostras.push({
+      id: `amostra-${Date.now()}`,
+      nome: `Peça ${num}`,
+      pesoTotal: 40.0,
+      tempo: '00:25:00',
+      cortes: {}
+    });
+    atualizarTela();
+  });
+  document.getElementById('btn-remover-amostra').addEventListener('click', () => {
+    const peca = obterPecaAtiva();
+    if (peca.amostras.length > 1) {
+      peca.amostras.pop();
+      atualizarTela();
+    } else {
+      alert('É necessário manter ao menos 1 peça na amostragem.');
+    }
+  });
+}
+
+function vincularEventosTabelaDesossa() {
+  const tbl = document.getElementById('tabela-desossa-dinamica');
+  tbl.addEventListener('change', (e) => {
+    const peca = obterPecaAtiva();
+    if (e.target.classList.contains('input-amostra-peso')) {
+      const idx = Number.parseInt(e.target.dataset.idx, 10);
+      peca.amostras[idx].pesoTotal = avaliarExpressaoNumerica(e.target.value);
+      atualizarTela();
+    }
+    if (e.target.classList.contains('input-amostra-tempo')) {
+      const idx = Number.parseInt(e.target.dataset.idx, 10);
+      peca.amostras[idx].tempo = e.target.value;
+      atualizarTela();
+    }
     if (e.target.classList.contains('input-corte-peso')) {
-      const idx = Number.parseInt(e.target.dataset.amostra, 10);
+      const idx = Number.parseInt(e.target.dataset.idx, 10);
       const corte = e.target.dataset.corte;
-      const v = avaliarExpressaoNumerica(e.target.value);
-      estado.amostras[idx].cortes[corte] = v;
-      e.target.value = v;
+      peca.amostras[idx].cortes[corte] = avaliarExpressaoNumerica(e.target.value);
       atualizarTela();
     }
   });
-  document.getElementById('corpo-tabela-cortes').addEventListener('click', (e) => {
+  tbl.addEventListener('click', (e) => {
     if (e.target.classList.contains('btn-remover-corte')) {
-      const corte = e.target.dataset.corte;
-      if (confirm(`Remover corte '${corte}'?`)) {
-        estado.amostras.forEach((a) => delete a.cortes[corte]);
-        delete estado.precosVenda[corte];
+      removerCortePeca(e.target.dataset.corte);
+    }
+  });
+}
+
+function removerCortePeca(corteNome) {
+  const peca = obterPecaAtiva();
+  if (confirm(`Remover o rendimento/perda '${corteNome}' desta peça?`)) {
+    peca.cortesCatalogo = (peca.cortesCatalogo || []).filter((c) => c.nome !== corteNome);
+    peca.amostras.forEach((a) => delete a.cortes[corteNome]);
+    delete peca.precosVendaSugeridos[corteNome];
+    atualizarTela();
+  }
+}
+
+function vincularEventosCusteio() {
+  document.getElementById('corpo-tabela-custeio').addEventListener('input', (e) => {
+    if (e.target.classList.contains('input-preco-venda-custeio')) {
+      const peca = obterPecaAtiva();
+      peca.precosVendaSugeridos[e.target.dataset.corte] = Number.parseFloat(e.target.value) || 0;
+      atualizarTela();
+    }
+  });
+  document.getElementById('btn-aplicar-margem-geral').addEventListener('click', () => {
+    const peca = obterPecaAtiva();
+    const margem = peca.margemPadraoPerc / 100;
+    if (margem >= 1) return alert('A margem deve ser menor que 100%.');
+    obterListaCortesPeca(peca).forEach((nome) => {
+      const isSub = nome.toLowerCase().includes('osso') || nome.toLowerCase().includes('cebo') || nome.toLowerCase().includes('sangue');
+      if (!isSub) {
+        peca.precosVendaSugeridos[nome] = arredondar(peca.custoKgEntrada / (1 - margem), 2);
+      }
+    });
+    atualizarTela();
+    alert('Preços de venda atualizados com base na margem padrão!');
+  });
+}
+
+function vincularEventosModais() {
+  document.getElementById('btn-abrir-nova-peca').addEventListener('click', () => abrirModalPeca(false));
+  document.getElementById('btn-editar-peca').addEventListener('click', () => abrirModalPeca(true));
+  document.getElementById('btn-salvar-modal-peca').addEventListener('click', salvarModalPeca);
+  document.getElementById('btn-excluir-peca').addEventListener('click', excluirPecaAtiva);
+  document.getElementById('btn-novo-corte').addEventListener('click', abrirModalCorte);
+  document.getElementById('btn-salvar-modal-corte').addEventListener('click', salvarModalCorte);
+  document.getElementById('btn-gravar-historico-modal').addEventListener('click', abrirModalHistorico);
+  document.getElementById('btn-confirmar-gravar-historico').addEventListener('click', confirmarGravarHistorico);
+  document.querySelectorAll('.btn-fechar-modal').forEach((b) => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.modal-overlay').forEach((m) => m.classList.remove('active'));
+    });
+  });
+}
+
+function abrirModalPeca(isEdicao) {
+  const modal = document.getElementById('modal-peca');
+  const titulo = document.getElementById('modal-peca-titulo');
+  const inputNome = document.getElementById('modal-input-nome-peca');
+  const inputCusto = document.getElementById('modal-input-custo-peca');
+  const inputMargem = document.getElementById('modal-input-margem-peca');
+  if (isEdicao) {
+    const peca = obterPecaAtiva();
+    titulo.innerText = 'Editar Peça Inteira';
+    inputNome.value = peca.nome;
+    inputCusto.value = peca.custoKgEntrada;
+    inputMargem.value = peca.margemPadraoPerc;
+    modal.dataset.edicao = 'true';
+  } else {
+    titulo.innerText = 'Cadastrar Nova Peça Inteira';
+    inputNome.value = '';
+    inputCusto.value = '25.00';
+    inputMargem.value = '30.00';
+    modal.dataset.edicao = 'false';
+  }
+  modal.classList.add('active');
+}
+
+function salvarModalPeca() {
+  const modal = document.getElementById('modal-peca');
+  const nome = document.getElementById('modal-input-nome-peca').value.trim();
+  const custo = Number.parseFloat(document.getElementById('modal-input-custo-peca').value) || 0;
+  const margem = Number.parseFloat(document.getElementById('modal-input-margem-peca').value) || 30;
+  if (!nome) return alert('Informe o nome da peça.');
+
+  if (modal.dataset.edicao === 'true') {
+    const peca = obterPecaAtiva();
+    peca.nome = nome;
+    peca.custoKgEntrada = custo;
+    peca.margemPadraoPerc = margem;
+  } else {
+    const id = `peca-${Date.now()}`;
+    banco.pecas.push({
+      id,
+      nome,
+      custoKgEntrada: custo,
+      margemPadraoPerc: margem,
+      modoCusto: 'peca_chave',
+      cortesCatalogo: [{ nome: 'Cebo e Osso', tipo: 'subproduto', precoVendaPadrao: 1.48 }],
+      amostras: [{ id: `amostra-${Date.now()}`, nome: 'Peça 1', pesoTotal: 40.0, tempo: '00:25:00', cortes: {} }],
+      precosVendaSugeridos: { 'Cebo e Osso': 1.48 },
+      historicoDesossas: []
+    });
+    banco.idPecaAtiva = id;
+  }
+  modal.classList.remove('active');
+  atualizarTela();
+}
+
+function excluirPecaAtiva() {
+  if (banco.pecas.length <= 1) return alert('Você não pode excluir a única peça do catálogo.');
+  const peca = obterPecaAtiva();
+  if (confirm(`Deseja realmente excluir a peça '${peca.nome}' e todas as suas análises?`)) {
+    banco.pecas = banco.pecas.filter((p) => p.id !== peca.id);
+    banco.idPecaAtiva = banco.pecas[0].id;
+    atualizarTela();
+  }
+}
+
+function abrirModalCorte() {
+  document.getElementById('modal-input-nome-corte').value = '';
+  document.getElementById('modal-input-preco-venda-corte').value = '25.00';
+  document.getElementById('modal-corte').classList.add('active');
+}
+
+function salvarModalCorte() {
+  const nome = document.getElementById('modal-input-nome-corte').value.trim();
+  const tipo = document.getElementById('modal-select-tipo-corte').value;
+  const preco = tipo === 'perda_liquida' ? 0 : (Number.parseFloat(document.getElementById('modal-input-preco-venda-corte').value) || 0);
+  if (!nome) return alert('Informe o nome do corte.');
+  const peca = obterPecaAtiva();
+  if (!peca.cortesCatalogo.some((c) => c.nome.toLowerCase() === nome.toLowerCase())) {
+    peca.cortesCatalogo.push({ nome, tipo, precoVendaPadrao: preco });
+  }
+  peca.precosVendaSugeridos[nome] = preco;
+  document.getElementById('modal-corte').classList.remove('active');
+  atualizarTela();
+}
+
+function abrirModalHistorico() {
+  document.getElementById('modal-hist-fornecedor').value = '';
+  document.getElementById('modal-hist-observacoes').value = '';
+  document.getElementById('modal-historico').classList.add('active');
+}
+
+function confirmarGravarHistorico() {
+  const peca = obterPecaAtiva();
+  const metricas = calcularMetricasPeca(peca);
+  const custeio = calcularCusteioPecaChave(peca, metricas);
+  const forn = document.getElementById('modal-hist-fornecedor').value.trim() || 'Recebimento Padrão';
+  const obs = document.getElementById('modal-hist-observacoes').value.trim();
+  if (!peca.historicoDesossas) peca.historicoDesossas = [];
+  peca.historicoDesossas.unshift({
+    id: `hist-${Date.now()}`,
+    data: new Date().toLocaleString('pt-BR'),
+    fornecedor: forn,
+    observacoes: obs,
+    qtdPecas: peca.amostras.length,
+    pesoTotal: metricas.somaPesoTotal,
+    pesoMedio: metricas.pesoMedioPeca,
+    quebraKg: metricas.quebraGlobalKg,
+    quebraPerc: metricas.quebraGlobalPerc,
+    faturamentoEstimado: custeio.faturamentoTotal,
+    amostrasSnapshot: JSON.parse(JSON.stringify(peca.amostras))
+  });
+  document.getElementById('modal-historico').classList.remove('active');
+  atualizarTela();
+  alert('Desossa gravada com sucesso no histórico auditável!');
+}
+
+function vincularAcoesHistorico() {
+  const tbody = document.getElementById('corpo-tabela-historico');
+  tbody.addEventListener('click', (e) => {
+    const peca = obterPecaAtiva();
+    if (e.target.classList.contains('btn-carregar-hist')) {
+      const idx = Number.parseInt(e.target.dataset.idx, 10);
+      const reg = peca.historicoDesossas[idx];
+      if (confirm(`Carregar os dados desta pesagem realizada em ${reg.data}?`)) {
+        peca.amostras = JSON.parse(JSON.stringify(reg.amostrasSnapshot));
+        atualizarTela();
+        document.querySelector('.tab-btn[data-tab="tab-desossa"]').click();
+      }
+    }
+    if (e.target.classList.contains('btn-excluir-hist')) {
+      const idx = Number.parseInt(e.target.dataset.idx, 10);
+      if (confirm('Excluir este registro do histórico?')) {
+        peca.historicoDesossas.splice(idx, 1);
         atualizarTela();
       }
     }
   });
-  document.getElementById('corpo-tabela-precificacao').addEventListener('input', (e) => {
-    if (e.target.classList.contains('input-preco-venda')) {
-      estado.precosVenda[e.target.dataset.corte] = Number.parseFloat(e.target.value) || 0;
+  document.getElementById('btn-limpar-historico').addEventListener('click', () => {
+    const peca = obterPecaAtiva();
+    if (confirm(`Limpar todo o histórico de recebimentos de ${peca.nome}?`)) {
+      peca.historicoDesossas = [];
       atualizarTela();
     }
   });
 }
 
-function vincularEventosAcoes() {
+function vincularAcoesGlobais() {
   document.getElementById('btn-atualizar-simulacao').addEventListener('click', () => {
-    const metricas = calcularMetricasGlobais();
-    const custos = calcularCustosERentabilidade(metricas);
-    renderizarSimuladorEstoque(metricas, custos);
-  });
-  document.getElementById('btn-novo-corte').addEventListener('click', () => {
-    const nome = prompt('Nome do novo corte:');
-    if (nome && nome.trim()) {
-      const n = nome.trim();
-      estado.amostras.forEach((a) => { if (a.cortes[n] === undefined) a.cortes[n] = 0; });
-      if (estado.precosVenda[n] === undefined) estado.precosVenda[n] = 25.00;
-      atualizarTela();
-    }
-  });
-  document.getElementById('btn-restaurar-exemplo').addEventListener('click', () => {
-    if (confirm('Restaurar dados originais do Dianteiro?')) {
-      Object.assign(estado, JSON.parse(JSON.stringify(ESTADO_PADRAO)));
-      sincronizarCamposIniciais();
-      atualizarTela();
-    }
+    const peca = obterPecaAtiva();
+    const metricas = calcularMetricasPeca(peca);
+    renderizarSimulador(peca, metricas);
   });
   document.getElementById('btn-salvar-local').addEventListener('click', () => {
-    salvarNoLocalStorageSilencioso();
-    alert('Análise salva com sucesso!');
+    salvarNoLocalStorage();
+    alert('Dados salvos com sucesso!');
+  });
+  document.getElementById('btn-restaurar-exemplo').addEventListener('click', () => {
+    if (confirm('Restaurar o catálogo e dados padrão iniciais?')) {
+      banco.pecas = JSON.parse(JSON.stringify(PECAS_INICIAIS));
+      banco.idPecaAtiva = 'dianteiro-bovino';
+      atualizarTela();
+    }
   });
   document.getElementById('btn-imprimir').addEventListener('click', () => window.print());
   document.getElementById('btn-exportar-json').addEventListener('click', exportarJSON);
@@ -473,10 +831,10 @@ function vincularEventosAcoes() {
 }
 
 function exportarJSON() {
-  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(estado, null, 2));
+  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(banco, null, 2));
   const a = document.createElement('a');
   a.setAttribute('href', dataStr);
-  a.setAttribute('download', `desossa_${estado.nomePeca.toLowerCase().replace(/\s+/g, '_')}.json`);
+  a.setAttribute('download', `acougue_pro_catalogo_${Date.now()}.json`);
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -489,35 +847,27 @@ function importarJSON(e) {
   reader.onload = (event) => {
     try {
       const obj = JSON.parse(event.target.result);
-      if (obj.amostras && obj.custoKgEntrada) {
-        Object.assign(estado, obj);
-        sincronizarCamposIniciais();
+      if (obj.pecas && Array.isArray(obj.pecas)) {
+        Object.assign(banco, obj);
         atualizarTela();
+        alert('Catálogo e histórico importados com sucesso!');
       }
     } catch (err) {
-      alert('Erro ao importar JSON.');
+      alert('Erro ao importar arquivo JSON.');
     }
   };
   reader.readAsText(file);
 }
 
-function sincronizarCamposIniciais() {
-  document.getElementById('input-nome-peca').value = estado.nomePeca;
-  document.getElementById('input-custo-compra-kg').value = estado.custoKgEntrada;
-  document.getElementById('input-custo-simulado').value = estado.custoKgEntrada;
-  estado.amostras.forEach((a, i) => {
-    const inputPeso = document.getElementById(`peso-total-amostra-${i}`);
-    const inputTempo = document.getElementById(`tempo-amostra-${i}`);
-    if (inputPeso) inputPeso.value = a.pesoTotal;
-    if (inputTempo) inputTempo.value = a.tempo;
-  });
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   carregarDoLocalStorage();
-  sincronizarCamposIniciais();
-  vincularEventosConfiguracao();
-  vincularEventosTabela();
-  vincularEventosAcoes();
+  vincularEventosAbas();
+  vincularEventosPeca();
+  vincularEventosAmostras();
+  vincularEventosTabelaDesossa();
+  vincularEventosCusteio();
+  vincularEventosModais();
+  vincularAcoesHistorico();
+  vincularAcoesGlobais();
   atualizarTela();
 });
