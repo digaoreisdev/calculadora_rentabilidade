@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Rendimento, Desossa & Custo Real de Açougue</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="top-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">🥩</div>
+        <div class="brand-title">
+          <h1>Açougue Pro • Rendimento, Desossa & Custo Real</h1>
+          <p>Análise de rendimento triplo (P, M, G), controle de perdas, apropriação de custos e estoque</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btn-restaurar-exemplo" class="btn btn-outline-white btn-sm" title="Carregar exemplo real do Dianteiro">
+          ↺ Restaurar Exemplo (Dianteiro)
+        </button>
+        <button id="btn-imprimir" class="btn btn-secondary btn-sm" title="Imprimir Relatório ou Salvar em PDF">
+          🖨️ Imprimir / PDF
+        </button>
+        <button id="btn-exportar-json" class="btn btn-secondary btn-sm" title="Exportar dados da análise em arquivo JSON">
+          💾 Exportar JSON
+        </button>
+        <label class="btn btn-secondary btn-sm" style="margin:0; cursor:pointer;" title="Importar arquivo JSON de análise">
+          📂 Importar JSON
+          <input type="file" id="input-importar-json" accept=".json" style="display:none;">
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- Configuração Geral da Peça -->
+    <section class="config-bar">
+      <div class="form-group" style="flex: 2; min-width: 220px;">
+        <label for="select-peca">Nome da Peça Cárnea</label>
+        <div style="display: flex; gap: 0.5rem;">
+          <input type="text" id="input-nome-peca" class="form-input" style="flex:1;" value="Dianteiro Bovino" placeholder="Ex: Dianteiro, Traseiro...">
+        </div>
+      </div>
+
+      <div class="form-group" style="flex: 1; min-width: 180px;">
+        <label for="input-custo-compra-kg">Custo de Compra (R$/kg com osso)</label>
+        <div style="position: relative; display: flex; align-items: center;">
+          <span style="position: absolute; left: 10px; color: var(--text-muted); font-weight: 600;">R$</span>
+          <input type="number" id="input-custo-compra-kg" class="form-input" style="padding-left: 36px; width: 100%; font-weight: 700;" value="21.45" step="0.01" min="0">
+        </div>
+      </div>
+
+      <div class="form-group" style="flex: 1; min-width: 180px;">
+        <label>Ações Rápidas</label>
+        <div style="display:flex; gap:0.5rem;">
+          <button id="btn-salvar-local" class="btn btn-primary" style="width: 100%;">
+            💾 Salvar Análise
+          </button>
+          <button id="btn-novo-corte" class="btn btn-secondary" title="Adicionar novo corte à lista">
+            + Corte
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Linha de Métricas Chave Globais -->
+    <section class="metrics-row" id="metricas-globais">
+      <div class="metric-card">
+        <div class="metric-title">Amostragem Total Analisada</div>
+        <div class="metric-value" id="metrica-peso-total">0,000 kg</div>
+        <div class="metric-sub" id="metrica-peso-medio">Média: 0,000 kg / peça</div>
+      </div>
+      <div class="metric-card accent">
+        <div class="metric-title">Quebra Técnica de Desossa</div>
+        <div class="metric-value" id="metrica-quebra-total">0,000 kg</div>
+        <div class="metric-sub" id="metrica-quebra-perc">0,00% de perda global</div>
+      </div>
+      <div class="metric-card neutral">
+        <div class="metric-title">Produtividade da Equipe</div>
+        <div class="metric-value" id="metrica-produtividade">0,00 kg/h</div>
+        <div class="metric-sub" id="metrica-tempo-medio">Tempo médio: 00:00:00</div>
+      </div>
+      <div class="metric-card success">
+        <div class="metric-title">Margem Global Estimada</div>
+        <div class="metric-value" id="metrica-margem-global">0,00%</div>
+        <div class="metric-sub" id="metrica-faturamento-medio">Faturamento: R$ 0,00 / peça</div>
+      </div>
+    </section>
+
+    <!-- Lançamento das 3 Amostras de Desossa -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>⚖️ Lançamento de Pesagem por Amostra (3 Peças: Média, Grande e Pequena)</span>
+        </div>
+        <div class="card-action-bar">
+          <span class="text-muted" style="font-size: 0.85rem;">
+            💡 Dica: Você pode digitar somas diretas nos campos (Ex: <code>3.966 + 4.352</code>).
+          </span>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table" id="tabela-amostras-lancamento">
+          <thead>
+            <tr>
+              <th style="min-width: 180px;">Corte / Subproduto</th>
+              <th class="text-center" style="background:#e0f2fe; min-width: 190px;">
+                Amostra 1 (Média)
+                <div style="font-size:0.75rem; font-weight:normal; margin-top:4px;">
+                  Total: <input type="text" id="peso-total-amostra-0" class="form-input form-input-calc" style="width: 85px; padding:2px 4px; display:inline;" value="43.396"> kg<br>
+                  Tempo: <input type="text" id="tempo-amostra-0" class="form-input" style="width: 75px; padding:2px 4px; display:inline; margin-top:2px;" value="00:27:02" placeholder="HH:MM:SS">
+                </div>
+              </th>
+              <th class="text-center" style="background:#fef3c7; min-width: 190px;">
+                Amostra 2 (Grande)
+                <div style="font-size:0.75rem; font-weight:normal; margin-top:4px;">
+                  Total: <input type="text" id="peso-total-amostra-1" class="form-input form-input-calc" style="width: 85px; padding:2px 4px; display:inline;" value="44.338"> kg<br>
+                  Tempo: <input type="text" id="tempo-amostra-1" class="form-input" style="width: 75px; padding:2px 4px; display:inline; margin-top:2px;" value="00:25:35" placeholder="HH:MM:SS">
+                </div>
+              </th>
+              <th class="text-center" style="background:#dcfce7; min-width: 190px;">
+                Amostra 3 (Pequena)
+                <div style="font-size:0.75rem; font-weight:normal; margin-top:4px;">
+                  Total: <input type="text" id="peso-total-amostra-2" class="form-input form-input-calc" style="width: 85px; padding:2px 4px; display:inline;" value="32.178"> kg<br>
+                  Tempo: <input type="text" id="tempo-amostra-2" class="form-input" style="width: 75px; padding:2px 4px; display:inline; margin-top:2px;" value="00:23:15" placeholder="HH:MM:SS">
+                </div>
+              </th>
+              <th class="text-right" style="background:#f8fafc; min-width: 110px;">Média (kg)</th>
+              <th class="text-right" style="background:#f8fafc; min-width: 100px;">Rend. (%)</th>
+              <th class="text-center" style="width: 40px;"></th>
+            </tr>
+          </thead>
+          <tbody id="corpo-tabela-cortes">
+            <!-- Linhas geradas dinamicamente via JS -->
+          </tbody>
+          <tfoot>
+            <tr style="background: #f1f5f9; font-weight: 700;">
+              <td>Soma dos Cortes (kg)</td>
+              <td class="text-center" id="soma-cortes-amostra-0">0,000 kg</td>
+              <td class="text-center" id="soma-cortes-amostra-1">0,000 kg</td>
+              <td class="text-center" id="soma-cortes-amostra-2">0,000 kg</td>
+              <td class="text-right" id="soma-cortes-media">0,000 kg</td>
+              <td class="text-right" id="soma-cortes-rend-perc">0,00%</td>
+              <td></td>
+            </tr>
+            <tr style="background: #fff; font-weight: 700;">
+              <td>Quebra de Desossa</td>
+              <td class="text-center" id="quebra-amostra-0">-</td>
+              <td class="text-center" id="quebra-amostra-1">-</td>
+              <td class="text-center" id="quebra-amostra-2">-</td>
+              <td class="text-right" id="quebra-media-kg">-</td>
+              <td class="text-right" id="quebra-media-perc">-</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <!-- Tabela de Precificação, Custo Real e Margem -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>💰 Apropriação de Custo Real por Corte & Margem de Lucro</span>
+        </div>
+        <div style="font-size:0.85rem; color:var(--text-muted);">
+          Método Padrão Cárneo: Rateio de Custo Ponderado por Valor Comercial
+        </div>
+      </div>
+
+      <div class="info-note">
+        <strong>Como funciona o Custo Real de Açougue:</strong> O quilo do dianteiro bruto com osso foi comprado a R$ 21,45. O sistema não cobra R$ 21,45 no quilo do osso/sebo (que é subproduto de baixo valor). O custo total da peça é rateado proporcionalmente ao valor de venda de cada corte nobre, apurando a <strong>Margem Real Verdadeira</strong> de cada item na sua gôndola.
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table" id="tabela-precificacao">
+          <thead>
+            <tr>
+              <th>Corte</th>
+              <th class="text-right">Rend. (%)</th>
+              <th class="text-right">Peso Médio</th>
+              <th class="text-right" style="min-width: 140px;">Preço de Venda (R$/kg)</th>
+              <th class="text-right" style="background:#fef3c7;">Custo Real (R$/kg)</th>
+              <th class="text-right">Lucro (R$/kg)</th>
+              <th class="text-right">Margem (%)</th>
+              <th class="text-right">Faturamento / Peça</th>
+            </tr>
+          </thead>
+          <tbody id="corpo-tabela-precificacao">
+            <!-- Linhas geradas dinamicamente -->
+          </tbody>
+          <tfoot>
+            <tr style="background: #f1f5f9; font-weight: 800; font-size: 0.95rem;">
+              <td>Totais da Peça Inteira</td>
+              <td class="text-right" id="total-rend-prec">-</td>
+              <td class="text-right" id="total-peso-prec">-</td>
+              <td class="text-right">-</td>
+              <td class="text-right" id="total-custo-peca" style="background:#fef3c7; color:var(--danger);">-</td>
+              <td class="text-right" id="total-lucro-peca" style="color:var(--success);">-</td>
+              <td class="text-right" id="total-margem-peca">-</td>
+              <td class="text-right" id="total-faturamento-peca" style="color:var(--secondary);">-</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <!-- Simulador de Compra e Controle de Estoque -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <span>📦 Simulador de Compras e Estoque Projetado</span>
+        </div>
+      </div>
+
+      <div class="simulator-box">
+        <div class="simulator-controls">
+          <div class="form-group" style="width: 200px;">
+            <label for="input-volume-compra">Volume a Comprar (kg)</label>
+            <input type="number" id="input-volume-compra" class="form-input" value="1000" min="1" step="10" style="font-weight: 700; font-size: 1.1rem;">
+          </div>
+          <div class="form-group" style="width: 180px;">
+            <label for="input-custo-simulado">Custo Negociado (R$/kg)</label>
+            <input type="number" id="input-custo-simulado" class="form-input" value="21.45" min="0" step="0.01" style="font-weight: 700; font-size: 1.1rem;">
+          </div>
+          <button id="btn-atualizar-simulacao" class="btn btn-primary" style="height: 42px;">
+            Calcular Projeção
+          </button>
+        </div>
+
+        <div class="metrics-row" style="margin-bottom: 1.5rem;">
+          <div class="metric-card" style="border-left-color: #dc2626;">
+            <div class="metric-title">Investimento Total na Compra</div>
+            <div class="metric-value" id="sim-custo-total" style="color: #dc2626;">R$ 0,00</div>
+            <div class="metric-sub" id="sim-volume-kg">Lote de 0 kg</div>
+          </div>
+          <div class="metric-card success">
+            <div class="metric-title">Faturamento Bruto Projetado</div>
+            <div class="metric-value" id="sim-faturamento-total" style="color: #16a34a;">R$ 0,00</div>
+            <div class="metric-sub">Venda total dos cortes</div>
+          </div>
+          <div class="metric-card accent">
+            <div class="metric-title">Lucro Bruto Projetado</div>
+            <div class="metric-value" id="sim-lucro-total" style="color: #d97706;">R$ 0,00</div>
+            <div class="metric-sub" id="sim-margem-perc">Margem: 0,00%</div>
+          </div>
+        </div>
+
+        <h4 style="margin-bottom: 0.75rem; color: var(--secondary);">Quilos que entrarão no seu Estoque (Câmara Fria):</h4>
+        <div class="table-responsive">
+          <table class="data-table" id="tabela-estoque-simulado">
+            <thead>
+              <tr>
+                <th>Corte</th>
+                <th class="text-right">Rendimento (%)</th>
+                <th class="text-right">Estoque Projetado (kg)</th>
+                <th class="text-right">Preço de Venda (R$/kg)</th>
+                <th class="text-right">Faturamento Esperado (R$)</th>
+              </tr>
+            </thead>
+            <tbody id="corpo-tabela-estoque">
+              <!-- Linhas geradas dinamicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

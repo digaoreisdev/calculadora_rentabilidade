@@ -1,0 +1,21 @@
+{
+  "name": "calculadora-rentabilidade-acougue",
+  "version": "1.0.0",
+  "description": "Calculadora Web de Rendimento, Desossa, Custo Real e Controle de Estoque para Açougues",
+  "main": "src/calculadora.mjs",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "start": "node server.mjs"
+  },
+  "keywords": [
+    "acougue",
+    "rendimento",
+    "desossa",
+    "rentabilidade",
+    "custo-real",
+    "estoque"
+  ],
+  "author": "",
+  "license": "MIT"
+}
