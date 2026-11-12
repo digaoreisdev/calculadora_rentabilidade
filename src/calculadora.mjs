@@ -4,12 +4,6 @@
  * Padrão de Engenharia: Tipagem JSDoc, defensividade e funções <= 30 linhas
  */
 
-/**
- * Valida se um número é válido e não-negativo.
- * @param {number} valor 
- * @param {string} nomeCampo 
- * @returns {number}
- */
 export function validarNumeroNaoNegativo(valor, nomeCampo) {
   if (typeof valor !== 'number' || Number.isNaN(valor) || valor < 0) {
     throw new TypeError(`O campo '${nomeCampo}' deve ser um número não-negativo válido.`);
@@ -17,11 +11,6 @@ export function validarNumeroNaoNegativo(valor, nomeCampo) {
   return valor;
 }
 
-/**
- * Converte string de tempo HH:MM:SS ou MM:SS em segundos.
- * @param {string} tempoStr 
- * @returns {number}
- */
 export function parseTempoEmSegundos(tempoStr) {
   if (typeof tempoStr !== 'string' || !tempoStr.trim()) return 0;
   const partes = tempoStr.trim().split(':').map((p) => Number.parseInt(p, 10));
@@ -33,11 +22,6 @@ export function parseTempoEmSegundos(tempoStr) {
   return partes[0];
 }
 
-/**
- * Converte segundos para string formatada HH:MM:SS.
- * @param {number} totalSegundos 
- * @returns {string}
- */
 export function formatarSegundosEmTempo(totalSegundos) {
   validarNumeroNaoNegativo(totalSegundos, 'totalSegundos');
   const horas = Math.floor(totalSegundos / 3600);
@@ -47,23 +31,11 @@ export function formatarSegundosEmTempo(totalSegundos) {
   return `${pad(horas)}:${pad(minutos)}:${pad(segundos)}`;
 }
 
-/**
- * Arredonda um número para N casas decimais com segurança.
- * @param {number} valor 
- * @param {number} casas 
- * @returns {number}
- */
 export function arredondar(valor, casas = 3) {
   const fator = 10 ** casas;
   return Math.round((valor + Number.EPSILON) * fator) / fator;
 }
 
-/**
- * Calcula a quebra de desossa de uma única amostra.
- * @param {number} pesoTotalEntrada 
- * @param {number} somaCortesESubprodutos 
- * @returns {{ quebraKg: number, quebraPerc: number }}
- */
 export function calcularQuebraAmostra(pesoTotalEntrada, somaCortesESubprodutos) {
   validarNumeroNaoNegativo(pesoTotalEntrada, 'pesoTotalEntrada');
   validarNumeroNaoNegativo(somaCortesESubprodutos, 'somaCortesESubprodutos');
@@ -73,12 +45,6 @@ export function calcularQuebraAmostra(pesoTotalEntrada, somaCortesESubprodutos) 
   return { quebraKg, quebraPerc };
 }
 
-/**
- * Calcula a produtividade de desossa em kg/hora.
- * @param {number} pesoTotalKg 
- * @param {number} tempoTotalSegundos 
- * @returns {number}
- */
 export function calcularProdutividadeKgHora(pesoTotalKg, tempoTotalSegundos) {
   validarNumeroNaoNegativo(pesoTotalKg, 'pesoTotalKg');
   validarNumeroNaoNegativo(tempoTotalSegundos, 'tempoTotalSegundos');
@@ -86,11 +52,6 @@ export function calcularProdutividadeKgHora(pesoTotalKg, tempoTotalSegundos) {
   return arredondar(pesoTotalKg / (tempoTotalSegundos / 3600), 2);
 }
 
-/**
- * Agrega e calcula o rendimento percentual ponderado de 1 a N amostras.
- * @param {Array<{ id?: string|number, nome?: string, pesoTotal: number, tempo?: string, cortes: Record<string, number> }>} amostras 
- * @returns {object}
- */
 export function calcularRendimentoAmostras(amostras) {
   if (!Array.isArray(amostras) || amostras.length === 0) {
     throw new Error('É necessário fornecer pelo menos uma amostra.');
@@ -191,10 +152,6 @@ function consolidarResultadoFinal(amostras, cortes, somaPeso, somaTempo, qtd) {
   };
 }
 
-/**
- * Calcula o custo e resultado baseado na regra da Peça-Chave.
- * Onde todos os cortes herdam o custo da peça inteira, gerando prejuízo em sebo/osso/líquidos e lucro nos nobres.
- */
 export function calcularCustosPecaChave(resultadoRendimento, custoKgEntrada, config = {}) {
   validarNumeroNaoNegativo(custoKgEntrada, 'custoKgEntrada');
   const pesoBase = resultadoRendimento.pesoMedioPeca || resultadoRendimento.somaPesoTotalEntrada;
@@ -210,7 +167,6 @@ export function calcularCustosPecaChave(resultadoRendimento, custoKgEntrada, con
   const faturamentoTotalPeca = arredondar(cortesProcessados.reduce((a, b) => a + b.faturamentoProjetado, 0), 2);
   const lucroTotalPeca = arredondar(faturamentoTotalPeca - custoTotalPeca, 2);
   const margemGlobalPerc = faturamentoTotalPeca > 0 ? arredondar((lucroTotalPeca / faturamentoTotalPeca) * 100, 2) : 0;
-
   return { custoKgEntrada, pesoBaseKg: pesoBase, custoTotalPeca, faturamentoTotalPeca, lucroTotalPeca, margemGlobalPerc, cortes: cortesProcessados };
 }
 
@@ -238,8 +194,42 @@ function processarItemCustoPecaChave(corte, pesoBase, custoKgEntrada, precosVend
 }
 
 /**
- * Método alternativo de Custo Ponderado por Valor Comercial
+ * Calcula a distribuição da composição da carcaça agrupada em:
+ * Comerciais/Lucrativos, Subprodutos (Osso/Sebo de descarte), Perdas Líquidas e Quebra.
  */
+export function calcularDistribuicaoComposicaoPeca(cortesCusteio, quebraPerc = 0) {
+  let percComerciais = 0;
+  let percSubprodutos = 0;
+  let percLiquidos = 0;
+
+  cortesCusteio.forEach((c) => {
+    const nome = (c.nome || '').toLowerCase().trim();
+    const tipo = c.tipo || '';
+    if (tipo === 'perda_liquida' || ehPerdaLiquida(nome)) {
+      percLiquidos += c.rendimentoMedioPerc;
+    } else if (tipo === 'subproduto' || ehSubproduto(nome)) {
+      percSubprodutos += c.rendimentoMedioPerc;
+    } else {
+      percComerciais += c.rendimentoMedioPerc;
+    }
+  });
+
+  return {
+    percComerciais: arredondar(percComerciais, 2),
+    percSubprodutos: arredondar(percSubprodutos, 2),
+    percLiquidos: arredondar(percLiquidos, 2),
+    percQuebra: arredondar(Math.max(0, quebraPerc), 2)
+  };
+}
+
+function ehPerdaLiquida(nome) {
+  return nome.includes('sangue') || nome.includes('liquido') || nome.includes('líquido') || nome.includes('gotejamento');
+}
+
+function ehSubproduto(nome) {
+  return nome === 'cebo e osso' || nome === 'sebo e osso' || nome === 'sebo' || nome === 'cebo' || nome === 'osso branco' || nome === 'descarte';
+}
+
 export function calcularCustosERentabilidade(resultadoRendimento, custoKgEntrada, precosVendaKg) {
   validarNumeroNaoNegativo(custoKgEntrada, 'custoKgEntrada');
   const pesoBase = resultadoRendimento.pesoMedioPeca || resultadoRendimento.somaPesoTotalEntrada;
@@ -267,9 +257,6 @@ export function calcularCustosERentabilidade(resultadoRendimento, custoKgEntrada
   return { custoKgEntrada, pesoBaseKg: pesoBase, custoTotalPeca, faturamentoTotalPeca, lucroBrutoPeca, margemGlobalPerc, cortes: cortesFinalizados };
 }
 
-/**
- * Simula uma compra de lote em atacado, projetando entrada no estoque e rentabilidade total.
- */
 export function projetarCompraEstoque(pesoLoteKg, custoKg, resultadoRendimento, precosVendaKg) {
   validarNumeroNaoNegativo(pesoLoteKg, 'pesoLoteKg');
   validarNumeroNaoNegativo(custoKg, 'custoKg');

@@ -373,6 +373,53 @@ function renderizarRodapeDesossa(peca, metricas) {
   tfoot.innerHTML = trSoma + trQuebra;
 }
 
+function renderizarGraficosVisuais(peca, metricas, custeio) {
+  const dist = calcularDistribuicao(custeio.cortes, metricas.quebraGlobalPerc);
+  atualizarBarraComposicao(dist);
+  atualizarBoxesFinanceiros(custeio);
+}
+
+function calcularDistribuicao(cortes, quebraPerc) {
+  let com = 0, sub = 0, liq = 0;
+  cortes.forEach((c) => {
+    const n = (c.nome || '').toLowerCase();
+    if (n.includes('sangue') || n.includes('liquido') || n.includes('líquido') || n.includes('gotejamento')) {
+      liq += c.rendimentoPerc;
+    } else if (n === 'cebo e osso' || n === 'sebo e osso' || n === 'sebo' || n === 'cebo' || n === 'descarte') {
+      sub += c.rendimentoPerc;
+    } else {
+      com += c.rendimentoPerc;
+    }
+  });
+  return { com: arredondar(com, 2), sub: arredondar(sub, 2), liq: arredondar(liq, 2), q: arredondar(Math.max(0, quebraPerc), 2) };
+}
+
+function atualizarBarraComposicao(d) {
+  document.getElementById('seg-comerciais').style.width = `${d.com}%`;
+  document.getElementById('seg-comerciais').innerText = d.com > 6 ? `${d.com}%` : '';
+  document.getElementById('seg-subprodutos').style.width = `${d.sub}%`;
+  document.getElementById('seg-subprodutos').innerText = d.sub > 6 ? `${d.sub}%` : '';
+  document.getElementById('seg-liquidos').style.width = `${d.liq}%`;
+  document.getElementById('seg-quebra').style.width = `${d.q}%`;
+
+  document.getElementById('chart-sub-aproveitamento').innerText = `Aproveitamento Comercial: ${d.com}%`;
+  document.getElementById('leg-comerciais').innerText = `${d.com}%`;
+  document.getElementById('leg-subprodutos').innerText = `${d.sub}%`;
+  document.getElementById('leg-liquidos').innerText = `${d.liq}%`;
+  document.getElementById('leg-quebra').innerText = `${d.q}%`;
+}
+
+function atualizarBoxesFinanceiros(custeio) {
+  document.getElementById('box-custo-peca').innerText = formatarMoeda(custeio.custoTotalPeca);
+  document.getElementById('box-faturamento-peca').innerText = formatarMoeda(custeio.faturamentoTotal);
+  document.getElementById('box-lucro-peca').innerText = formatarMoeda(custeio.lucroLiquidoPeca);
+
+  const fatRatio = custeio.custoTotalPeca > 0 ? Math.min(100, Math.round((custeio.faturamentoTotal / custeio.custoTotalPeca) * 50)) : 100;
+  const lucroRatio = custeio.faturamentoTotal > 0 ? Math.max(0, Math.min(100, Math.round((custeio.lucroLiquidoPeca / custeio.faturamentoTotal) * 100))) : 0;
+  document.getElementById('bar-faturamento-fill').style.width = `${Math.min(100, fatRatio)}%`;
+  document.getElementById('bar-lucro-fill').style.width = `${lucroRatio}%`;
+}
+
 function renderizarTabelaCusteio(peca, custeio) {
   const tbody = document.getElementById('corpo-tabela-custeio');
   tbody.innerHTML = '';
@@ -516,6 +563,7 @@ function atualizarTela() {
   atualizarMetricasTopGeral(peca, metricas, custeio);
   renderizarTabelaDesossa(peca, metricas);
   renderizarTabelaCusteio(peca, custeio);
+  renderizarGraficosVisuais(peca, metricas, custeio);
   renderizarSimulador(peca, metricas);
   renderizarHistorico(peca);
   salvarNoLocalStorage();

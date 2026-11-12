@@ -8,6 +8,7 @@ import {
   calcularProdutividadeKgHora,
   calcularRendimentoAmostras,
   calcularCustosPecaChave,
+  calcularDistribuicaoComposicaoPeca,
   calcularCustosERentabilidade,
   projetarCompraEstoque
 } from '../src/calculadora.mjs';
@@ -63,8 +64,6 @@ test('REG-005: Suporte dinâmico a 1 amostra isolada (ex: Patinho)', () => {
   assert.equal(resultado.somaPesoTotalEntrada, 11.5);
   assert.equal(resultado.pesoMedioPeca, 11.5);
 
-  // Soma dos cortes do patinho: 0.180 + 1.450 + 0.950 + 1.320 + 7.590 = 11.490 kg
-  // Quebra = 11.500 - 11.490 = 0.010 kg (10 g)
   assert.equal(resultado.quebraGlobalKg, 0.01);
   const patinhoLimpo = resultado.cortes.find((c) => c.nome === 'Patinho Limpo');
   assert.ok(patinhoLimpo);
@@ -79,16 +78,13 @@ test('REG-006: Custeio por Peça-Chave com prejuízo contábil em Osso/Sebo e L�
     precosVenda: dianteiro.precosVendaSugeridos
   });
 
-  // Todos os cortes herdam o custo de R$ 21,45/kg
   const ceboOsso = resultadoCusto.cortes.find((c) => c.nome === 'Cebo e Osso');
   assert.ok(ceboOsso);
   assert.equal(ceboOsso.custoRealKg, 21.45);
   assert.equal(ceboOsso.precoVendaKg, 1.48);
-  // Prejuízo unitário: 1.48 - 21.45 = -19.97/kg
   assert.equal(ceboOsso.lucroKg, -19.97);
   assert.ok(ceboOsso.margemPerc < 0);
 
-  // Agulha c/ Osso vende a 24.90 e custa 21.45 -> Lucro de +3.45/kg
   const agulhaOsso = resultadoCusto.cortes.find((c) => c.nome === 'Agulha C/ Osso');
   assert.ok(agulhaOsso);
   assert.equal(agulhaOsso.custoRealKg, 21.45);
@@ -109,6 +105,19 @@ test('REG-007: Perda líquida (Sangue/Líquidos) tem prejuízo de 100%', () => {
   assert.equal(sangue.custoRealKg, 28.50);
   assert.equal(sangue.lucroKg, -28.50);
   assert.equal(sangue.margemPerc, -100);
+});
+
+test('REG-009: Agrupamento da Composição da Carcaça (Lucrativos vs Subprodutos vs Quebras)', () => {
+  const rendimento = calcularRendimentoAmostras(dianteiro.amostras);
+  const dist = calcularDistribuicaoComposicaoPeca(rendimento.cortes, rendimento.quebraGlobalPerc);
+
+  // Subproduto: Cebo e Osso = 18.39%
+  assert.equal(dist.percSubprodutos, 18.39);
+  // Quebra técnica = 0.01%
+  assert.equal(dist.percQuebra, 0.01);
+  // Carnes comerciais = 100% - 18.39% - 0.01% = 81.6%
+  assert.equal(dist.percComerciais, 81.6);
+  assert.equal(dist.percLiquidos, 0);
 });
 
 test('REG-002: Cálculo alternativo de Custo Ponderado por Valor Comercial', () => {

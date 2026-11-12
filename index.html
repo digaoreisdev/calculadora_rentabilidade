@@ -174,6 +174,58 @@
           <strong>Como funciona a Peça-Chave:</strong> Se o Dianteiro custa <strong>R$ 21,45/kg</strong>, o Cebo/Osso custou R$ 21,45/kg e ao ser vendido a R$ 1,48/kg gera <strong>prejuízo real de R$ 19,97/kg</strong> (-93,1%). Já as perdas líquidas (sangue/gotejamento) geram 100% de prejuízo (-R$ 21,45/kg). Os cortes nobres absorvem e superam esse prejuízo para garantir o lucro líquido da peça.
         </div>
 
+        <!-- Painel Visual de Distribuição da Carcaça & Balanço Financeiro -->
+        <div class="composition-wrapper">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+            <strong style="color:var(--secondary); font-size:0.95rem;">📊 Divisão Física da Peça (Composição da Carcaça)</strong>
+            <span id="chart-sub-aproveitamento" style="font-size:0.85rem; font-weight:700; color:var(--success);">Aproveitamento Comercial: 0,00%</span>
+          </div>
+          
+          <div class="composition-bar" id="barra-composicao">
+            <div id="seg-comerciais" class="comp-seg comerciais" style="width: 80%;" title="Carnes Nobres & Comerciais">80%</div>
+            <div id="seg-subprodutos" class="comp-seg subprodutos" style="width: 18%;" title="Sebo e Osso">18%</div>
+            <div id="seg-liquidos" class="comp-seg liquidos" style="width: 1%;" title="Líquidos / Sangue">1%</div>
+            <div id="seg-quebra" class="comp-seg quebra" style="width: 1%;" title="Quebra Técnica">1%</div>
+          </div>
+
+          <div class="composition-legend">
+            <div class="legend-item">
+              <span class="legend-color" style="background:#15803d;"></span>
+              <span>Cortes Comerciais / Nobres: <strong id="leg-comerciais">0,00%</strong></span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color" style="background:#b91c1c;"></span>
+              <span>Subprodutos (Cebo/Osso): <strong id="leg-subprodutos">0,00%</strong></span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color" style="background:#7e22ce;"></span>
+              <span>Perdas Líquidas (Sangue): <strong id="leg-liquidos">0,00%</strong></span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-color" style="background:#64748b;"></span>
+              <span>Quebra Técnica: <strong id="leg-quebra">0,00%</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="finance-visual-grid">
+          <div class="finance-box">
+            <div class="finance-box-title">Custo de Compra da Peça</div>
+            <div class="finance-box-value" id="box-custo-peca" style="color:#b91c1c;">R$ 0,00</div>
+            <div class="finance-bar-bg"><div class="finance-bar-fill" style="width:100%; background:#b91c1c;"></div></div>
+          </div>
+          <div class="finance-box">
+            <div class="finance-box-title">Faturamento Total Projetado</div>
+            <div class="finance-box-value" id="box-faturamento-peca" style="color:#1d4ed8;">R$ 0,00</div>
+            <div class="finance-bar-bg"><div class="finance-bar-fill" id="bar-faturamento-fill" style="width:100%; background:#1d4ed8;"></div></div>
+          </div>
+          <div class="finance-box">
+            <div class="finance-box-title">Lucro Líquido Real da Peça</div>
+            <div class="finance-box-value" id="box-lucro-peca" style="color:#15803d;">R$ 0,00</div>
+            <div class="finance-bar-bg"><div class="finance-bar-fill" id="bar-lucro-fill" style="width:100%; background:#15803d;"></div></div>
+          </div>
+        </div>
+
         <div class="table-responsive">
           <table class="data-table" id="tabela-custeio-peca-chave">
             <thead>
