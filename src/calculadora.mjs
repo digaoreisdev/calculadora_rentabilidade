@@ -111,7 +111,7 @@ function montarDetalheAmostra(amostra, idx, pesoTotal, segundos, totaisCortes) {
   const quebra = calcularQuebraAmostra(pesoTotal, somaCortes);
   return {
     id: amostra.id || `amostra-${idx + 1}`,
-    nome: amostra.nome || `Amostra ${idx + 1}`,
+    nome: amostra.nome || `Peça ${idx + 1}`,
     pesoTotal,
     tempoFormatado: formatarSegundosEmTempo(segundos),
     tempoSegundos: segundos,
@@ -149,6 +149,46 @@ function consolidarResultadoFinal(amostras, cortes, somaPeso, somaTempo, qtd) {
     quebraGlobalPerc: quebraGlobal.quebraPerc,
     amostras,
     cortes
+  };
+}
+
+export function calcularAnaliseIndividualAmostra(amostra, custoKgEntrada, precosVenda = {}, usarPecaChave = true) {
+  validarNumeroNaoNegativo(custoKgEntrada, 'custoKgEntrada');
+  const pesoTotal = validarNumeroNaoNegativo(amostra.pesoTotal, 'pesoTotal');
+  const cortes = amostra.cortes || {};
+  let somaCortes = 0;
+  let faturamentoTotal = 0;
+
+  const itens = Object.entries(cortes).map(([nome, peso]) => {
+    const pesoValido = validarNumeroNaoNegativo(peso, nome);
+    somaCortes += pesoValido;
+    const rendPerc = pesoTotal > 0 ? arredondar((pesoValido / pesoTotal) * 100, 2) : 0;
+    const preco = precosVenda[nome] ?? 0;
+    const fat = arredondar(pesoValido * preco, 2);
+    faturamentoTotal += fat;
+    const custoKg = usarPecaChave ? custoKgEntrada : preco;
+    const lucroKg = arredondar(preco - custoKg, 2);
+    return { nome, pesoKg: pesoValido, rendPerc, precoVendaKg: preco, custoKg, fat, lucroKg };
+  });
+
+  const quebra = calcularQuebraAmostra(pesoTotal, somaCortes);
+  const custoTotal = arredondar(pesoTotal * custoKgEntrada, 2);
+  const lucroLiquido = arredondar(faturamentoTotal - custoTotal, 2);
+  const margemPerc = faturamentoTotal > 0 ? arredondar((lucroLiquido / faturamentoTotal) * 100, 2) : 0;
+
+  return {
+    id: amostra.id,
+    nome: amostra.nome,
+    pesoTotal,
+    tempo: amostra.tempo,
+    somaCortes: arredondar(somaCortes, 3),
+    quebraKg: quebra.quebraKg,
+    quebraPerc: quebra.quebraPerc,
+    custoTotal,
+    faturamentoTotal: arredondar(faturamentoTotal, 2),
+    lucroLiquido,
+    margemPerc,
+    itens
   };
 }
 
@@ -193,10 +233,6 @@ function processarItemCustoPecaChave(corte, pesoBase, custoKgEntrada, precosVend
   };
 }
 
-/**
- * Calcula a distribuição da composição da carcaça agrupada em:
- * Comerciais/Lucrativos, Subprodutos (Osso/Sebo de descarte), Perdas Líquidas e Quebra.
- */
 export function calcularDistribuicaoComposicaoPeca(cortesCusteio, quebraPerc = 0) {
   let percComerciais = 0;
   let percSubprodutos = 0;

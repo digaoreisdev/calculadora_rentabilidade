@@ -121,15 +121,15 @@ const PECAS_INICIAIS = [
     amostras: [
       {
         id: 'amostra-patinho-1',
-        nome: 'Amostra 1 (Peça 11,5 kg)',
-        pesoTotal: 11.500,
-        tempo: '00:08:45',
+        nome: 'Peça 1 (5,658 kg)',
+        pesoTotal: 5.658,
+        tempo: '00:05:40',
         cortes: {
-          'Sangue e Líquidos': 0.180,
-          'Cebo e Osso': 1.450,
-          'Moída de Segunda': 0.950,
-          'Moída de Primeira': 1.320,
-          'Patinho Limpo': 7.590
+          'Sangue e Líquidos': 0.116,
+          'Cebo e Osso': 0.720,
+          'Moída de Segunda': 0.450,
+          'Moída de Primeira': 0.650,
+          'Patinho Limpo': 3.710
         }
       }
     ],
@@ -148,6 +148,7 @@ const PECAS_INICIAIS = [
 const banco = {
   pecas: JSON.parse(JSON.stringify(PECAS_INICIAIS)),
   idPecaAtiva: 'dianteiro-bovino',
+  amostraSelecionadaId: null,
   volumeSimuladoKg: 1000,
   custoSimuladoKg: 21.45
 };
@@ -297,18 +298,95 @@ function renderizarSeletorPecas() {
 }
 
 function renderizarTabelaDesossa(peca, metricas) {
+  renderizarSubtabsPecas(peca);
+  renderizarPainelAnaliseIndividual(peca);
   renderizarCabecalhoDesossa(peca);
   renderizarCorpoDesossa(peca, metricas);
   renderizarRodapeDesossa(peca, metricas);
+}
+
+function renderizarSubtabsPecas(peca) {
+  const container = document.getElementById('container-subtabs-pecas');
+  if (!container) return;
+  container.innerHTML = '';
+  const pillMedia = document.createElement('button');
+  pillMedia.className = `piece-pill ${!banco.amostraSelecionadaId ? 'active' : ''}`;
+  pillMedia.innerHTML = `📊 Média Geral (${peca.amostras.length} peças)`;
+  pillMedia.addEventListener('click', () => { banco.amostraSelecionadaId = null; atualizarTela(); });
+  container.appendChild(pillMedia);
+
+  peca.amostras.forEach((a, i) => {
+    const pill = document.createElement('button');
+    pill.className = `piece-pill ${banco.amostraSelecionadaId === a.id ? 'active' : ''}`;
+    pill.innerHTML = `🥩 ${a.nome || `Peça ${i + 1}`} (${formatarKg(a.pesoTotal)})`;
+    pill.addEventListener('click', () => { banco.amostraSelecionadaId = a.id; atualizarTela(); });
+    container.appendChild(pill);
+  });
+
+  const btnAdd = document.createElement('button');
+  btnAdd.className = 'piece-pill piece-pill-btn-add';
+  btnAdd.innerHTML = '+ Lançar Nova Peça';
+  btnAdd.addEventListener('click', adicionarNovaAmostra);
+  container.appendChild(btnAdd);
+}
+
+function renderizarPainelAnaliseIndividual(peca) {
+  const painel = document.getElementById('painel-analise-individual-peca');
+  if (!painel) return;
+  if (!banco.amostraSelecionadaId) {
+    painel.style.display = 'none';
+    return;
+  }
+  const amostra = peca.amostras.find((a) => a.id === banco.amostraSelecionadaId);
+  if (!amostra) {
+    painel.style.display = 'none';
+    banco.amostraSelecionadaId = null;
+    return;
+  }
+  const analise = calcularAnaliseIndividualAmostra(amostra, peca.custoKgEntrada, peca.precosVendaSugeridos, peca.modoCusto !== 'livre');
+  preencherDadosPainelIndividual(amostra, analise);
+  painel.style.display = 'flex';
+}
+
+function preencherDadosPainelIndividual(amostra, analise) {
+  document.getElementById('ind-titulo-peca').innerText = `Análise Individual: ${amostra.nome || 'Peça'}`;
+  document.getElementById('ind-sub-peca').innerText = `Tempo: ${amostra.tempo || '00:00:00'} | Cortes: ${formatarKg(analise.somaCortes)}`;
+  document.getElementById('ind-badge-quebra').innerHTML = gerarBadgeQuebra(analise.quebraKg, analise.quebraPerc);
+  document.getElementById('ind-peso-bruto').innerText = formatarKg(analise.pesoTotal);
+  document.getElementById('ind-tempo-desossa').innerText = `Tempo: ${amostra.tempo || '00:00:00'}`;
+  document.getElementById('ind-quebra-kg').innerText = formatarKg(analise.quebraKg);
+  document.getElementById('ind-quebra-perc').innerText = `${formatarPerc(analise.quebraPerc)} de quebra`;
+  document.getElementById('ind-custo-total').innerText = formatarMoeda(analise.custoTotal);
+  document.getElementById('ind-lucro-liquido').innerText = formatarMoeda(analise.lucroLiquido);
+  document.getElementById('ind-margem-peca').innerText = `Margem Real: ${formatarPerc(analise.margemPerc)}`;
+}
+
+function calcularAnaliseIndividualAmostra(amostra, custoKg, precosVenda, usarPecaChave) {
+  const pesoTotal = amostra.pesoTotal || 0;
+  let somaCortes = 0, fatTotal = 0;
+  Object.entries(amostra.cortes || {}).forEach(([n, p]) => {
+    somaCortes += p;
+    fatTotal += p * (precosVenda[n] ?? 0);
+  });
+  const quebra = calcularQuebraAmostra(pesoTotal, somaCortes);
+  const custoTotal = arredondar(pesoTotal * custoKg, 2);
+  const lucroLiquido = arredondar(fatTotal - custoTotal, 2);
+  const margemPerc = fatTotal > 0 ? arredondar((lucroLiquido / fatTotal) * 100, 2) : 0;
+  return { pesoTotal, somaCortes, quebraKg: quebra.quebraKg, quebraPerc: quebra.quebraPerc, custoTotal, faturamentoTotal: arredondar(fatTotal, 2), lucroLiquido, margemPerc };
 }
 
 function renderizarCabecalhoDesossa(peca) {
   const thead = document.getElementById('cabecalho-tabela-desossa');
   let html = `<tr><th style="min-width: 170px;">Corte / Rendimento / Perda</th>`;
   peca.amostras.forEach((a, i) => {
+    const isFocused = banco.amostraSelecionadaId === a.id;
     html += `
-      <th class="text-center" style="background:${obterCorColuna(i)}; min-width: 180px;">
-        Peça ${i + 1}
+      <th class="text-center" style="background:${obterCorColuna(i)}; min-width: 185px; ${isFocused ? 'outline: 3px solid var(--primary);' : ''}">
+        <div class="col-header-actions">
+          <input type="text" class="form-input input-amostra-nome" data-idx="${i}" value="${a.nome || `Peça ${i + 1}`}"
+                 style="font-size:0.8rem; font-weight:700; width:110px; padding:2px 4px; display:inline;" title="Clique para renomear esta peça">
+          <button class="btn-del-col btn-excluir-coluna-amostra" data-idx="${i}" title="Excluir esta peça">✕ Excluir</button>
+        </div>
         <div style="font-size:0.75rem; font-weight:normal; margin-top:4px;">
           Total: <input type="text" class="form-input form-input-calc input-amostra-peso" data-idx="${i}"
                         value="${a.pesoTotal}" style="width: 80px; padding:2px 4px; display:inline;"> kg<br>
@@ -610,27 +688,46 @@ function vincularEventosPeca() {
   });
 }
 
-function vincularEventosAmostras() {
-  document.getElementById('btn-add-amostra').addEventListener('click', () => {
-    const peca = obterPecaAtiva();
-    const num = peca.amostras.length + 1;
-    peca.amostras.push({
-      id: `amostra-${Date.now()}`,
-      nome: `Peça ${num}`,
-      pesoTotal: 40.0,
-      tempo: '00:25:00',
-      cortes: {}
-    });
-    atualizarTela();
+function adicionarNovaAmostra() {
+  const peca = obterPecaAtiva();
+  const num = peca.amostras.length + 1;
+  const novaId = `amostra-${Date.now()}`;
+  peca.amostras.push({
+    id: novaId,
+    nome: `Peça ${num}`,
+    pesoTotal: 5.0,
+    tempo: '00:05:00',
+    cortes: {}
   });
+  banco.amostraSelecionadaId = novaId;
+  atualizarTela();
+}
+
+function excluirAmostraPorIndice(idx) {
+  const peca = obterPecaAtiva();
+  if (peca.amostras.length <= 1) {
+    alert('É necessário manter ao menos 1 peça na amostragem.');
+    return;
+  }
+  const nome = peca.amostras[idx]?.nome || `Peça ${idx + 1}`;
+  if (confirm(`Deseja realmente excluir a ${nome}?`)) {
+    const removida = peca.amostras.splice(idx, 1)[0];
+    if (banco.amostraSelecionadaId === removida.id) {
+      banco.amostraSelecionadaId = null;
+    }
+    atualizarTela();
+  }
+}
+
+function vincularEventosAmostras() {
+  document.getElementById('btn-add-amostra').addEventListener('click', adicionarNovaAmostra);
   document.getElementById('btn-remover-amostra').addEventListener('click', () => {
     const peca = obterPecaAtiva();
-    if (peca.amostras.length > 1) {
-      peca.amostras.pop();
-      atualizarTela();
-    } else {
-      alert('É necessário manter ao menos 1 peça na amostragem.');
-    }
+    excluirAmostraPorIndice(peca.amostras.length - 1);
+  });
+  document.getElementById('btn-fechar-analise-individual')?.addEventListener('click', () => {
+    banco.amostraSelecionadaId = null;
+    atualizarTela();
   });
 }
 
@@ -638,18 +735,20 @@ function vincularEventosTabelaDesossa() {
   const tbl = document.getElementById('tabela-desossa-dinamica');
   tbl.addEventListener('change', (e) => {
     const peca = obterPecaAtiva();
+    const idx = Number.parseInt(e.target.dataset.idx, 10);
     if (e.target.classList.contains('input-amostra-peso')) {
-      const idx = Number.parseInt(e.target.dataset.idx, 10);
       peca.amostras[idx].pesoTotal = avaliarExpressaoNumerica(e.target.value);
       atualizarTela();
     }
     if (e.target.classList.contains('input-amostra-tempo')) {
-      const idx = Number.parseInt(e.target.dataset.idx, 10);
       peca.amostras[idx].tempo = e.target.value;
       atualizarTela();
     }
+    if (e.target.classList.contains('input-amostra-nome')) {
+      peca.amostras[idx].nome = e.target.value.trim() || `Peça ${idx + 1}`;
+      atualizarTela();
+    }
     if (e.target.classList.contains('input-corte-peso')) {
-      const idx = Number.parseInt(e.target.dataset.idx, 10);
       const corte = e.target.dataset.corte;
       peca.amostras[idx].cortes[corte] = avaliarExpressaoNumerica(e.target.value);
       atualizarTela();
@@ -658,6 +757,10 @@ function vincularEventosTabelaDesossa() {
   tbl.addEventListener('click', (e) => {
     if (e.target.classList.contains('btn-remover-corte')) {
       removerCortePeca(e.target.dataset.corte);
+    }
+    if (e.target.classList.contains('btn-excluir-coluna-amostra')) {
+      const idx = Number.parseInt(e.target.dataset.idx, 10);
+      excluirAmostraPorIndice(idx);
     }
   });
 }

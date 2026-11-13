@@ -428,8 +428,99 @@ body {
   transition: width 0.4s ease;
 }
 
+/* Sub-tabs for Individual Piece vs Média */
+.piece-subtabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  background: #f1f5f9;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+}
+
+.piece-pill {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: var(--secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.piece-pill:hover {
+  background: #e2e8f0;
+}
+
+.piece-pill.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.piece-pill-btn-add {
+  background: #15803d;
+  color: white;
+  border-color: #15803d;
+}
+
+.piece-pill-btn-add:hover {
+  background: #166534;
+}
+
+/* Individual Analysis Card */
+.individual-piece-card {
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.individual-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.col-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.btn-del-col {
+  background: transparent;
+  border: none;
+  color: #b91c1c;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.btn-del-col:hover {
+  background: #fee2e2;
+}
+
 @media print {
-  .top-header, .header-actions, .tabs-nav, .btn, .config-bar, .modal-overlay { display: none !important; }
+  .top-header, .header-actions, .tabs-nav, .btn, .config-bar, .modal-overlay, .piece-subtabs { display: none !important; }
   body { background: white; padding: 0; }
   .container { max-width: 100%; margin: 0; padding: 0; }
   .tab-content { display: flex !important; }

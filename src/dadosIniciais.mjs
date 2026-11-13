@@ -8,8 +8,8 @@ export const PECAS_PADRAO = [
     nome: 'Dianteiro Bovino',
     custoKgEntrada: 21.45,
     margemPadraoPerc: 30.0,
-    modoCusto: 'peca_chave', // 'peca_chave' ou 'livre'
-    modoMargem: 'individual', // 'individual' ou 'global'
+    modoCusto: 'peca_chave',
+    modoMargem: 'individual',
     cortesCatalogo: [
       { nome: 'Cebo e Osso', tipo: 'subproduto', precoVendaPadrao: 1.48 },
       { nome: 'Agulha C/ Osso', tipo: 'com_osso', precoVendaPadrao: 24.90 },
@@ -27,11 +27,11 @@ export const PECAS_PADRAO = [
     amostras: [
       {
         id: 'amostra-1',
-        nome: 'Amostra 1 (Média - 43,4 kg)',
+        nome: 'Peça 1 (Média - 43,4 kg)',
         pesoTotal: 43.396,
         tempo: '00:27:02',
         cortes: {
-          'Cebo e Osso': 8.318, // 3.966 + 4.352
+          'Cebo e Osso': 8.318,
           'Agulha C/ Osso': 6.045,
           'Agulha S/ Osso': 3.984,
           'Agulha Especial': 1.768,
@@ -47,11 +47,11 @@ export const PECAS_PADRAO = [
       },
       {
         id: 'amostra-2',
-        nome: 'Amostra 2 (Grande - 44,3 kg)',
+        nome: 'Peça 2 (Grande - 44,3 kg)',
         pesoTotal: 44.338,
         tempo: '00:25:35',
         cortes: {
-          'Cebo e Osso': 8.862, // 4.268 + 4.594
+          'Cebo e Osso': 8.862,
           'Agulha C/ Osso': 5.592,
           'Agulha S/ Osso': 3.812,
           'Agulha Especial': 1.696,
@@ -67,11 +67,11 @@ export const PECAS_PADRAO = [
       },
       {
         id: 'amostra-3',
-        nome: 'Amostra 3 (Pequena - 32,2 kg)',
+        nome: 'Peça 3 (Pequena - 32,2 kg)',
         pesoTotal: 32.178,
         tempo: '00:23:15',
         cortes: {
-          'Cebo e Osso': 4.874, // 1.474 + 3.400
+          'Cebo e Osso': 4.874,
           'Agulha C/ Osso': 4.828,
           'Agulha S/ Osso': 3.344,
           'Agulha Especial': 1.582,
@@ -119,15 +119,15 @@ export const PECAS_PADRAO = [
     amostras: [
       {
         id: 'amostra-patinho-1',
-        nome: 'Amostra 1 (Peça 11,5 kg)',
-        pesoTotal: 11.500,
-        tempo: '00:08:45',
+        nome: 'Peça 1 (5,658 kg)',
+        pesoTotal: 5.658,
+        tempo: '00:05:40',
         cortes: {
-          'Sangue e Líquidos': 0.180,
-          'Cebo e Osso': 1.450,
-          'Moída de Segunda': 0.950,
-          'Moída de Primeira': 1.320,
-          'Patinho Limpo': 7.590
+          'Sangue e Líquidos': 0.116,
+          'Cebo e Osso': 0.720,
+          'Moída de Segunda': 0.450,
+          'Moída de Primeira': 0.650,
+          'Patinho Limpo': 3.710
         }
       }
     ],

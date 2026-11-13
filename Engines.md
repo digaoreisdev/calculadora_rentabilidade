@@ -25,10 +25,9 @@
 3. **Custeio Baseado na Peça-Chave (Regra do Açougueiro):**
    $$\text{Custo do Corte } i \text{ (R\$/kg)} = \text{Custo da Peça-Chave (R\$/kg)}$$
    $$\text{Lucro/Prejuízo do Corte } i \text{ (R\$/kg)} = \text{Preço de Venda } i - \text{Custo } i$$
-4. **Distribuição da Composição da Carcaça:**
-   $$\% \text{ Aproveitamento Comercial} = \sum \% \text{ Cortes Nobres e Comerciais}$$
-   $$\% \text{ Subprodutos} = \sum \% \text{ Cebo e Osso}$$
-   $$\% \text{ Perdas Líquidas e Quebras} = \sum \% \text{ Sangue/Líquidos} + \% \text{ Quebra Técnica}$$
+4. **Análise Individual por Peça:**
+   $$\text{Faturamento da Peça } k = \sum (\text{Peso do Corte } i \text{ na Peça } k \times \text{Preço de Venda } i)$$
+   $$\text{Lucro da Peça } k = \text{Faturamento da Peça } k - (\text{Peso Total da Peça } k \times \text{Custo de Entrada})$$
 
 ---
 
@@ -44,6 +43,7 @@
 | REG-006 | 2026-11-12 | Custeio por Peça-Chave e apuração de prejuízo contábil em osso, sebo e líquidos | Custo de cada corte igual ao da peça inteira (ex: R$ 21,45), gerando prejuízo em sebo/sangue | Implementação de `calcularCustosPecaChave` com cálculo de margens individuais e perdas líquidas | `test/calculadora.test.mjs` | PASS |
 | REG-007 | 2026-11-12 | Alternância entre Custo da Peça-Chave, Custo Livre e Margem Geral vs Individual | Necessidade de flexibilidade de gestão | Suporte aos modos `peca_chave`, `livre`, `margem_global` e `margem_individual` | `test/calculadora.test.mjs` | PASS |
 | REG-009 | 2026-11-12 | Agrupamento e cálculo da distribuição da composição da peça (Lucrativos vs Subprodutos vs Quebras) | Necessidade de visualização gráfica clara da divisão da carcaça | Implementação de `calcularDistribuicaoComposicaoPeca` | `test/calculadora.test.mjs` | PASS |
+| REG-010 | 2026-11-13 | Análise individual de cada peça de rendimento (Ficha Técnica individual com quebra, faturamento e lucro por peça) | Necessidade de analisar cada peça lançada separadamente além da média geral | Implementação de `calcularAnaliseIndividualAmostra` | `test/calculadora.test.mjs` | PASS |
 
 ---
 
@@ -51,3 +51,4 @@
 - **v1.0.0 (2026-11-12):** Versão inicial da Calculadora Web de Desossa, Rendimento, Custo Real e Simulador de Compras.
 - **v1.1.0 (2026-11-12):** Multi-peças com templates cadastrais (Dianteiro, Patinho, Traseiro), amostragem dinâmica (1 a N peças), custeio por Peça-Chave com prejuízo contábil explícito, perdas líquidas e histórico de recebimentos.
 - **v1.2.0 (2026-11-12):** Painel visual de distribuição da composição da carcaça e balanço financeiro gráfico da desossa.
+- **v1.3.0 (2026-11-13):** Fichas técnicas individuais por peça lançada com análise isolada (quebra, custo, lucro) e exclusão/edição individual de qualquer peça da amostragem.

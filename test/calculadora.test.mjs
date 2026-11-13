@@ -8,6 +8,7 @@ import {
   calcularProdutividadeKgHora,
   calcularRendimentoAmostras,
   calcularCustosPecaChave,
+  calcularAnaliseIndividualAmostra,
   calcularDistribuicaoComposicaoPeca,
   calcularCustosERentabilidade,
   projetarCompraEstoque
@@ -61,14 +62,41 @@ test('REG-001: Quebra de desossa e rendimento ponderado da amostragem do Diantei
 test('REG-005: Suporte dinâmico a 1 amostra isolada (ex: Patinho)', () => {
   const resultado = calcularRendimentoAmostras(patinho.amostras);
   assert.equal(resultado.quantidadeAmostras, 1);
-  assert.equal(resultado.somaPesoTotalEntrada, 11.5);
-  assert.equal(resultado.pesoMedioPeca, 11.5);
+  assert.equal(resultado.somaPesoTotalEntrada, 5.658);
+  assert.equal(resultado.pesoMedioPeca, 5.658);
 
-  assert.equal(resultado.quebraGlobalKg, 0.01);
+  // Soma dos cortes do patinho: 0.116 + 0.720 + 0.450 + 0.650 + 3.710 = 5.646 kg
+  // Quebra = 5.658 - 5.646 = 0.012 kg (12 g)
+  assert.equal(resultado.quebraGlobalKg, 0.012);
   const patinhoLimpo = resultado.cortes.find((c) => c.nome === 'Patinho Limpo');
   assert.ok(patinhoLimpo);
-  assert.equal(patinhoLimpo.pesoTotal, 7.59);
-  assert.equal(patinhoLimpo.rendimentoMedioPerc, 66.0);
+  assert.equal(patinhoLimpo.pesoTotal, 3.710);
+  assert.equal(patinhoLimpo.rendimentoMedioPerc, 65.57);
+});
+
+test('REG-010: Análise individual da peça (Ficha Técnica individual com quebra e lucro)', () => {
+  const analisePeca1 = calcularAnaliseIndividualAmostra(
+    dianteiro.amostras[0],
+    dianteiro.custoKgEntrada,
+    dianteiro.precosVendaSugeridos,
+    true
+  );
+
+  assert.equal(analisePeca1.pesoTotal, 43.396);
+  assert.equal(analisePeca1.somaCortes, 43.391);
+  assert.equal(analisePeca1.quebraKg, 0.005);
+  assert.equal(analisePeca1.quebraPerc, 0.01);
+
+  // Custo da Peça 1: 43.396 * 21.45 = 930.84
+  assert.equal(analisePeca1.custoTotal, 930.84);
+  assert.ok(analisePeca1.faturamentoTotal > analisePeca1.custoTotal);
+  assert.ok(analisePeca1.lucroLiquido > 0);
+
+  // Verifica que tem o detalhe de cada corte na peça
+  const itemCebo = analisePeca1.itens.find((i) => i.nome === 'Cebo e Osso');
+  assert.ok(itemCebo);
+  assert.equal(itemCebo.pesoKg, 8.318);
+  assert.equal(itemCebo.lucroKg, -19.97); // Prejuízo no osso
 });
 
 test('REG-006: Custeio por Peça-Chave com prejuízo contábil em Osso/Sebo e Líquidos', () => {
@@ -111,11 +139,8 @@ test('REG-009: Agrupamento da Composição da Carcaça (Lucrativos vs Subproduto
   const rendimento = calcularRendimentoAmostras(dianteiro.amostras);
   const dist = calcularDistribuicaoComposicaoPeca(rendimento.cortes, rendimento.quebraGlobalPerc);
 
-  // Subproduto: Cebo e Osso = 18.39%
   assert.equal(dist.percSubprodutos, 18.39);
-  // Quebra técnica = 0.01%
   assert.equal(dist.percQuebra, 0.01);
-  // Carnes comerciais = 100% - 18.39% - 0.01% = 81.6%
   assert.equal(dist.percComerciais, 81.6);
   assert.equal(dist.percLiquidos, 0);
 });
