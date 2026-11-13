@@ -1356,14 +1356,6 @@ function salvarModalCorte() {
   atualizarTela();
   exibirToast(`Corte '${nome}' adicionado com sucesso!`, 'success');
 }
-  if (!peca.precosVendaSugeridos) peca.precosVendaSugeridos = {};
-  if (!peca.custosSistema) peca.custosSistema = {};
-  peca.precosVendaSugeridos[nome] = preco;
-  peca.custosSistema[nome] = custo;
-  salvarNoLocalStorage();
-  document.getElementById('modal-corte').classList.remove('active');
-  atualizarTela();
-}
 
 function abrirModalHistorico() {
   document.getElementById('modal-hist-fornecedor').value = '';
