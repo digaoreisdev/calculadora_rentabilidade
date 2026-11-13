@@ -36,6 +36,49 @@ export function arredondar(valor, casas = 3) {
   return Math.round((valor + Number.EPSILON) * fator) / fator;
 }
 
+export function parseValorMonetario(valor) {
+  if (typeof valor === 'number') return Math.max(0, valor);
+  if (!valor || typeof valor !== 'string') return 0;
+  const limpa = valor.replace(/[^\d.,]/g, '').trim();
+  if (!limpa) return 0;
+  if (limpa.includes('.') && limpa.includes(',')) {
+    return Number.parseFloat(limpa.replace(/\./g, '').replace(',', '.')) || 0;
+  }
+  if (limpa.includes(',')) {
+    return Number.parseFloat(limpa.replace(',', '.')) || 0;
+  }
+  return Number.parseFloat(limpa) || 0;
+}
+
+export function parseValorPercentual(valor) {
+  if (typeof valor === 'number') return Math.max(0, valor);
+  if (!valor || typeof valor !== 'string') return 0;
+  const limpa = valor.replace(/[^\d.,]/g, '').trim();
+  if (!limpa) return 0;
+  return Number.parseFloat(limpa.replace(',', '.')) || 0;
+}
+
+export function removerCorteDePeca(peca, corteNome) {
+  if (!peca || !corteNome) return peca;
+  const nomeAlvo = corteNome.trim().toLowerCase();
+  peca.cortesCatalogo = (peca.cortesCatalogo || []).filter(
+    (c) => c.nome.trim().toLowerCase() !== nomeAlvo
+  );
+  (peca.amostras || []).forEach((a) => {
+    if (a.cortes) {
+      Object.keys(a.cortes).forEach((k) => {
+        if (k.trim().toLowerCase() === nomeAlvo) delete a.cortes[k];
+      });
+    }
+  });
+  if (peca.precosVendaSugeridos) {
+    Object.keys(peca.precosVendaSugeridos).forEach((k) => {
+      if (k.trim().toLowerCase() === nomeAlvo) delete peca.precosVendaSugeridos[k];
+    });
+  }
+  return peca;
+}
+
 export function calcularQuebraAmostra(pesoTotalEntrada, somaCortesESubprodutos) {
   validarNumeroNaoNegativo(pesoTotalEntrada, 'pesoTotalEntrada');
   validarNumeroNaoNegativo(somaCortesESubprodutos, 'somaCortesESubprodutos');

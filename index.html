@@ -57,14 +57,14 @@
         <label for="input-custo-compra-kg">Custo de Compra (R$/kg com osso)</label>
         <div style="position: relative; display: flex; align-items: center;">
           <span style="position: absolute; left: 10px; color: var(--text-muted); font-weight: 700;">R$</span>
-          <input type="number" id="input-custo-compra-kg" class="form-input" style="padding-left: 36px; width: 100%; font-weight: 700;" value="21.45" step="0.01" min="0">
+          <input type="text" id="input-custo-compra-kg" class="form-input form-input-moeda" style="padding-left: 36px; width: 100%; font-weight: 700;" value="21,45">
         </div>
       </div>
 
       <div class="form-group" style="flex: 1; min-width: 150px;">
         <label for="input-margem-padrao-peca">Margem Padrão (%)</label>
         <div style="position: relative; display: flex; align-items: center;">
-          <input type="number" id="input-margem-padrao-peca" class="form-input" style="width: 100%; font-weight: 700;" value="30.00" step="0.5" min="0">
+          <input type="text" id="input-margem-padrao-peca" class="form-input form-input-perc" style="width: 100%; font-weight: 700;" value="30,00">
           <span style="position: absolute; right: 10px; color: var(--text-muted); font-weight: 700;">%</span>
         </div>
       </div>
@@ -417,11 +417,11 @@
         </div>
         <div class="form-group">
           <label for="modal-input-custo-peca">Custo de Compra Padrão (R$/kg com osso)</label>
-          <input type="number" id="modal-input-custo-peca" class="form-input" step="0.01" value="25.00">
+          <input type="text" id="modal-input-custo-peca" class="form-input form-input-moeda" value="25,00">
         </div>
         <div class="form-group">
           <label for="modal-input-margem-peca">Margem Padrão Desejada (%)</label>
-          <input type="number" id="modal-input-margem-peca" class="form-input" step="0.5" value="30.00">
+          <input type="text" id="modal-input-margem-peca" class="form-input form-input-perc" value="30,00">
         </div>
       </div>
       <div class="modal-footer">
@@ -455,7 +455,7 @@
         </div>
         <div class="form-group">
           <label for="modal-input-preco-venda-corte">Preço de Venda Padrão (R$/kg)</label>
-          <input type="number" id="modal-input-preco-venda-corte" class="form-input" step="0.10" value="25.00">
+          <input type="text" id="modal-input-preco-venda-corte" class="form-input form-input-moeda" value="25,00">
         </div>
       </div>
       <div class="modal-footer">
@@ -485,6 +485,23 @@
       <div class="modal-footer">
         <button class="btn btn-secondary btn-fechar-modal">Cancelar</button>
         <button id="btn-confirmar-gravar-historico" class="btn btn-success">Salvar no Histórico</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRMAÇÃO DE EXCLUSÃO (SUBSTITUI CONFIRM NATIVO) -->
+  <div id="modal-confirmacao" class="modal-overlay">
+    <div class="modal-box" style="max-width: 440px;">
+      <div class="modal-header" style="background:#fee2e2;">
+        <h3 id="modal-confirma-titulo" style="font-size:1.1rem; color:#991b1b; font-weight:800;">Confirmar Exclusão</h3>
+        <button class="btn btn-secondary btn-sm btn-fechar-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="modal-confirma-mensagem" style="font-size:0.95rem; color:var(--secondary); line-height:1.4;">Tem certeza que deseja excluir?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-fechar-modal">Cancelar</button>
+        <button id="btn-confirmar-acao-modal" class="btn btn-danger">Sim, Excluir</button>
       </div>
     </div>
   </div>

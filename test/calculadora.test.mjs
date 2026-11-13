@@ -4,6 +4,9 @@ import {
   validarNumeroNaoNegativo,
   parseTempoEmSegundos,
   formatarSegundosEmTempo,
+  parseValorMonetario,
+  parseValorPercentual,
+  removerCorteDePeca,
   calcularQuebraAmostra,
   calcularProdutividadeKgHora,
   calcularRendimentoAmostras,
@@ -65,8 +68,6 @@ test('REG-005: Suporte dinâmico a 1 amostra isolada (ex: Patinho)', () => {
   assert.equal(resultado.somaPesoTotalEntrada, 5.658);
   assert.equal(resultado.pesoMedioPeca, 5.658);
 
-  // Soma dos cortes do patinho: 0.116 + 0.720 + 0.450 + 0.650 + 3.710 = 5.646 kg
-  // Quebra = 5.658 - 5.646 = 0.012 kg (12 g)
   assert.equal(resultado.quebraGlobalKg, 0.012);
   const patinhoLimpo = resultado.cortes.find((c) => c.nome === 'Patinho Limpo');
   assert.ok(patinhoLimpo);
@@ -87,16 +88,41 @@ test('REG-010: Análise individual da peça (Ficha Técnica individual com quebr
   assert.equal(analisePeca1.quebraKg, 0.005);
   assert.equal(analisePeca1.quebraPerc, 0.01);
 
-  // Custo da Peça 1: 43.396 * 21.45 = 930.84
   assert.equal(analisePeca1.custoTotal, 930.84);
   assert.ok(analisePeca1.faturamentoTotal > analisePeca1.custoTotal);
   assert.ok(analisePeca1.lucroLiquido > 0);
 
-  // Verifica que tem o detalhe de cada corte na peça
   const itemCebo = analisePeca1.itens.find((i) => i.nome === 'Cebo e Osso');
   assert.ok(itemCebo);
   assert.equal(itemCebo.pesoKg, 8.318);
-  assert.equal(itemCebo.lucroKg, -19.97); // Prejuízo no osso
+  assert.equal(itemCebo.lucroKg, -19.97);
+});
+
+test('REG-011: Parser flexível de valores monetários e percentuais (vírgula e ponto)', () => {
+  assert.equal(parseValorMonetario('21,45'), 21.45);
+  assert.equal(parseValorMonetario('21.45'), 21.45);
+  assert.equal(parseValorMonetario('R$ 21,45'), 21.45);
+  assert.equal(parseValorMonetario('1.250,50'), 1250.50);
+  assert.equal(parseValorMonetario(''), 0);
+  assert.equal(parseValorMonetario(28.5), 28.5);
+
+  assert.equal(parseValorPercentual('30%'), 30);
+  assert.equal(parseValorPercentual('30,5%'), 30.5);
+  assert.equal(parseValorPercentual('30.5'), 30.5);
+  assert.equal(parseValorPercentual(''), 0);
+  assert.equal(parseValorPercentual(35), 35);
+});
+
+test('REG-012: Exclusão em cascata de corte de rendimento da peça', () => {
+  const copiaPeca = JSON.parse(JSON.stringify(patinho));
+  assert.ok(copiaPeca.cortesCatalogo.some((c) => c.nome === 'Sangue e Líquidos'));
+  assert.ok(copiaPeca.amostras[0].cortes['Sangue e Líquidos'] !== undefined);
+
+  removerCorteDePeca(copiaPeca, 'Sangue e Líquidos');
+
+  assert.ok(!copiaPeca.cortesCatalogo.some((c) => c.nome === 'Sangue e Líquidos'));
+  assert.equal(copiaPeca.amostras[0].cortes['Sangue e Líquidos'], undefined);
+  assert.equal(copiaPeca.precosVendaSugeridos['Sangue e Líquidos'], undefined);
 });
 
 test('REG-006: Custeio por Peça-Chave com prejuízo contábil em Osso/Sebo e Líquidos', () => {

@@ -43,7 +43,9 @@
 | REG-006 | 2026-11-12 | Custeio por Peça-Chave e apuração de prejuízo contábil em osso, sebo e líquidos | Custo de cada corte igual ao da peça inteira (ex: R$ 21,45), gerando prejuízo em sebo/sangue | Implementação de `calcularCustosPecaChave` com cálculo de margens individuais e perdas líquidas | `test/calculadora.test.mjs` | PASS |
 | REG-007 | 2026-11-12 | Alternância entre Custo da Peça-Chave, Custo Livre e Margem Geral vs Individual | Necessidade de flexibilidade de gestão | Suporte aos modos `peca_chave`, `livre`, `margem_global` e `margem_individual` | `test/calculadora.test.mjs` | PASS |
 | REG-009 | 2026-11-12 | Agrupamento e cálculo da distribuição da composição da peça (Lucrativos vs Subprodutos vs Quebras) | Necessidade de visualização gráfica clara da divisão da carcaça | Implementação de `calcularDistribuicaoComposicaoPeca` | `test/calculadora.test.mjs` | PASS |
-| REG-010 | 2026-11-13 | Análise individual de cada peça de rendimento (Ficha Técnica individual com quebra, faturamento e lucro por peça) | Necessidade de analisar cada peça lançada separadamente além da média geral | Implementação de `calcularAnaliseIndividualAmostra` | `test/calculadora.test.mjs` | PASS |
+| REG-010 | 2026-11-13 | Análise individual de cada peça de rendimento (Ficha Técnica individual com quebra e lucro) | Necessidade de analisar cada peça lançada separadamente além da média geral | Implementação de `calcularAnaliseIndividualAmostra` | `test/calculadora.test.mjs` | PASS |
+| REG-011 | 2026-11-13 | Parser e formatação de valores monetários e percentuais aceitando vírgula e ponto | `input type="number"` bloqueava tecla ponto e rejeitava vírgula no Windows PT-BR | Implementação de `parseValorMonetario` e `parseValorPercentual` universais | `test/calculadora.test.mjs` | PASS |
+| REG-012 | 2026-11-13 | Exclusão confiável de Peças Principais e Cortes sem depender de `window.confirm()` | `window.confirm()` bloqueado silenciosamente pelo navegador | Substituição por Modal de Confirmação customizado e exclusão em cascata | `test/calculadora.test.mjs` | PASS |
 
 ---
 
@@ -52,3 +54,4 @@
 - **v1.1.0 (2026-11-12):** Multi-peças com templates cadastrais (Dianteiro, Patinho, Traseiro), amostragem dinâmica (1 a N peças), custeio por Peça-Chave com prejuízo contábil explícito, perdas líquidas e histórico de recebimentos.
 - **v1.2.0 (2026-11-12):** Painel visual de distribuição da composição da carcaça e balanço financeiro gráfico da desossa.
 - **v1.3.0 (2026-11-13):** Fichas técnicas individuais por peça lançada com análise isolada (quebra, custo, lucro) e exclusão/edição individual de qualquer peça da amostragem.
+- **v1.4.0 (2026-11-13):** Correção da digitação de decimais (vírgula/ponto), formatação com máscara automática em moeda (R$) e percentual (%), e modal próprio de confirmação de exclusão.
