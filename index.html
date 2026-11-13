@@ -275,11 +275,13 @@
                 <th>Corte / Rendimento / Perda</th>
                 <th class="text-right">Rend. (%)</th>
                 <th class="text-right">Peso Médio</th>
-                <th class="text-right" style="min-width: 120px;">Custo (R$/kg)</th>
-                <th class="text-right" style="min-width: 130px;">Preço Venda (R$/kg)</th>
-                <th class="text-right">Lucro/Prej. (R$/kg)</th>
-                <th class="text-right">Margem (%)</th>
-                <th class="text-right">Fat. / Peça</th>
+                <th class="text-right" style="min-width: 110px;" title="Custo cadastrado no seu sistema ERP">Custo Atual ERP</th>
+                <th class="text-right" style="min-width: 110px;" title="Custo real apurado pela desossa">Custo Real Desossa</th>
+                <th class="text-right" style="min-width: 110px;" title="Preço praticado no balcão">Preço Venda</th>
+                <th class="text-right" title="Margem do cadastro ERP">Margem ERP</th>
+                <th class="text-right" title="Margem real calculada frente ao custo real da desossa">Margem Real</th>
+                <th class="text-right" title="Preço sugerido para atingir a margem meta da peça">Preço Sugerido</th>
+                <th class="text-center" title="Auditoria e diagnóstico">Diagnóstico</th>
                 <th class="text-right">Lucro / Peça</th>
               </tr>
             </thead>
@@ -293,9 +295,11 @@
                 <td class="text-right" id="custo-total-peso">-</td>
                 <td class="text-right text-muted">-</td>
                 <td class="text-right text-muted">-</td>
-                <td class="text-right" id="custo-total-lucro-kg">-</td>
-                <td class="text-right" id="custo-total-margem-perc">-</td>
-                <td class="text-right font-bold" id="custo-total-faturamento">-</td>
+                <td class="text-right text-muted">-</td>
+                <td class="text-right text-muted">-</td>
+                <td class="text-right font-bold" id="custo-total-margem-perc">-</td>
+                <td class="text-right text-muted">-</td>
+                <td class="text-center" id="custo-total-status-audit">-</td>
                 <td class="text-right font-bold" id="custo-total-lucro-liquido">-</td>
               </tr>
             </tfoot>
@@ -440,8 +444,8 @@
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label for="modal-input-nome-corte">Nome do Corte / Rendimento</label>
-          <input type="text" id="modal-input-nome-corte" class="form-input" placeholder="Ex: Sangue/Líquidos, Picanha, Músculo...">
+          <label for="modal-input-nome-corte">Código / Nome do Corte / Rendimento</label>
+          <input type="text" id="modal-input-nome-corte" class="form-input" placeholder="Ex: 1274 - Moida de Primeira, Alcatra...">
         </div>
         <div class="form-group">
           <label for="modal-select-tipo-corte">Classificação</label>
@@ -453,9 +457,20 @@
             <option value="perda_liquida">Perda Líquida (Sangue / Gotejamento - Venda R$ 0)</option>
           </select>
         </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem;">
+          <div class="form-group">
+            <label for="modal-input-custo-atual-corte">Custo Atual no seu ERP (R$/kg)</label>
+            <input type="text" id="modal-input-custo-atual-corte" class="form-input form-input-moeda" value="20,00" title="Custo cadastrado hoje no seu sistema da loja">
+          </div>
+          <div class="form-group">
+            <label for="modal-input-preco-venda-corte">Preço Atual de Venda (R$/kg)</label>
+            <input type="text" id="modal-input-preco-venda-corte" class="form-input form-input-moeda" value="25,00" title="Preço praticado no balcão">
+          </div>
+        </div>
         <div class="form-group">
-          <label for="modal-input-preco-venda-corte">Preço de Venda Padrão (R$/kg)</label>
-          <input type="text" id="modal-input-preco-venda-corte" class="form-input form-input-moeda" value="25,00">
+          <label for="modal-input-margem-atual-corte">Margem Atual do Cadastro (%)</label>
+          <input type="text" id="modal-input-margem-atual-corte" class="form-input form-input-perc" value="20,00" title="Margem calculada do cadastro atual">
+          <small style="color:var(--text-muted); font-size:0.75rem;">Calculada automaticamente a partir do custo atual e preço de venda.</small>
         </div>
       </div>
       <div class="modal-footer">

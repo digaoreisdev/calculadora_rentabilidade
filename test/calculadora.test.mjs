@@ -8,6 +8,7 @@ import {
   parseValorPercentual,
   formatarKgValor,
   calcularSobraCorte,
+  calcularAuditoriaCorte,
   removerCorteDePeca,
   calcularQuebraAmostra,
   calcularProdutividadeKgHora,
@@ -218,6 +219,29 @@ test('REG-014: Cálculo de sobra do corte principal e formatação de 3 casas de
   assert.equal(formatarKgValor(0), '0,000');
   assert.equal(formatarKgValor(''), '0,000');
   assert.equal(formatarKgValor(5.658), '5,658');
+});
+
+test('REG-015: Auditoria comparativa entre Cadastro Atual de ERP e Custo/Margem Real da Desossa', () => {
+  // Caso 1: Moída de 1ª vendida a R$ 25 com custo de R$ 20 no ERP, mas custando R$ 28.50 na desossa
+  const audit1 = calcularAuditoriaCorte(20.00, 25.00, 28.50, 30.0);
+  assert.equal(audit1.custoAtualSistema, 20.00);
+  assert.equal(audit1.precoVendaAtual, 25.00);
+  assert.equal(audit1.custoRealDesossa, 28.50);
+  assert.equal(audit1.margemAtualSistemaPerc, 20.00);
+  assert.equal(audit1.margemRealDesossaPerc, -14.00);
+  assert.equal(audit1.difCustoKg, 8.50);
+  assert.equal(audit1.diagnostico, 'prejuizo_oculto');
+  assert.equal(audit1.precoSugeridoMeta, 40.71);
+
+  // Caso 2: Corte nobre com margem saudável (custo real R$ 21.45, venda R$ 35.00)
+  const audit2 = calcularAuditoriaCorte(21.45, 35.00, 21.45, 30.0);
+  assert.equal(audit2.margemRealDesossaPerc, 38.71);
+  assert.equal(audit2.diagnostico, 'saudavel');
+
+  // Caso 3: Sangue / Perda líquida (venda R$ 0.00, custo real R$ 21.45)
+  const audit3 = calcularAuditoriaCorte(0, 0, 21.45, 30.0);
+  assert.equal(audit3.diagnostico, 'perda');
+  assert.equal(audit3.margemRealDesossaPerc, -100);
 });
 
 test('Defensividade: Bloqueio de valores negativos e formatos inválidos', () => {

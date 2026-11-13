@@ -100,6 +100,20 @@ export const PECAS_PADRAO = [
       'Moída de Primeira': 35.90,
       'Moída de Segunda': 26.90
     },
+    custosSistema: {
+      'Cebo e Osso': 1.48,
+      'Agulha C/ Osso': 18.50,
+      'Agulha S/ Osso': 24.00,
+      'Agulha Especial': 27.00,
+      'Costela Dianteiro': 17.50,
+      'Paleta C/ Sete': 20.00,
+      'Paleta Osso Redondo': 19.50,
+      'Paleta S/ Osso': 25.00,
+      'Peito Costela': 18.50,
+      'Músculo': 24.50,
+      'Moída de Primeira': 26.00,
+      'Moída de Segunda': 19.50
+    },
     historicoDesossas: []
   },
   {
@@ -137,6 +151,58 @@ export const PECAS_PADRAO = [
       'Moída de Segunda': 26.90,
       'Moída de Primeira': 37.90,
       'Patinho Limpo': 42.90
+    },
+    custosSistema: {
+      'Sangue e Líquidos': 0.00,
+      'Cebo e Osso': 1.48,
+      'Moída de Segunda': 20.00,
+      'Moída de Primeira': 28.00,
+      'Patinho Limpo': 32.00
+    },
+    historicoDesossas: []
+  },
+  {
+    id: 'alcatra-inteira',
+    nome: 'Alcatra Completa (Com Miolo e Aparas)',
+    custoKgEntrada: 32.90,
+    margemPadraoPerc: 30.0,
+    modoCusto: 'peca_chave',
+    modoMargem: 'individual',
+    cortesCatalogo: [
+      { nome: 'Sangue e Líquidos de Perda', tipo: 'perda_liquida', precoVendaPadrao: 0.00 },
+      { nome: 'Cebo de Perda', tipo: 'subproduto', precoVendaPadrao: 1.48 },
+      { nome: 'Moída de Segunda', tipo: 'comum', precoVendaPadrao: 26.90 },
+      { nome: 'Moída de Primeira', tipo: 'nobre', precoVendaPadrao: 37.90 },
+      { nome: 'Alcatra Limpa (Miolo)', tipo: 'nobre', precoVendaPadrao: 49.90 }
+    ],
+    amostras: [
+      {
+        id: 'amostra-alcatra-1',
+        nome: 'Peça 1 (10,500 kg)',
+        pesoTotal: 10.500,
+        tempo: '00:07:30',
+        cortes: {
+          'Sangue e Líquidos de Perda': 0.180,
+          'Cebo de Perda': 1.120,
+          'Moída de Segunda': 0.850,
+          'Moída de Primeira': 1.250,
+          'Alcatra Limpa (Miolo)': 7.100
+        }
+      }
+    ],
+    precosVendaSugeridos: {
+      'Sangue e Líquidos de Perda': 0.00,
+      'Cebo de Perda': 1.48,
+      'Moída de Segunda': 26.90,
+      'Moída de Primeira': 37.90,
+      'Alcatra Limpa (Miolo)': 49.90
+    },
+    custosSistema: {
+      'Sangue e Líquidos de Perda': 0.00,
+      'Cebo de Perda': 1.48,
+      'Moída de Segunda': 21.00,
+      'Moída de Primeira': 28.00,
+      'Alcatra Limpa (Miolo)': 36.00
     },
     historicoDesossas: []
   }

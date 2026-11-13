@@ -48,6 +48,7 @@
 | REG-012 | 2026-11-13 | Exclusão confiável de Peças Principais e Cortes sem depender de `window.confirm()` | `window.confirm()` bloqueado silenciosamente pelo navegador | Substituição por Modal de Confirmação customizado e exclusão em cascata | `test/calculadora.test.mjs` | PASS |
 | REG-013 | 2026-11-13 | Suporte a sistema zerado (0 amostras e exclusão da última peça sem NaN) | Trava `peca.amostras.length <= 1` impedia o usuário de zerar a tela para novo lançamento | Remoção da trava com tratamento defensivo e estado vazio limpo | `test/calculadora.test.mjs` | PASS |
 | REG-014 | 2026-11-13 | Cálculo de sobra do corte principal e formatação de 3 casas decimais (ex: 0,000 kg e 0,140 kg) | Herança indevida de dados antigos de outros templates e exibição de decimais incompletos | Função `calcularSobraCorte` (botão ⚡Sobra) e `formatarKgValor` estrito com 3 decimais | `test/calculadora.test.mjs` | PASS |
+| REG-015 | 2026-11-13 | Auditoria comparativa entre Cadastro Atual de ERP e Custo/Margem Real da Desossa | Ausência de campos para registrar o custo/margem que o sistema ERP atual da loja utiliza | Módulo de auditoria `calcularAuditoriaCorte`, campos de Custo Atual ERP e diagnóstico de Prejuízo Oculto | `test/calculadora.test.mjs` | PASS |
 
 ---
 
@@ -58,3 +59,4 @@
 - **v1.3.0 (2026-11-13):** Fichas técnicas individuais por peça lançada com análise isolada (quebra, custo, lucro) e exclusão/edição individual de qualquer peça da amostragem.
 - **v1.4.0 (2026-11-13):** Correção da digitação de decimais (vírgula/ponto), formatação com máscara automática em moeda (R$) e percentual (%), e modal próprio de confirmação de exclusão.
 - **v1.5.0 (2026-11-13):** Suporte completo a sistema zerado (0 peças ou amostras), cálculo inteligente de sobra/saldo para corte principal (botão ⚡Sobra) e formatação estrita de pesos em Kg com 3 casas decimais (`0,000 kg`, `0,140 kg`).
+- **v1.6.0 (2026-11-13):** Módulo de Auditoria Comparativa de Cadastro (ERP Atual vs Desossa Real), campos de Custo Atual ERP e Margem Atual do cadastro, diagnóstico visual de divergências (🔴 Prejuízo Oculto, 🟡 Abaixo da Meta, 🟢 Margem Saudável) e template pronto da Alcatra Completa.

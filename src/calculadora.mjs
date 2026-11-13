@@ -311,6 +311,33 @@ function processarItemCustoPecaChave(corte, pesoBase, custoKgEntrada, precosVend
   };
 }
 
+export function calcularAuditoriaCorte(custoAtualSistema, precoVendaAtual, custoRealDesossa, margemMetaPerc = 30) {
+  const cSistema = Math.max(0, Number(custoAtualSistema) || 0);
+  const pVenda = Math.max(0, Number(precoVendaAtual) || 0);
+  const cReal = Math.max(0, Number(custoRealDesossa) || 0);
+  const margemAtualSistemaPerc = pVenda > 0 ? arredondar(((pVenda - cSistema) / pVenda) * 100, 2) : 0;
+  const margemRealDesossaPerc = pVenda > 0 ? arredondar(((pVenda - cReal) / pVenda) * 100, 2) : (cReal > 0 ? -100 : 0);
+  const difCustoKg = arredondar(cReal - cSistema, 2);
+  const fatorMeta = margemMetaPerc < 100 ? (1 - (margemMetaPerc / 100)) : 0.01;
+  const precoSugeridoMeta = arredondar(cReal / (fatorMeta > 0 ? fatorMeta : 0.01), 2);
+
+  let diagnostico = 'saudavel';
+  if (pVenda === 0 && cReal > 0) diagnostico = 'perda';
+  else if (pVenda < cReal) diagnostico = 'prejuizo_oculto';
+  else if (margemRealDesossaPerc < margemMetaPerc) diagnostico = 'abaixo_meta';
+
+  return {
+    custoAtualSistema: cSistema,
+    precoVendaAtual: pVenda,
+    custoRealDesossa: cReal,
+    margemAtualSistemaPerc,
+    margemRealDesossaPerc,
+    difCustoKg,
+    precoSugeridoMeta,
+    diagnostico
+  };
+}
+
 export function calcularDistribuicaoComposicaoPeca(cortesCusteio, quebraPerc = 0) {
   let percComerciais = 0;
   let percSubprodutos = 0;

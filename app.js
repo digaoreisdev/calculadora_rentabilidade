@@ -101,6 +101,20 @@ const PECAS_INICIAIS = [
       'Moída de Primeira': 35.90,
       'Moída de Segunda': 26.90
     },
+    custosSistema: {
+      'Cebo e Osso': 1.48,
+      'Agulha C/ Osso': 18.50,
+      'Agulha S/ Osso': 24.00,
+      'Agulha Especial': 27.00,
+      'Costela Dianteiro': 17.50,
+      'Paleta C/ Sete': 20.00,
+      'Paleta Osso Redondo': 19.50,
+      'Paleta S/ Osso': 25.00,
+      'Peito Costela': 18.50,
+      'Músculo': 24.50,
+      'Moída de Primeira': 26.00,
+      'Moída de Segunda': 19.50
+    },
     historicoDesossas: []
   },
   {
@@ -138,6 +152,58 @@ const PECAS_INICIAIS = [
       'Moída de Segunda': 26.90,
       'Moída de Primeira': 37.90,
       'Patinho Limpo': 42.90
+    },
+    custosSistema: {
+      'Sangue e Líquidos': 0.00,
+      'Cebo e Osso': 1.48,
+      'Moída de Segunda': 20.00,
+      'Moída de Primeira': 28.00,
+      'Patinho Limpo': 32.00
+    },
+    historicoDesossas: []
+  },
+  {
+    id: 'alcatra-inteira',
+    nome: 'Alcatra Completa (Com Miolo e Aparas)',
+    custoKgEntrada: 32.90,
+    margemPadraoPerc: 30.0,
+    modoCusto: 'peca_chave',
+    modoMargem: 'individual',
+    cortesCatalogo: [
+      { nome: 'Sangue e Líquidos de Perda', tipo: 'perda_liquida', precoVendaPadrao: 0.00 },
+      { nome: 'Cebo de Perda', tipo: 'subproduto', precoVendaPadrao: 1.48 },
+      { nome: 'Moída de Segunda', tipo: 'comum', precoVendaPadrao: 26.90 },
+      { nome: 'Moída de Primeira', tipo: 'nobre', precoVendaPadrao: 37.90 },
+      { nome: 'Alcatra Limpa (Miolo)', tipo: 'nobre', precoVendaPadrao: 49.90 }
+    ],
+    amostras: [
+      {
+        id: 'amostra-alcatra-1',
+        nome: 'Peça 1 (10,500 kg)',
+        pesoTotal: 10.500,
+        tempo: '00:07:30',
+        cortes: {
+          'Sangue e Líquidos de Perda': 0.180,
+          'Cebo de Perda': 1.120,
+          'Moída de Segunda': 0.850,
+          'Moída de Primeira': 1.250,
+          'Alcatra Limpa (Miolo)': 7.100
+        }
+      }
+    ],
+    precosVendaSugeridos: {
+      'Sangue e Líquidos de Perda': 0.00,
+      'Cebo de Perda': 1.48,
+      'Moída de Segunda': 26.90,
+      'Moída de Primeira': 37.90,
+      'Alcatra Limpa (Miolo)': 49.90
+    },
+    custosSistema: {
+      'Sangue e Líquidos de Perda': 0.00,
+      'Cebo de Perda': 1.48,
+      'Moída de Segunda': 21.00,
+      'Moída de Primeira': 28.00,
+      'Alcatra Limpa (Miolo)': 36.00
     },
     historicoDesossas: []
   }
@@ -304,20 +370,48 @@ function calcularCusteioPecaChave(peca, metricas) {
   const usarPecaChave = peca.modoCusto !== 'livre';
 
   const cortesProcessados = metricas.cortesConsolidados.map((c) => {
-    const precoVenda = peca.precosVendaSugeridos[c.nome] ?? 0;
-    const custoItemKg = usarPecaChave ? custoBaseKg : (peca.custosIndividuais?.[c.nome] ?? custoBaseKg);
-    const pesoEst = arredondar((pesoBase * c.rendimentoPerc) / 100, 3);
-    const fat = arredondar(pesoEst * precoVenda, 2);
-    const custoEst = arredondar(pesoEst * custoItemKg, 2);
-    const lucroKg = arredondar(precoVenda - custoItemKg, 2);
-    const margemPerc = precoVenda > 0 ? arredondar((lucroKg / precoVenda) * 100, 2) : (custoItemKg > 0 ? -100 : 0);
-    return { ...c, pesoEst, precoVenda, custoItemKg, fat, custoEst, lucroKg, lucroEst: arredondar(fat - custoEst, 2), margemPerc };
+    return processarItemCusteio(c, peca, pesoBase, custoBaseKg, usarPecaChave);
   });
 
   const faturamentoTotal = arredondar(cortesProcessados.reduce((a, b) => a + b.fat, 0), 2);
   const lucroLiquidoPeca = arredondar(faturamentoTotal - custoTotalPeca, 2);
   const margemGlobalPerc = faturamentoTotal > 0 ? arredondar((lucroLiquidoPeca / faturamentoTotal) * 100, 2) : 0;
   return { custoTotalPeca, faturamentoTotal, lucroLiquidoPeca, margemGlobalPerc, cortes: cortesProcessados };
+}
+
+function processarItemCusteio(c, peca, pesoBase, custoBaseKg, usarPecaChave) {
+  const precoVenda = peca.precosVendaSugeridos?.[c.nome] ?? 0;
+  const custoAtualERP = peca.custosSistema?.[c.nome] ?? (precoVenda > 0 ? arredondar(precoVenda * 0.7, 2) : 0);
+  const custoItemKg = usarPecaChave ? custoBaseKg : (peca.custosIndividuais?.[c.nome] ?? custoBaseKg);
+  const pesoEst = arredondar((pesoBase * c.rendimentoPerc) / 100, 3);
+  const fat = arredondar(pesoEst * precoVenda, 2);
+  const custoEst = arredondar(pesoEst * custoItemKg, 2);
+  const lucroKg = arredondar(precoVenda - custoItemKg, 2);
+  const margemRealPerc = precoVenda > 0 ? arredondar((lucroKg / precoVenda) * 100, 2) : (custoItemKg > 0 ? -100 : 0);
+  const margemERPPerc = precoVenda > 0 ? arredondar(((precoVenda - custoAtualERP) / precoVenda) * 100, 2) : 0;
+  const fatorMeta = peca.margemPadraoPerc < 100 ? (1 - (peca.margemPadraoPerc / 100)) : 0.01;
+  const precoSugerido = arredondar(custoItemKg / (fatorMeta > 0 ? fatorMeta : 0.01), 2);
+
+  let diag = 'saudavel';
+  if (precoVenda === 0 && custoItemKg > 0) diag = 'perda';
+  else if (precoVenda < custoItemKg) diag = 'prejuizo_oculto';
+  else if (margemRealPerc < peca.margemPadraoPerc) diag = 'abaixo_meta';
+
+  return {
+    ...c,
+    pesoEst,
+    precoVenda,
+    custoAtualERP,
+    custoItemKg,
+    fat,
+    custoEst,
+    lucroKg,
+    lucroEst: arredondar(fat - custoEst, 2),
+    margemPerc: margemRealPerc,
+    margemERPPerc,
+    precoSugerido,
+    diagnostico: diag
+  };
 }
 
 function gerarBadgeQuebra(quebraKg, quebraPerc, somaCortes = null, pesoTotal = null) {
@@ -598,31 +692,54 @@ function renderizarTabelaCusteio(peca, custeio) {
   const tbody = document.getElementById('corpo-tabela-custeio');
   tbody.innerHTML = '';
   custeio.cortes.forEach((c) => {
-    const isPrej = c.lucroKg < 0;
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>
-        <strong>${c.nome}</strong>
-        ${isPrej ? '<span class="badge badge-prejuizo" style="margin-left:6px; font-size:0.7rem;">PREJUÍZO</span>' : ''}
-      </td>
-      <td class="text-right">${formatarPerc(c.rendimentoPerc)}</td>
-      <td class="text-right text-muted">${formatarKg(c.pesoEst)}</td>
-      <td class="text-right font-bold" style="background:#fef3c7; color:var(--primary);">${formatarMoeda(c.custoItemKg)}</td>
-      <td class="text-right">
-        <div style="display:inline-flex; align-items:center; gap:3px;">
-          <span style="font-size:0.75rem; color:var(--text-muted);">R$</span>
-          <input type="text" class="form-input form-input-moeda input-preco-venda-custeio" data-corte="${c.nome}"
-                 value="${formatarNumeroBR(c.precoVenda, 2)}" style="width: 80px; text-align:right; font-weight:700;">
-        </div>
-      </td>
-      <td class="text-right font-bold ${isPrej ? 'text-danger' : 'text-success'}">${formatarMoeda(c.lucroKg)}</td>
-      <td class="text-right"><span class="badge ${isPrej ? 'badge-danger' : 'badge-success'}">${formatarPerc(c.margemPerc)}</span></td>
-      <td class="text-right font-bold">${formatarMoeda(c.fat)}</td>
-      <td class="text-right font-bold ${c.lucroEst >= 0 ? 'text-success' : 'text-danger'}">${formatarMoeda(c.lucroEst)}</td>
-    `;
+    tr.innerHTML = montarHtmlLinhaCusteio(c, peca);
     tbody.appendChild(tr);
   });
   atualizarTotaisCusteio(custeio);
+}
+
+function gerarBadgeDiagnostico(diag) {
+  if (diag === 'prejuizo_oculto') {
+    return '<span class="badge badge-danger" title="O custo real da desossa é maior que o preço de venda!">🔴 Prejuízo Oculto</span>';
+  }
+  if (diag === 'perda') {
+    return '<span class="badge" style="background:#f3e8ff; color:#7e22ce;" title="Perda líquida ou subproduto sem receita">Perda</span>';
+  }
+  if (diag === 'abaixo_meta') {
+    return '<span class="badge badge-warning" title="Margem real positiva, porém abaixo da meta configurada">🟡 Abaixo da Meta</span>';
+  }
+  return '<span class="badge badge-success" title="Margem real igual ou superior à meta">🟢 Saudável</span>';
+}
+
+function montarHtmlLinhaCusteio(c, peca) {
+  const isPrej = c.lucroKg < 0;
+  return `
+    <td>
+      <strong>${c.nome}</strong>
+      ${c.diagnostico === 'perda' ? '<span class="badge" style="background:#f3e8ff; color:#7e22ce; margin-left:4px; font-size:0.65rem;">PERDA</span>' : ''}
+    </td>
+    <td class="text-right">${formatarPerc(c.rendimentoPerc)}</td>
+    <td class="text-right text-muted">${formatarKg(c.pesoEst)}</td>
+    <td class="text-right">
+      <input type="text" class="form-input form-input-moeda input-custo-erp-custeio" data-corte="${c.nome}"
+             value="${formatarNumeroBR(c.custoAtualERP, 2)}" style="width: 70px; text-align:right; font-size:0.8rem;" title="Custo cadastrado no seu sistema ERP">
+    </td>
+    <td class="text-right font-bold" style="background:#fef3c7; color:var(--primary); font-size:0.85rem;">${formatarMoeda(c.custoItemKg)}</td>
+    <td class="text-right">
+      <input type="text" class="form-input form-input-moeda input-preco-venda-custeio" data-corte="${c.nome}"
+             value="${formatarNumeroBR(c.precoVenda, 2)}" style="width: 70px; text-align:right; font-weight:700; font-size:0.8rem;" title="Preço atual de venda">
+    </td>
+    <td class="text-right text-muted" style="font-size:0.8rem;">${formatarPerc(c.margemERPPerc)}</td>
+    <td class="text-right">
+      <span class="badge ${isPrej ? 'badge-danger' : (c.margemPerc < peca.margemPadraoPerc ? 'badge-warning' : 'badge-success')} font-bold">
+        ${formatarPerc(c.margemPerc)}
+      </span>
+    </td>
+    <td class="text-right font-bold" style="color:#0369a1; font-size:0.85rem;">${formatarMoeda(c.precoSugerido)}</td>
+    <td class="text-center">${gerarBadgeDiagnostico(c.diagnostico)}</td>
+    <td class="text-right font-bold ${c.lucroEst >= 0 ? 'text-success' : 'text-danger'}">${formatarMoeda(c.lucroEst)}</td>
+  `;
 }
 
 function atualizarTotaisCusteio(custeio) {
@@ -630,9 +747,9 @@ function atualizarTotaisCusteio(custeio) {
   const somaPeso = arredondar(custeio.cortes.reduce((a, b) => a + b.pesoEst, 0), 3);
   document.getElementById('custo-total-rend').innerText = formatarPerc(somaRend);
   document.getElementById('custo-total-peso').innerText = formatarKg(somaPeso);
-  document.getElementById('custo-total-lucro-kg').innerText = formatarMoeda(custeio.lucroLiquidoPeca / (somaPeso || 1));
   document.getElementById('custo-total-margem-perc').innerHTML = `<span class="badge badge-success font-bold">${formatarPerc(custeio.margemGlobalPerc)}</span>`;
-  document.getElementById('custo-total-faturamento').innerText = formatarMoeda(custeio.faturamentoTotal);
+  const elStatus = document.getElementById('custo-total-status-audit');
+  if (elStatus) elStatus.innerHTML = custeio.lucroLiquidoPeca >= 0 ? '<span class="badge badge-success">✓ Lucrativo</span>' : '<span class="badge badge-danger">⚠️ Prejuízo</span>';
   document.getElementById('custo-total-lucro-liquido').innerText = formatarMoeda(custeio.lucroLiquidoPeca);
 }
 
@@ -946,27 +1063,39 @@ function removerCortePeca(corteNome) {
 
 function vincularEventosCusteio() {
   document.getElementById('corpo-tabela-custeio').addEventListener('change', (e) => {
+    const peca = obterPecaAtiva();
+    if (!peca) return;
+    const corte = e.target.dataset.corte;
     if (e.target.classList.contains('input-preco-venda-custeio')) {
-      const peca = obterPecaAtiva();
-      peca.precosVendaSugeridos[e.target.dataset.corte] = parseValorMonetario(e.target.value);
+      if (!peca.precosVendaSugeridos) peca.precosVendaSugeridos = {};
+      peca.precosVendaSugeridos[corte] = parseValorMonetario(e.target.value);
+      salvarNoLocalStorage();
+      atualizarTela();
+    }
+    if (e.target.classList.contains('input-custo-erp-custeio')) {
+      if (!peca.custosSistema) peca.custosSistema = {};
+      peca.custosSistema[corte] = parseValorMonetario(e.target.value);
       salvarNoLocalStorage();
       atualizarTela();
     }
   });
-  document.getElementById('btn-aplicar-margem-geral').addEventListener('click', () => {
-    const peca = obterPecaAtiva();
-    const margem = peca.margemPadraoPerc / 100;
-    if (margem >= 1) return alert('A margem deve ser menor que 100%.');
-    obterListaCortesPeca(peca).forEach((nome) => {
-      const isSub = nome.toLowerCase().includes('osso') || nome.toLowerCase().includes('cebo') || nome.toLowerCase().includes('sangue');
-      if (!isSub) {
-        peca.precosVendaSugeridos[nome] = arredondar(peca.custoKgEntrada / (1 - margem), 2);
-      }
-    });
-    salvarNoLocalStorage();
-    atualizarTela();
-    alert('Preços de venda atualizados com base na margem padrão!');
+  document.getElementById('btn-aplicar-margem-geral').addEventListener('click', aplicarMargemGeralCortes);
+}
+
+function aplicarMargemGeralCortes() {
+  const peca = obterPecaAtiva();
+  if (!peca) return;
+  const margem = peca.margemPadraoPerc / 100;
+  if (margem >= 1) return alert('A margem deve ser menor que 100%.');
+  obterListaCortesPeca(peca).forEach((nome) => {
+    const isSub = nome.toLowerCase().includes('osso') || nome.toLowerCase().includes('cebo') || nome.toLowerCase().includes('sangue');
+    if (!isSub) {
+      peca.precosVendaSugeridos[nome] = arredondar(peca.custoKgEntrada / (1 - margem), 2);
+    }
   });
+  salvarNoLocalStorage();
+  atualizarTela();
+  alert('Preços de venda atualizados com base na margem padrão!');
 }
 
 function vincularEventosModais() {
@@ -990,6 +1119,15 @@ function vincularEventosModais() {
     b.addEventListener('click', () => {
       document.querySelectorAll('.modal-overlay').forEach((m) => m.classList.remove('active'));
     });
+  });
+  document.getElementById('modal-input-custo-atual-corte')?.addEventListener('input', sincronizarMargemModalCorte);
+  document.getElementById('modal-input-preco-venda-corte')?.addEventListener('input', sincronizarMargemModalCorte);
+  document.getElementById('modal-select-tipo-corte')?.addEventListener('change', (e) => {
+    if (e.target.value === 'perda_liquida') {
+      document.getElementById('modal-input-custo-atual-corte').value = '0,00';
+      document.getElementById('modal-input-preco-venda-corte').value = '0,00';
+      document.getElementById('modal-input-margem-atual-corte').value = '-100,00';
+    }
   });
 }
 
@@ -1063,20 +1201,36 @@ function excluirPecaAtiva() {
 
 function abrirModalCorte() {
   document.getElementById('modal-input-nome-corte').value = '';
+  document.getElementById('modal-input-custo-atual-corte').value = '20,00';
   document.getElementById('modal-input-preco-venda-corte').value = '25,00';
+  document.getElementById('modal-input-margem-atual-corte').value = '20,00';
   document.getElementById('modal-corte').classList.add('active');
+}
+
+function sincronizarMargemModalCorte() {
+  const c = parseValorMonetario(document.getElementById('modal-input-custo-atual-corte').value);
+  const p = parseValorMonetario(document.getElementById('modal-input-preco-venda-corte').value);
+  const m = p > 0 ? arredondar(((p - c) / p) * 100, 2) : 0;
+  document.getElementById('modal-input-margem-atual-corte').value = formatarNumeroBR(m, 2);
 }
 
 function salvarModalCorte() {
   const nome = document.getElementById('modal-input-nome-corte').value.trim();
   const tipo = document.getElementById('modal-select-tipo-corte').value;
-  const preco = tipo === 'perda_liquida' ? 0 : parseValorMonetario(document.getElementById('modal-input-preco-venda-corte').value);
+  const isPerda = tipo === 'perda_liquida';
+  const custo = isPerda ? 0 : parseValorMonetario(document.getElementById('modal-input-custo-atual-corte').value);
+  const preco = isPerda ? 0 : parseValorMonetario(document.getElementById('modal-input-preco-venda-corte').value);
+  const margem = isPerda ? -100 : parseValorPercentual(document.getElementById('modal-input-margem-atual-corte').value);
   if (!nome) return alert('Informe o nome do corte.');
+
   const peca = obterPecaAtiva();
   if (!peca.cortesCatalogo.some((c) => c.nome.toLowerCase() === nome.toLowerCase())) {
-    peca.cortesCatalogo.push({ nome, tipo, precoVendaPadrao: preco });
+    peca.cortesCatalogo.push({ nome, tipo, precoVendaPadrao: preco, custoAtualSistema: custo, margemAtualSistema: margem });
   }
+  if (!peca.precosVendaSugeridos) peca.precosVendaSugeridos = {};
+  if (!peca.custosSistema) peca.custosSistema = {};
   peca.precosVendaSugeridos[nome] = preco;
+  peca.custosSistema[nome] = custo;
   salvarNoLocalStorage();
   document.getElementById('modal-corte').classList.remove('active');
   atualizarTela();
