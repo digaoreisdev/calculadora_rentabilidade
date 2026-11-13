@@ -8,6 +8,8 @@ import {
   parseValorPercentual,
   formatarKgValor,
   calcularSobraCorte,
+  calcularPerdaTecnicaAuto,
+  arredondar,
   calcularAuditoriaCorte,
   removerCorteDePeca,
   calcularQuebraAmostra,
@@ -186,6 +188,14 @@ test('REG-004: Projeção de Compras e Estoque', () => {
   const projecao = projetarCompraEstoque(1000, 21.45, rendimento, dianteiro.precosVendaSugeridos);
   assert.equal(projecao.pesoLoteKg, 1000);
   assert.equal(projecao.custoTotalLote, 21450.00);
+  assert.equal(projecao.pesoDesossaLoteKg, 1000);
+  assert.equal(projecao.pesoEstoquePecaInteiraKg, 0);
+
+  // Simulação de estoque duplo (ex: 200 kg mantidos inteiros para venda direta e 800 kg para desossa)
+  const projecaoDupla = projetarCompraEstoque(1000, 21.45, rendimento, dianteiro.precosVendaSugeridos, 0.8, 26.90);
+  assert.equal(projecaoDupla.pesoDesossaLoteKg, 800);
+  assert.equal(projecaoDupla.pesoEstoquePecaInteiraKg, 200);
+  assert.equal(projecaoDupla.faturamentoPecaInteira, 5380.00);
 });
 
 test('REG-013: Suporte a sistema zerado (0 amostras com retorno limpo sem NaN)', () => {
@@ -242,6 +252,44 @@ test('REG-015: Auditoria comparativa entre Cadastro Atual de ERP e Custo/Margem 
   const audit3 = calcularAuditoriaCorte(0, 0, 21.45, 30.0);
   assert.equal(audit3.diagnostico, 'perda');
   assert.equal(audit3.margemRealDesossaPerc, -100);
+});
+
+test('REG-016: Fechamento de rendimento em 100% com Perda Técnica Automática (Manejo e Serra)', () => {
+  // Exemplo da Alcatra ou Dianteiro com sobra técnica (corte de serra / evaporação / manejo)
+  // Peça de entrada de 10,000 kg, com cortes e perdas informadas somando 9,700 kg
+  const pesoEntrada = 10.000;
+  const somaCortesInformados = 9.700;
+
+  const resultadoPerda = calcularPerdaTecnicaAuto(pesoEntrada, somaCortesInformados);
+  assert.equal(resultadoPerda.perdaTecnicaKg, 0.300);
+  assert.equal(resultadoPerda.perdaTecnicaPerc, 3.00);
+  assert.equal(resultadoPerda.rendimentoFechadoPerc, 100.00);
+
+  // Amostra real com cortes parciais
+  const amostraTeste = {
+    id: 'amostra-teste-1',
+    nome: 'Peça Teste',
+    pesoTotal: 5.658,
+    tempo: '00:03:46',
+    cortes: {
+      'Sangue e Líquidos': 0.116,
+      'Cebo e Osso': 0.146,
+      'Moída de Primeira': 0.140,
+      'Moída de Segunda': 0.204,
+      'Patinho Limpo': 4.800
+    }
+  };
+  // Soma cortes = 0.116 + 0.146 + 0.140 + 0.204 + 4.800 = 5.406 kg
+  // Diferença até 5.658 kg = 0.252 kg (4.45%)
+  const resultadoRend = calcularRendimentoAmostras([amostraTeste], { incluirPerdaTecnica: true });
+  assert.equal(resultadoRend.quantidadeAmostras, 1);
+  const itemPerdaTecnica = resultadoRend.cortes.find((c) => c.nome === 'Perda Técnica (Manejo / Serra)');
+  assert.ok(itemPerdaTecnica, 'O corte de Perda Técnica deve estar presente');
+  assert.equal(itemPerdaTecnica.pesoTotal, 0.252);
+  assert.equal(itemPerdaTecnica.rendimentoMedioPerc, 4.45);
+
+  const somaTodosRendimentos = resultadoRend.cortes.reduce((acc, c) => acc + c.rendimentoMedioPerc, 0);
+  assert.equal(arredondar(somaTodosRendimentos, 1), 100.0);
 });
 
 test('Defensividade: Bloqueio de valores negativos e formatos inválidos', () => {

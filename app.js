@@ -164,46 +164,72 @@ const PECAS_INICIAIS = [
   },
   {
     id: 'alcatra-inteira',
-    nome: 'Alcatra Completa (Com Miolo e Aparas)',
-    custoKgEntrada: 32.90,
-    margemPadraoPerc: 30.0,
+    nome: '1241 - Alcatra Bovina Completa',
+    custoKgEntrada: 37.78,
+    margemPadraoPerc: 23.88,
     modoCusto: 'peca_chave',
     modoMargem: 'individual',
     cortesCatalogo: [
       { nome: 'Sangue e Líquidos de Perda', tipo: 'perda_liquida', precoVendaPadrao: 0.00 },
       { nome: 'Cebo de Perda', tipo: 'subproduto', precoVendaPadrao: 1.48 },
-      { nome: 'Moída de Segunda', tipo: 'comum', precoVendaPadrao: 26.90 },
-      { nome: 'Moída de Primeira', tipo: 'nobre', precoVendaPadrao: 37.90 },
-      { nome: 'Alcatra Limpa (Miolo)', tipo: 'nobre', precoVendaPadrao: 49.90 }
+      { nome: '1275 - Moída de Segunda', tipo: 'comum', precoVendaPadrao: 27.49 },
+      { nome: '1274 - Moída de Primeira', tipo: 'nobre', precoVendaPadrao: 47.99 },
+      { nome: '1241 - Alcatra Bovina (Corte Principal)', tipo: 'nobre', precoVendaPadrao: 49.90 }
     ],
     amostras: [
       {
         id: 'amostra-alcatra-1',
-        nome: 'Peça 1 (10,500 kg)',
-        pesoTotal: 10.500,
-        tempo: '00:07:30',
+        nome: 'Peça 1 (4,316 kg)',
+        pesoTotal: 4.316,
+        tempo: '00:03:58',
         cortes: {
-          'Sangue e Líquidos de Perda': 0.180,
-          'Cebo de Perda': 1.120,
-          'Moída de Segunda': 0.850,
-          'Moída de Primeira': 1.250,
-          'Alcatra Limpa (Miolo)': 7.100
+          'Sangue e Líquidos de Perda': 0.136,
+          'Cebo de Perda': 0.250,
+          '1275 - Moída de Segunda': 0.288,
+          '1274 - Moída de Primeira': 0.192,
+          '1241 - Alcatra Bovina (Corte Principal)': 3.450
+        }
+      },
+      {
+        id: 'amostra-alcatra-2',
+        nome: 'Peça 2 (3,762 kg)',
+        pesoTotal: 3.762,
+        tempo: '00:03:31',
+        cortes: {
+          'Sangue e Líquidos de Perda': 0.206,
+          'Cebo de Perda': 0.114,
+          '1275 - Moída de Segunda': 0.234,
+          '1274 - Moída de Primeira': 0.228,
+          '1241 - Alcatra Bovina (Corte Principal)': 2.980
+        }
+      },
+      {
+        id: 'amostra-alcatra-3',
+        nome: 'Peça 3 (3,564 kg)',
+        pesoTotal: 3.564,
+        tempo: '00:03:16',
+        cortes: {
+          'Sangue e Líquidos de Perda': 0.176,
+          'Cebo de Perda': 0.072,
+          '1275 - Moída de Segunda': 0.134,
+          '1274 - Moída de Primeira': 0.114,
+          '1241 - Alcatra Bovina (Corte Principal)': 3.068
         }
       }
     ],
     precosVendaSugeridos: {
       'Sangue e Líquidos de Perda': 0.00,
       'Cebo de Perda': 1.48,
-      'Moída de Segunda': 26.90,
-      'Moída de Primeira': 37.90,
-      'Alcatra Limpa (Miolo)': 49.90
+      '1275 - Moída de Segunda': 27.49,
+      '1274 - Moída de Primeira': 47.99,
+      '1241 - Alcatra Bovina (Corte Principal)': 49.90
     },
     custosSistema: {
       'Sangue e Líquidos de Perda': 0.00,
-      'Cebo de Perda': 1.48,
-      'Moída de Segunda': 21.00,
-      'Moída de Primeira': 28.00,
-      'Alcatra Limpa (Miolo)': 36.00
+      'Cebo de Perda': 1.04,
+      '1275 - Moída de Segunda': 24.51,
+      '1274 - Moída de Primeira': 27.23,
+      '1241 - Alcatra Bovina (Corte Principal)': 37.78
     },
     historicoDesossas: []
   }
@@ -229,6 +255,21 @@ function solicitarConfirmacao(msg, onConfirm, titulo = 'Confirmar Exclusão') {
   document.getElementById('modal-confirma-mensagem').innerText = msg;
   callbackConfirmacao = onConfirm;
   modal.classList.add('active');
+}
+
+function exibirToast(mensagem, tipo = 'info', duracao = 3500) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${tipo}`;
+  const icones = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+  const icon = icones[tipo] || 'ℹ️';
+  toast.innerHTML = `<span style="font-size:1.15rem;">${icon}</span><span style="flex:1;">${mensagem}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('toast-closing');
+    setTimeout(() => toast.remove(), 300);
+  }, duracao);
 }
 
 function parseValorMonetario(v) {
@@ -357,8 +398,21 @@ function consolidarMetricasFinais(peca, cortes, totaisCortes, detalhesAmostras, 
     nome,
     pesoTotal: totaisCortes[nome],
     pesoMedio: arredondar(totaisCortes[nome] / qtd, 3),
-    rendimentoPerc: somaPeso > 0 ? arredondar((totaisCortes[nome] / somaPeso) * 100, 2) : 0
+    rendimentoPerc: somaPeso > 0 ? arredondar((totaisCortes[nome] / somaPeso) * 100, 2) : 0,
+    tipo: peca.cortesCatalogo?.find((c) => c.nome === nome)?.tipo || 'comum',
+    isAuto: false
   }));
+
+  if (quebraGlobalKg > 0 && somaPeso > 0) {
+    cortesConsolidados.push({
+      nome: 'Perda Técnica (Manejo / Serra)',
+      pesoTotal: quebraGlobalKg,
+      pesoMedio: arredondar(quebraGlobalKg / qtd, 3),
+      rendimentoPerc: quebraGlobalPerc,
+      tipo: 'perda_tecnica',
+      isAuto: true
+    });
+  }
 
   return { somaPesoTotal: somaPeso, pesoMedioPeca, tempoMedioSeg, produtividadeKgHora, quebraGlobalKg, quebraGlobalPerc, detalhesAmostras, cortesConsolidados };
 }
@@ -380,8 +434,9 @@ function calcularCusteioPecaChave(peca, metricas) {
 }
 
 function processarItemCusteio(c, peca, pesoBase, custoBaseKg, usarPecaChave) {
-  const precoVenda = peca.precosVendaSugeridos?.[c.nome] ?? 0;
-  const custoAtualERP = peca.custosSistema?.[c.nome] ?? (precoVenda > 0 ? arredondar(precoVenda * 0.7, 2) : 0);
+  const isAuto = c.isAuto || c.tipo === 'perda_tecnica';
+  const precoVenda = isAuto ? 0 : (peca.precosVendaSugeridos?.[c.nome] ?? 0);
+  const custoAtualERP = isAuto ? 0 : (peca.custosSistema?.[c.nome] ?? (precoVenda > 0 ? arredondar(precoVenda * 0.7, 2) : 0));
   const custoItemKg = usarPecaChave ? custoBaseKg : (peca.custosIndividuais?.[c.nome] ?? custoBaseKg);
   const pesoEst = arredondar((pesoBase * c.rendimentoPerc) / 100, 3);
   const fat = arredondar(pesoEst * precoVenda, 2);
@@ -393,7 +448,7 @@ function processarItemCusteio(c, peca, pesoBase, custoBaseKg, usarPecaChave) {
   const precoSugerido = arredondar(custoItemKg / (fatorMeta > 0 ? fatorMeta : 0.01), 2);
 
   let diag = 'saudavel';
-  if (precoVenda === 0 && custoItemKg > 0) diag = 'perda';
+  if ((precoVenda === 0 && custoItemKg > 0) || isAuto) diag = 'perda';
   else if (precoVenda < custoItemKg) diag = 'prejuizo_oculto';
   else if (margemRealPerc < peca.margemPadraoPerc) diag = 'abaixo_meta';
 
@@ -583,7 +638,7 @@ function renderizarCorpoDesossa(peca, metricas) {
   }
   metricas.cortesConsolidados.forEach((corte) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = montarHtmlLinhaCorte(peca, corte);
+    tr.innerHTML = montarHtmlLinhaCorte(peca, corte, metricas);
     tbody.appendChild(tr);
   });
 }
@@ -592,28 +647,42 @@ function renderizarAvisoAmostrasVazias() {
   return `<tr><td colspan="4" class="text-center" style="padding: 2.5rem 1rem; color: var(--text-muted);"><div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.35rem;">⚖️ Nenhuma peça lançada no momento</div><div style="font-size: 0.85rem; margin-bottom: 0.85rem;">O sistema está zerado. Clique abaixo para lançar uma peça.</div><button class="btn btn-primary btn-sm btn-add-amostra-empty">+ Adicionar Primeira Peça</button></td></tr>`;
 }
 
-function montarHtmlLinhaCorte(peca, corte) {
-  let tds = `<td><strong>${corte.nome}</strong></td>`;
+function montarHtmlLinhaCorte(peca, corte, metricas) {
+  const isAuto = corte.isAuto || corte.tipo === 'perda_tecnica';
+  let tds = `<td><strong>${corte.nome}</strong> ${isAuto ? '<span class="badge" style="background:#fee2e2; color:#991b1b; font-size:0.65rem; margin-left:4px;">⚡ AUTO</span>' : ''}</td>`;
   peca.amostras.forEach((a, i) => {
-    const v = a.cortes[corte.nome];
-    const vTexto = (v !== undefined && v !== null && v !== '') ? formatarKgValor(v) : '';
-    tds += `
-      <td class="text-center" style="white-space: nowrap;">
-        <input type="text" class="form-input form-input-calc input-corte-peso" data-idx="${i}" data-corte="${corte.nome}"
-               value="${vTexto}" style="width: 80px; text-align:right; display:inline-block;" placeholder="0,000">
-        <button class="btn-calc-sobra" data-idx="${i}" data-corte="${corte.nome}"
-                title="Calcular sobra: preencher com o que sobrou da peça (Peso Total menos os outros cortes)"
-                style="border:none; background:#e0f2fe; color:#0369a1; border-radius:4px; padding:2px 5px; font-size:0.68rem; font-weight:700; cursor:pointer; margin-left:2px;">
-          ⚡Sobra
-        </button>
-      </td>
-    `;
+    if (isAuto) {
+      const det = metricas.detalhesAmostras?.[i];
+      const pesoAuto = Math.max(0, det?.quebraKg || 0);
+      tds += `
+        <td class="text-center" style="white-space: nowrap;">
+          <span class="badge" style="background:#fee2e2; color:#991b1b; font-weight:700; font-size:0.75rem; padding:3px 6px;"
+                title="Perda técnica automática de manejo e corte da serra desta peça">
+            ⚡ ${formatarKgValor(pesoAuto)}
+          </span>
+        </td>
+      `;
+    } else {
+      const v = a.cortes[corte.nome];
+      const vTexto = (v !== undefined && v !== null && v !== '') ? formatarKgValor(v) : '';
+      tds += `
+        <td class="text-center" style="white-space: nowrap;">
+          <input type="text" class="form-input form-input-calc input-corte-peso" data-idx="${i}" data-corte="${corte.nome}"
+                 value="${vTexto}" style="width: 80px; text-align:right; display:inline-block;" placeholder="0,000">
+          <button class="btn-calc-sobra" data-idx="${i}" data-corte="${corte.nome}"
+                  title="Calcular sobra: preencher com o que sobrou da peça (Peso Total menos os outros cortes)"
+                  style="border:none; background:#e0f2fe; color:#0369a1; border-radius:4px; padding:2px 5px; font-size:0.68rem; font-weight:700; cursor:pointer; margin-left:2px;">
+            ⚡Sobra
+          </button>
+        </td>
+      `;
+    }
   });
   tds += `
     <td class="text-right font-bold">${formatarKg(corte.pesoMedio)}</td>
-    <td class="text-right"><span class="badge badge-neutral font-bold">${formatarPerc(corte.rendimentoPerc)}</span></td>
+    <td class="text-right"><span class="badge ${isAuto ? 'badge-danger' : 'badge-neutral'} font-bold">${formatarPerc(corte.rendimentoPerc)}</span></td>
     <td class="text-center">
-      <button class="btn btn-sm btn-secondary btn-remover-corte" data-corte="${corte.nome}" style="padding:2px 6px; color:#b91c1c;">✕</button>
+      ${isAuto ? '' : `<button class="btn btn-sm btn-secondary btn-remover-corte" data-corte="${corte.nome}" style="padding:2px 6px; color:#b91c1c;">✕</button>`}
     </td>
   `;
   return tds;
@@ -624,20 +693,21 @@ function renderizarRodapeDesossa(peca, metricas) {
   if (!peca.amostras || peca.amostras.length === 0) {
     tfoot.innerHTML = `
       <tr style="background:#f1f5f9; font-weight:700;"><td>Soma dos Cortes (kg)</td><td class="text-right">0,000 kg</td><td class="text-right">0,00%</td><td></td></tr>
-      <tr style="background:#fff; font-weight:700;"><td>Quebra de Desossa</td><td class="text-right">0,000 kg</td><td class="text-right"><span class="badge badge-success">✓ 0,00%</span></td><td></td></tr>
+      <tr style="background:#fff; font-weight:700;"><td>Quebra Restante</td><td class="text-right">0,000 kg</td><td class="text-right"><span class="badge badge-success">✓ 0,00%</span></td><td></td></tr>
     `;
     return;
   }
-  let trSoma = '<tr style="background:#f1f5f9; font-weight:700;"><td>Soma dos Cortes (kg)</td>';
-  let trQuebra = '<tr style="background:#fff; font-weight:700;"><td>Quebra de Desossa</td>';
+  let trSoma = '<tr style="background:#f1f5f9; font-weight:700;"><td>Total Alocado + Perdas (kg)</td>';
+  let trQuebra = '<tr style="background:#fff; font-weight:700;"><td>Rendimento Fechado</td>';
   metricas.detalhesAmostras.forEach((det) => {
-    trSoma += `<td class="text-center">${formatarKg(det.somaCortes)}</td>`;
-    trQuebra += `<td class="text-center">${gerarBadgeQuebra(det.quebraKg, det.quebraPerc, det.somaCortes, det.pesoTotal)}</td>`;
+    const totalAlocado = arredondar(det.somaCortes + Math.max(0, det.quebraKg), 3);
+    trSoma += `<td class="text-center font-bold" style="color:var(--primary);">${formatarKg(totalAlocado)}</td>`;
+    trQuebra += `<td class="text-center"><span class="badge badge-success" title="Rendimento 100% fechado (cortes + perdas técnicas)">✓ 100,00%</span></td>`;
   });
   const somaMedia = arredondar(metricas.cortesConsolidados.reduce((acc, c) => acc + c.pesoMedio, 0), 3);
   const somaRend = arredondar(metricas.cortesConsolidados.reduce((acc, c) => acc + c.rendimentoPerc, 0), 2);
-  trSoma += `<td class="text-right">${formatarKg(somaMedia)}</td><td class="text-right">${formatarPerc(somaRend)}</td><td></td></tr>`;
-  trQuebra += `<td class="text-right">${formatarKg(metricas.quebraGlobalKg / (peca.amostras.length || 1))}</td><td class="text-right">${gerarBadgeQuebraPerc(metricas.quebraGlobalPerc)}</td><td></td></tr>`;
+  trSoma += `<td class="text-right font-bold" style="color:var(--primary);">${formatarKg(somaMedia)}</td><td class="text-right font-bold">${formatarPerc(somaRend)}</td><td></td></tr>`;
+  trQuebra += `<td class="text-right text-muted">-</td><td class="text-right"><span class="badge badge-success">✓ 100,00%</span></td><td></td></tr>`;
   tfoot.innerHTML = trSoma + trQuebra;
 }
 
@@ -648,10 +718,12 @@ function renderizarGraficosVisuais(peca, metricas, custeio) {
 }
 
 function calcularDistribuicao(cortes, quebraPerc) {
-  let com = 0, sub = 0, liq = 0;
+  let com = 0, sub = 0, liq = 0, perTec = 0;
   cortes.forEach((c) => {
     const n = (c.nome || '').toLowerCase().trim();
-    if (n.includes('sangue') || n.includes('liquido') || n.includes('líquido') || n.includes('gotejamento')) {
+    if (c.tipo === 'perda_tecnica' || n.includes('perda técnica') || n.includes('manejo e serra')) {
+      perTec += c.rendimentoPerc;
+    } else if (n.includes('sangue') || n.includes('liquido') || n.includes('líquido') || n.includes('gotejamento')) {
       liq += c.rendimentoPerc;
     } else if (n === 'cebo e osso' || n === 'sebo e osso' || n === 'sebo' || n === 'cebo' || n === 'descarte') {
       sub += c.rendimentoPerc;
@@ -659,7 +731,7 @@ function calcularDistribuicao(cortes, quebraPerc) {
       com += c.rendimentoPerc;
     }
   });
-  return { com: arredondar(com, 2), sub: arredondar(sub, 2), liq: arredondar(liq, 2), q: arredondar(Math.max(0, quebraPerc), 2) };
+  return { com: arredondar(com, 2), sub: arredondar(sub, 2), liq: arredondar(liq, 2), q: arredondar(Math.max(0, quebraPerc + perTec), 2) };
 }
 
 function atualizarBarraComposicao(d) {
@@ -714,29 +786,32 @@ function gerarBadgeDiagnostico(diag) {
 
 function montarHtmlLinhaCusteio(c, peca) {
   const isPrej = c.lucroKg < 0;
+  const isAuto = c.isAuto || c.tipo === 'perda_tecnica';
   return `
     <td>
       <strong>${c.nome}</strong>
-      ${c.diagnostico === 'perda' ? '<span class="badge" style="background:#f3e8ff; color:#7e22ce; margin-left:4px; font-size:0.65rem;">PERDA</span>' : ''}
+      ${isAuto ? '<span class="badge" style="background:#fee2e2; color:#991b1b; margin-left:4px; font-size:0.65rem;">PERDA TÉCNICA</span>' : (c.diagnostico === 'perda' ? '<span class="badge" style="background:#f3e8ff; color:#7e22ce; margin-left:4px; font-size:0.65rem;">PERDA</span>' : '')}
     </td>
-    <td class="text-right">${formatarPerc(c.rendimentoPerc)}</td>
+    <td class="text-right font-bold">${formatarPerc(c.rendimentoPerc)}</td>
     <td class="text-right text-muted">${formatarKg(c.pesoEst)}</td>
     <td class="text-right">
+      ${isAuto ? '<span class="text-muted">-</span>' : `
       <input type="text" class="form-input form-input-moeda input-custo-erp-custeio" data-corte="${c.nome}"
-             value="${formatarNumeroBR(c.custoAtualERP, 2)}" style="width: 70px; text-align:right; font-size:0.8rem;" title="Custo cadastrado no seu sistema ERP">
+             value="${formatarNumeroBR(c.custoAtualERP, 2)}" style="width: 70px; text-align:right; font-size:0.8rem;" title="Custo cadastrado no seu sistema ERP">`}
     </td>
     <td class="text-right font-bold" style="background:#fef3c7; color:var(--primary); font-size:0.85rem;">${formatarMoeda(c.custoItemKg)}</td>
     <td class="text-right">
+      ${isAuto ? '<span class="text-muted">R$ 0,00</span>' : `
       <input type="text" class="form-input form-input-moeda input-preco-venda-custeio" data-corte="${c.nome}"
-             value="${formatarNumeroBR(c.precoVenda, 2)}" style="width: 70px; text-align:right; font-weight:700; font-size:0.8rem;" title="Preço atual de venda">
+             value="${formatarNumeroBR(c.precoVenda, 2)}" style="width: 70px; text-align:right; font-weight:700; font-size:0.8rem;" title="Preço atual de venda">`}
     </td>
-    <td class="text-right text-muted" style="font-size:0.8rem;">${formatarPerc(c.margemERPPerc)}</td>
+    <td class="text-right text-muted" style="font-size:0.8rem;">${isAuto ? '-' : formatarPerc(c.margemERPPerc)}</td>
     <td class="text-right">
       <span class="badge ${isPrej ? 'badge-danger' : (c.margemPerc < peca.margemPadraoPerc ? 'badge-warning' : 'badge-success')} font-bold">
         ${formatarPerc(c.margemPerc)}
       </span>
     </td>
-    <td class="text-right font-bold" style="color:#0369a1; font-size:0.85rem;">${formatarMoeda(c.precoSugerido)}</td>
+    <td class="text-right font-bold" style="color:#0369a1; font-size:0.85rem;">${isAuto ? '-' : formatarMoeda(c.precoSugerido)}</td>
     <td class="text-center">${gerarBadgeDiagnostico(c.diagnostico)}</td>
     <td class="text-right font-bold ${c.lucroEst >= 0 ? 'text-success' : 'text-danger'}">${formatarMoeda(c.lucroEst)}</td>
   `;
@@ -756,16 +831,36 @@ function atualizarTotaisCusteio(custeio) {
 function renderizarSimulador(peca, metricas) {
   const volCompra = Number.parseFloat(document.getElementById('input-volume-compra')?.value) || banco.volumeSimuladoKg;
   const custoKg = Number.parseFloat(document.getElementById('input-custo-simulado')?.value) || peca.custoKgEntrada;
+  const propDesossa = (Number.parseFloat(document.getElementById('select-destino-lote')?.value) || 100) / 100;
+  const precoInteira = parseValorMonetario(document.getElementById('input-preco-venda-inteira')?.value || (peca.custoKgEntrada * 1.3));
+
+  const volDesossa = arredondar(volCompra * propDesossa, 3);
+  const volInteiro = arredondar(volCompra * (1 - propDesossa), 3);
+  const fatInteiro = arredondar(volInteiro * precoInteira, 2);
   const custoTotalLote = arredondar(volCompra * custoKg, 2);
+
   const tbody = document.getElementById('corpo-tabela-estoque');
   tbody.innerHTML = '';
+  let fatCortes = 0;
 
-  let faturamentoTotal = 0;
+  if (volInteiro > 0) {
+    const trInteiro = document.createElement('tr');
+    trInteiro.style.background = '#f0fdf4';
+    trInteiro.innerHTML = `
+      <td><strong>🥩 ${peca.nome} (Peça Inteira Fechada / Atacado)</strong> <span class="badge badge-success" style="font-size:0.65rem;">ESTOQUE BRUTO</span></td>
+      <td class="text-right">${formatarPerc((1 - propDesossa) * 100)}</td>
+      <td class="text-right font-bold text-success">${formatarKg(volInteiro)}</td>
+      <td class="text-right text-muted">${formatarMoeda(precoInteira)}</td>
+      <td class="text-right font-bold text-success">${formatarMoeda(fatInteiro)}</td>
+    `;
+    tbody.appendChild(trInteiro);
+  }
+
   metricas.cortesConsolidados.forEach((c) => {
     const preco = peca.precosVendaSugeridos[c.nome] || 0;
-    const pesoEstoque = arredondar((volCompra * c.rendimentoPerc) / 100, 3);
+    const pesoEstoque = arredondar((volDesossa * c.rendimentoPerc) / 100, 3);
     const fat = arredondar(pesoEstoque * preco, 2);
-    faturamentoTotal += fat;
+    fatCortes += fat;
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><strong>${c.nome}</strong></td>
@@ -776,10 +871,11 @@ function renderizarSimulador(peca, metricas) {
     `;
     tbody.appendChild(tr);
   });
-  atualizarCardsSimulacao(volCompra, custoTotalLote, faturamentoTotal);
+  const faturamentoTotal = arredondar(fatCortes + fatInteiro, 2);
+  atualizarCardsSimulacao(volCompra, custoTotalLote, faturamentoTotal, volInteiro, volDesossa);
 }
 
-function atualizarCardsSimulacao(vol, custo, fat) {
+function atualizarCardsSimulacao(vol, custo, fat, volInteiro = 0, volDesossa = 0) {
   const lucro = arredondar(fat - custo, 2);
   const margem = fat > 0 ? arredondar((lucro / fat) * 100, 2) : 0;
   document.getElementById('sim-custo-total').innerText = formatarMoeda(custo);
@@ -787,6 +883,10 @@ function atualizarCardsSimulacao(vol, custo, fat) {
   document.getElementById('sim-faturamento-total').innerText = formatarMoeda(fat);
   document.getElementById('sim-lucro-total').innerText = formatarMoeda(lucro);
   document.getElementById('sim-margem-perc').innerText = `Margem Projetada: ${formatarPerc(margem)}`;
+  const elDivisao = document.getElementById('sim-divisao-estoque');
+  if (elDivisao) {
+    elDivisao.innerText = `${formatarKg(volInteiro)} / ${formatarKg(volDesossa)}`;
+  }
 }
 
 function renderizarHistorico(peca) {
@@ -1086,7 +1186,7 @@ function aplicarMargemGeralCortes() {
   const peca = obterPecaAtiva();
   if (!peca) return;
   const margem = peca.margemPadraoPerc / 100;
-  if (margem >= 1) return alert('A margem deve ser menor que 100%.');
+  if (margem >= 1) return exibirToast('A margem deve ser menor que 100%.', 'warning');
   obterListaCortesPeca(peca).forEach((nome) => {
     const isSub = nome.toLowerCase().includes('osso') || nome.toLowerCase().includes('cebo') || nome.toLowerCase().includes('sangue');
     if (!isSub) {
@@ -1095,7 +1195,7 @@ function aplicarMargemGeralCortes() {
   });
   salvarNoLocalStorage();
   atualizarTela();
-  alert('Preços de venda atualizados com base na margem padrão!');
+  exibirToast('Preços de venda atualizados com base na margem padrão!', 'success');
 }
 
 function vincularEventosModais() {
@@ -1129,6 +1229,7 @@ function vincularEventosModais() {
       document.getElementById('modal-input-margem-atual-corte').value = '-100,00';
     }
   });
+  document.getElementById('btn-novo-corte-tab2')?.addEventListener('click', abrirModalCorte);
 }
 
 function abrirModalPeca(isEdicao) {
@@ -1159,28 +1260,39 @@ function salvarModalPeca() {
   const nome = document.getElementById('modal-input-nome-peca').value.trim();
   const custo = parseValorMonetario(document.getElementById('modal-input-custo-peca').value);
   const margem = parseValorPercentual(document.getElementById('modal-input-margem-peca').value);
-  if (!nome) return alert('Informe o nome da peça.');
+  if (!nome) return exibirToast('Informe o nome da peça.', 'warning');
 
   if (modal.dataset.edicao === 'true') {
     const peca = obterPecaAtiva();
     peca.nome = nome;
     peca.custoKgEntrada = custo;
     peca.margemPadraoPerc = margem;
+    exibirToast(`Peça '${nome}' atualizada com sucesso!`, 'success');
   } else {
     const id = `peca-${Date.now()}`;
+    const nomePrincipal = `${nome} (Corte Principal / Balcão)`;
+    const precoEstimado = margem < 100 ? arredondar(custo / (1 - (margem / 100)), 2) : custo * 1.4;
+    const novosCortes = { [nomePrincipal]: 0, 'Cebo e Osso': 0, 'Sangue e Líquidos': 0 };
+
     banco.pecas.push({
       id,
       nome,
       custoKgEntrada: custo,
       margemPadraoPerc: margem,
       modoCusto: 'peca_chave',
-      cortesCatalogo: [{ nome: 'Cebo e Osso', tipo: 'subproduto', precoVendaPadrao: 1.48 }],
-      amostras: [{ id: `amostra-${Date.now()}`, nome: 'Peça 1', pesoTotal: 5.0, tempo: '00:05:00', cortes: {} }],
-      precosVendaSugeridos: { 'Cebo e Osso': 1.48 },
+      cortesCatalogo: [
+        { nome: nomePrincipal, tipo: 'nobre', precoVendaPadrao: precoEstimado, custoAtualSistema: custo, margemAtualSistema: margem },
+        { nome: 'Cebo e Osso', tipo: 'subproduto', precoVendaPadrao: 1.48, custoAtualSistema: 1.48, margemAtualSistema: 0 },
+        { nome: 'Sangue e Líquidos', tipo: 'perda_liquida', precoVendaPadrao: 0.00, custoAtualSistema: 0, margemAtualSistema: -100 }
+      ],
+      amostras: [{ id: `amostra-${Date.now()}`, nome: 'Peça 1', pesoTotal: 0, tempo: '00:05:00', cortes: novosCortes }],
+      precosVendaSugeridos: { [nomePrincipal]: precoEstimado, 'Cebo e Osso': 1.48, 'Sangue e Líquidos': 0.00 },
+      custosSistema: { [nomePrincipal]: custo, 'Cebo e Osso': 1.48, 'Sangue e Líquidos': 0.00 },
       historicoDesossas: []
     });
     banco.idPecaAtiva = id;
     banco.amostraSelecionadaId = null;
+    exibirToast(`Peça '${nome}' cadastrada com sucesso!`, 'success');
   }
   salvarNoLocalStorage();
   modal.classList.remove('active');
@@ -1221,12 +1333,29 @@ function salvarModalCorte() {
   const custo = isPerda ? 0 : parseValorMonetario(document.getElementById('modal-input-custo-atual-corte').value);
   const preco = isPerda ? 0 : parseValorMonetario(document.getElementById('modal-input-preco-venda-corte').value);
   const margem = isPerda ? -100 : parseValorPercentual(document.getElementById('modal-input-margem-atual-corte').value);
-  if (!nome) return alert('Informe o nome do corte.');
+  if (!nome) return exibirToast('Informe o nome do corte.', 'warning');
 
   const peca = obterPecaAtiva();
   if (!peca.cortesCatalogo.some((c) => c.nome.toLowerCase() === nome.toLowerCase())) {
     peca.cortesCatalogo.push({ nome, tipo, precoVendaPadrao: preco, custoAtualSistema: custo, margemAtualSistema: margem });
   }
+  if (!peca.precosVendaSugeridos) peca.precosVendaSugeridos = {};
+  if (!peca.custosSistema) peca.custosSistema = {};
+  peca.precosVendaSugeridos[nome] = preco;
+  peca.custosSistema[nome] = custo;
+
+  (peca.amostras || []).forEach((a) => {
+    if (!a.cortes) a.cortes = {};
+    if (a.cortes[nome] === undefined) {
+      a.cortes[nome] = 0;
+    }
+  });
+
+  salvarNoLocalStorage();
+  document.getElementById('modal-corte').classList.remove('active');
+  atualizarTela();
+  exibirToast(`Corte '${nome}' adicionado com sucesso!`, 'success');
+}
   if (!peca.precosVendaSugeridos) peca.precosVendaSugeridos = {};
   if (!peca.custosSistema) peca.custosSistema = {};
   peca.precosVendaSugeridos[nome] = preco;
@@ -1265,7 +1394,7 @@ function confirmarGravarHistorico() {
   salvarNoLocalStorage();
   document.getElementById('modal-historico').classList.remove('active');
   atualizarTela();
-  alert('Desossa gravada com sucesso no histórico auditável!');
+  exibirToast('Desossa gravada com sucesso no histórico auditável!', 'success');
 }
 
 function vincularAcoesHistorico() {
@@ -1281,6 +1410,7 @@ function vincularAcoesHistorico() {
         salvarNoLocalStorage();
         atualizarTela();
         document.querySelector('.tab-btn[data-tab="tab-desossa"]').click();
+        exibirToast(`Pesagem de ${reg.data} carregada com sucesso!`, 'info');
       }, 'Carregar Histórico');
     }
     if (e.target.classList.contains('btn-excluir-hist')) {
@@ -1289,6 +1419,7 @@ function vincularAcoesHistorico() {
         peca.historicoDesossas.splice(idx, 1);
         salvarNoLocalStorage();
         atualizarTela();
+        exibirToast('Registro excluído do histórico.', 'info');
       });
     }
   });
@@ -1298,6 +1429,7 @@ function vincularAcoesHistorico() {
       peca.historicoDesossas = [];
       salvarNoLocalStorage();
       atualizarTela();
+      exibirToast('Histórico limpo com sucesso.', 'info');
     });
   });
 }
@@ -1307,10 +1439,11 @@ function vincularAcoesGlobais() {
     const peca = obterPecaAtiva();
     const metricas = calcularMetricasPeca(peca);
     renderizarSimulador(peca, metricas);
+    exibirToast('Simulação e estoque recalculados!', 'info');
   });
   document.getElementById('btn-salvar-local').addEventListener('click', () => {
     salvarNoLocalStorage();
-    alert('Dados salvos com sucesso!');
+    exibirToast('Dados salvos no seu navegador com sucesso!', 'success');
   });
   document.getElementById('btn-restaurar-exemplo').addEventListener('click', () => {
     solicitarConfirmacao('Restaurar o catálogo e dados padrão iniciais?', () => {
@@ -1319,6 +1452,7 @@ function vincularAcoesGlobais() {
       banco.amostraSelecionadaId = null;
       salvarNoLocalStorage();
       atualizarTela();
+      exibirToast('Catálogo padrão restaurado com sucesso!', 'info');
     }, 'Restaurar Dados');
   });
   document.getElementById('btn-imprimir').addEventListener('click', () => window.print());
@@ -1334,6 +1468,7 @@ function exportarJSON() {
   document.body.appendChild(a);
   a.click();
   a.remove();
+  exibirToast('Arquivo JSON exportado com sucesso!', 'success');
 }
 
 function importarJSON(e) {
@@ -1347,10 +1482,10 @@ function importarJSON(e) {
         Object.assign(banco, obj);
         salvarNoLocalStorage();
         atualizarTela();
-        alert('Catálogo e histórico importados com sucesso!');
+        exibirToast('Catálogo e histórico importados com sucesso!', 'success');
       }
     } catch (err) {
-      alert('Erro ao importar arquivo JSON.');
+      exibirToast('Erro ao importar arquivo JSON: formato inválido.', 'error');
     }
   };
   reader.readAsText(file);

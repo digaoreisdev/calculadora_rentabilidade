@@ -71,6 +71,21 @@ export function calcularSobraCorte(pesoTotal, outrosCortes) {
   return Math.max(0, arredondar(pesoTotal - somaOutros, 3));
 }
 
+export function calcularPerdaTecnicaAuto(pesoTotalEntrada, somaCortesInformados) {
+  validarNumeroNaoNegativo(pesoTotalEntrada, 'pesoTotalEntrada');
+  validarNumeroNaoNegativo(somaCortesInformados, 'somaCortesInformados');
+  if (pesoTotalEntrada === 0) {
+    return { perdaTecnicaKg: 0, perdaTecnicaPerc: 0, rendimentoFechadoPerc: 100 };
+  }
+  const perdaKg = Math.max(0, arredondar(pesoTotalEntrada - somaCortesInformados, 3));
+  const perdaPerc = arredondar((perdaKg / pesoTotalEntrada) * 100, 2);
+  return {
+    perdaTecnicaKg: perdaKg,
+    perdaTecnicaPerc: perdaPerc,
+    rendimentoFechadoPerc: 100.00
+  };
+}
+
 export function parseValorPercentual(valor) {
   if (typeof valor === 'number') return Math.max(0, valor);
   if (!valor || typeof valor !== 'string') return 0;
@@ -116,24 +131,11 @@ export function calcularProdutividadeKgHora(pesoTotalKg, tempoTotalSegundos) {
   return arredondar(pesoTotalKg / (tempoTotalSegundos / 3600), 2);
 }
 
-export function calcularRendimentoAmostras(amostras = []) {
+export function calcularRendimentoAmostras(amostras = [], opcoes = {}) {
   if (!Array.isArray(amostras)) {
     throw new TypeError('O parâmetro amostras deve ser um array.');
   }
-  if (amostras.length === 0) {
-    return {
-      quantidadeAmostras: 0,
-      somaPesoTotalEntrada: 0,
-      pesoMedioPeca: 0,
-      tempoTotalSegundos: 0,
-      tempoMedioSegundos: 0,
-      produtividadeKgHora: 0,
-      quebraGlobalKg: 0,
-      quebraGlobalPerc: 0,
-      amostras: [],
-      cortes: []
-    };
-  }
+  if (amostras.length === 0) return montarRetornoAmostrasVazias();
   const nomesCortes = extrairNomesCortesUnicos(amostras);
   const totaisCortes = inicializarMapa(nomesCortes);
   let somaPesoTotalEntrada = 0;
@@ -147,7 +149,38 @@ export function calcularRendimentoAmostras(amostras = []) {
   );
 
   const cortesConsolidados = montarConsolidadoCortes(nomesCortes, totaisCortes, somaPesoTotalEntrada, amostras.length);
+  adicionarPerdaTecnicaAutoSeAtivo(cortesConsolidados, somaPesoTotalEntrada, amostras.length, opcoes);
   return consolidarResultadoFinal(amostrasProcessadas, cortesConsolidados, somaPesoTotalEntrada, somaTempoSegundos, amostras.length);
+}
+
+function montarRetornoAmostrasVazias() {
+  return {
+    quantidadeAmostras: 0,
+    somaPesoTotalEntrada: 0,
+    pesoMedioPeca: 0,
+    tempoTotalSegundos: 0,
+    tempoMedioSegundos: 0,
+    produtividadeKgHora: 0,
+    quebraGlobalKg: 0,
+    quebraGlobalPerc: 0,
+    amostras: [],
+    cortes: []
+  };
+}
+
+function adicionarPerdaTecnicaAutoSeAtivo(cortes, somaPeso, qtd, opcoes = {}) {
+  if (!opcoes.incluirPerdaTecnica || somaPeso <= 0) return;
+  const somaCortes = cortes.reduce((acc, c) => acc + c.pesoTotal, 0);
+  const perdaTec = calcularPerdaTecnicaAuto(somaPeso, somaCortes);
+  if (perdaTec.perdaTecnicaKg > 0) {
+    cortes.push({
+      nome: 'Perda Técnica (Manejo / Serra)',
+      pesoTotal: perdaTec.perdaTecnicaKg,
+      pesoMedio: arredondar(perdaTec.perdaTecnicaKg / qtd, 3),
+      rendimentoMedioPerc: perdaTec.perdaTecnicaPerc,
+      tipo: 'perda_tecnica'
+    });
+  }
 }
 
 function extrairNomesCortesUnicos(amostras) {
@@ -342,11 +375,14 @@ export function calcularDistribuicaoComposicaoPeca(cortesCusteio, quebraPerc = 0
   let percComerciais = 0;
   let percSubprodutos = 0;
   let percLiquidos = 0;
+  let percPerdaTec = 0;
 
   cortesCusteio.forEach((c) => {
     const nome = (c.nome || '').toLowerCase().trim();
     const tipo = c.tipo || '';
-    if (tipo === 'perda_liquida' || ehPerdaLiquida(nome)) {
+    if (tipo === 'perda_tecnica' || nome.includes('perda técnica') || nome.includes('manejo e serra')) {
+      percPerdaTec += c.rendimentoMedioPerc;
+    } else if (tipo === 'perda_liquida' || ehPerdaLiquida(nome)) {
       percLiquidos += c.rendimentoMedioPerc;
     } else if (tipo === 'subproduto' || ehSubproduto(nome)) {
       percSubprodutos += c.rendimentoMedioPerc;
@@ -359,7 +395,7 @@ export function calcularDistribuicaoComposicaoPeca(cortesCusteio, quebraPerc = 0
     percComerciais: arredondar(percComerciais, 2),
     percSubprodutos: arredondar(percSubprodutos, 2),
     percLiquidos: arredondar(percLiquidos, 2),
-    percQuebra: arredondar(Math.max(0, quebraPerc), 2)
+    percQuebra: arredondar(Math.max(0, quebraPerc + percPerdaTec), 2)
   };
 }
 
@@ -398,20 +434,36 @@ export function calcularCustosERentabilidade(resultadoRendimento, custoKgEntrada
   return { custoKgEntrada, pesoBaseKg: pesoBase, custoTotalPeca, faturamentoTotalPeca, lucroBrutoPeca, margemGlobalPerc, cortes: cortesFinalizados };
 }
 
-export function projetarCompraEstoque(pesoLoteKg, custoKg, resultadoRendimento, precosVendaKg) {
+export function projetarCompraEstoque(pesoLoteKg, custoKg, resultadoRendimento, precosVendaKg, proporcaoDesossa = 1.0, precoVendaPecaInteira = 0) {
   validarNumeroNaoNegativo(pesoLoteKg, 'pesoLoteKg');
   validarNumeroNaoNegativo(custoKg, 'custoKg');
+  const propDesossa = Math.min(1, Math.max(0, Number(proporcaoDesossa) || 0));
   const custoTotalLote = arredondar(pesoLoteKg * custoKg, 2);
+  const pesoDesossaKg = arredondar(pesoLoteKg * propDesossa, 3);
+  const pesoInteiroKg = arredondar(pesoLoteKg * (1 - propDesossa), 3);
+  const fatInteiro = arredondar(pesoInteiroKg * (Number(precoVendaPecaInteira) || 0), 2);
 
   const projecaoCortes = resultadoRendimento.cortes.map((corte) => {
     const precoVenda = validarNumeroNaoNegativo(precosVendaKg[corte.nome] || 0, `Preço ${corte.nome}`);
-    const pesoEstoqueKg = arredondar((pesoLoteKg * corte.rendimentoMedioPerc) / 100, 3);
+    const pesoEstoqueKg = arredondar((pesoDesossaKg * corte.rendimentoMedioPerc) / 100, 3);
     const faturamentoProjetado = arredondar(pesoEstoqueKg * precoVenda, 2);
     return { nome: corte.nome, rendimentoMedioPerc: corte.rendimentoMedioPerc, pesoEstoqueKg, precoVendaKg: precoVenda, faturamentoProjetado };
   });
 
-  const faturamentoTotalLote = arredondar(projecaoCortes.reduce((acc, c) => acc + c.faturamentoProjetado, 0), 2);
+  const fatCortes = arredondar(projecaoCortes.reduce((acc, c) => acc + c.faturamentoProjetado, 0), 2);
+  const faturamentoTotalLote = arredondar(fatCortes + fatInteiro, 2);
   const lucroBrutoLote = arredondar(faturamentoTotalLote - custoTotalLote, 2);
   const margemLotePerc = faturamentoTotalLote > 0 ? arredondar((lucroBrutoLote / faturamentoTotalLote) * 100, 2) : 0;
-  return { pesoLoteKg, custoKg, custoTotalLote, faturamentoTotalLote, lucroBrutoLote, margemLotePerc, cortes: projecaoCortes };
+  return {
+    pesoLoteKg,
+    custoKg,
+    custoTotalLote,
+    pesoDesossaLoteKg: pesoDesossaKg,
+    pesoEstoquePecaInteiraKg: pesoInteiroKg,
+    faturamentoPecaInteira: fatInteiro,
+    faturamentoTotalLote,
+    lucroBrutoLote,
+    margemLotePerc,
+    cortes: projecaoCortes
+  };
 }

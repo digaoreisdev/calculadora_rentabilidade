@@ -163,46 +163,72 @@ export const PECAS_PADRAO = [
   },
   {
     id: 'alcatra-inteira',
-    nome: 'Alcatra Completa (Com Miolo e Aparas)',
-    custoKgEntrada: 32.90,
-    margemPadraoPerc: 30.0,
+    nome: '1241 - Alcatra Bovina Completa',
+    custoKgEntrada: 37.78,
+    margemPadraoPerc: 23.88,
     modoCusto: 'peca_chave',
     modoMargem: 'individual',
     cortesCatalogo: [
       { nome: 'Sangue e Líquidos de Perda', tipo: 'perda_liquida', precoVendaPadrao: 0.00 },
       { nome: 'Cebo de Perda', tipo: 'subproduto', precoVendaPadrao: 1.48 },
-      { nome: 'Moída de Segunda', tipo: 'comum', precoVendaPadrao: 26.90 },
-      { nome: 'Moída de Primeira', tipo: 'nobre', precoVendaPadrao: 37.90 },
-      { nome: 'Alcatra Limpa (Miolo)', tipo: 'nobre', precoVendaPadrao: 49.90 }
+      { nome: '1275 - Moída de Segunda', tipo: 'comum', precoVendaPadrao: 27.49 },
+      { nome: '1274 - Moída de Primeira', tipo: 'nobre', precoVendaPadrao: 47.99 },
+      { nome: '1241 - Alcatra Bovina (Corte Principal)', tipo: 'nobre', precoVendaPadrao: 49.90 }
     ],
     amostras: [
       {
         id: 'amostra-alcatra-1',
-        nome: 'Peça 1 (10,500 kg)',
-        pesoTotal: 10.500,
-        tempo: '00:07:30',
+        nome: 'Peça 1 (4,316 kg)',
+        pesoTotal: 4.316,
+        tempo: '00:03:58',
         cortes: {
-          'Sangue e Líquidos de Perda': 0.180,
-          'Cebo de Perda': 1.120,
-          'Moída de Segunda': 0.850,
-          'Moída de Primeira': 1.250,
-          'Alcatra Limpa (Miolo)': 7.100
+          'Sangue e Líquidos de Perda': 0.136,
+          'Cebo de Perda': 0.250,
+          '1275 - Moída de Segunda': 0.288,
+          '1274 - Moída de Primeira': 0.192,
+          '1241 - Alcatra Bovina (Corte Principal)': 3.450
+        }
+      },
+      {
+        id: 'amostra-alcatra-2',
+        nome: 'Peça 2 (3,762 kg)',
+        pesoTotal: 3.762,
+        tempo: '00:03:31',
+        cortes: {
+          'Sangue e Líquidos de Perda': 0.206,
+          'Cebo de Perda': 0.114,
+          '1275 - Moída de Segunda': 0.234,
+          '1274 - Moída de Primeira': 0.228,
+          '1241 - Alcatra Bovina (Corte Principal)': 2.980
+        }
+      },
+      {
+        id: 'amostra-alcatra-3',
+        nome: 'Peça 3 (3,564 kg)',
+        pesoTotal: 3.564,
+        tempo: '00:03:16',
+        cortes: {
+          'Sangue e Líquidos de Perda': 0.176,
+          'Cebo de Perda': 0.072,
+          '1275 - Moída de Segunda': 0.134,
+          '1274 - Moída de Primeira': 0.114,
+          '1241 - Alcatra Bovina (Corte Principal)': 3.068
         }
       }
     ],
     precosVendaSugeridos: {
       'Sangue e Líquidos de Perda': 0.00,
       'Cebo de Perda': 1.48,
-      'Moída de Segunda': 26.90,
-      'Moída de Primeira': 37.90,
-      'Alcatra Limpa (Miolo)': 49.90
+      '1275 - Moída de Segunda': 27.49,
+      '1274 - Moída de Primeira': 47.99,
+      '1241 - Alcatra Bovina (Corte Principal)': 49.90
     },
     custosSistema: {
       'Sangue e Líquidos de Perda': 0.00,
-      'Cebo de Perda': 1.48,
-      'Moída de Segunda': 21.00,
-      'Moída de Primeira': 28.00,
-      'Alcatra Limpa (Miolo)': 36.00
+      'Cebo de Perda': 1.04,
+      '1275 - Moída de Segunda': 24.51,
+      '1274 - Moída de Primeira': 27.23,
+      '1241 - Alcatra Bovina (Corte Principal)': 37.78
     },
     historicoDesossas: []
   }

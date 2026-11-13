@@ -201,11 +201,14 @@
           <div class="card-title">
             <span>💰 Apropriação de Custo Real da Peça-Chave & Prejuízo/Lucro por Corte</span>
           </div>
-          <div style="display:flex; gap: 1rem; align-items:center; flex-wrap:wrap;">
+          <div style="display:flex; gap: 0.75rem; align-items:center; flex-wrap:wrap;">
             <label class="toggle-control" title="Quando ativado, todo corte herda o custo de R$ 21,45/kg da peça inteira">
               <input type="checkbox" id="check-custo-peca-chave" checked>
               <span>Vincular Custo à Peça-Chave</span>
             </label>
+            <button id="btn-novo-corte-tab2" class="btn btn-secondary btn-sm" title="Adicionar novo corte ou perda líquida">
+              + Novo Corte/Perda
+            </button>
             <button id="btn-aplicar-margem-geral" class="btn btn-secondary btn-sm" title="Calcula os preços de venda sugeridos com base na margem padrão da peça">
               Aplicar Margem Padrão nos Cortes
             </button>
@@ -317,14 +320,27 @@
           </div>
         </div>
 
-        <div class="config-bar" style="margin-bottom:1.25rem;">
-          <div class="form-group" style="width: 220px;">
+        <div class="config-bar" style="margin-bottom:1.25rem; flex-wrap:wrap;">
+          <div class="form-group" style="width: 180px;">
             <label for="input-volume-compra">Volume a Comprar (kg)</label>
             <input type="number" id="input-volume-compra" class="form-input" value="1000" min="1" step="50" style="font-weight:700; font-size:1.1rem;">
           </div>
-          <div class="form-group" style="width: 180px;">
+          <div class="form-group" style="width: 160px;">
             <label for="input-custo-simulado">Custo Negociado (R$/kg)</label>
             <input type="number" id="input-custo-simulado" class="form-input" value="21.45" min="0" step="0.01" style="font-weight:700; font-size:1.1rem;">
+          </div>
+          <div class="form-group" style="width: 220px;">
+            <label for="select-destino-lote">Destino do Lote Comprado</label>
+            <select id="select-destino-lote" class="form-select" style="font-weight:600;">
+              <option value="100" selected>100% Desossa (Cortes no Balcão)</option>
+              <option value="80">80% Desossa / 20% Peça Inteira</option>
+              <option value="50">50% Desossa / 50% Peça Inteira</option>
+              <option value="0">100% Peça Inteira (Venda Direta)</option>
+            </select>
+          </div>
+          <div class="form-group" id="group-preco-inteira" style="width: 170px;">
+            <label for="input-preco-venda-inteira">Venda Peça Inteira (R$/kg)</label>
+            <input type="text" id="input-preco-venda-inteira" class="form-input form-input-moeda" value="26,90" style="font-weight:700;">
           </div>
           <button id="btn-atualizar-simulacao" class="btn btn-primary" style="height:40px; margin-top:auto;">
             Recalcular Projeção
@@ -340,16 +356,21 @@
           <div class="metric-card success">
             <div class="metric-title">Faturamento Bruto Projetado</div>
             <div class="metric-value" id="sim-faturamento-total" style="color: #16a34a;">R$ 0,00</div>
-            <div class="metric-sub">Venda total dos cortes</div>
+            <div class="metric-sub" id="sim-fat-sub">Venda total dos cortes</div>
           </div>
           <div class="metric-card accent">
             <div class="metric-title">Lucro Bruto Projetado</div>
             <div class="metric-value" id="sim-lucro-total" style="color: #d97706;">R$ 0,00</div>
             <div class="metric-sub" id="sim-margem-perc">Margem: 0,00%</div>
           </div>
+          <div class="metric-card neutral" style="border-left-color: #0284c7;">
+            <div class="metric-title">Divisão de Estoque</div>
+            <div class="metric-value" id="sim-divisao-estoque" style="font-size:1.15rem; color:#0369a1;">0 kg / 0 kg</div>
+            <div class="metric-sub" id="sim-divisao-sub">Peça Inteira vs Desossados</div>
+          </div>
         </div>
 
-        <h4 style="margin-bottom: 0.75rem; color: var(--secondary);">Quilos que entrarão no seu Estoque (Câmara Fria):</h4>
+        <h4 style="margin-bottom: 0.75rem; color: var(--secondary);">Quilos que entrarão no seu Estoque (Câmara Fria & Balcão):</h4>
         <div class="table-responsive">
           <table class="data-table">
             <thead>
@@ -520,6 +541,9 @@
       </div>
     </div>
   </div>
+
+  <!-- CONTAINER DE NOTIFICAÇÕES TOAST (EVITA TRAVAMENTO DE TELA DO ALERT NATIVO) -->
+  <div id="toast-container"></div>
 
   <script src="app.js"></script>
 </body>
