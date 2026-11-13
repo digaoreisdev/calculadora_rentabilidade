@@ -6,6 +6,8 @@ import {
   formatarSegundosEmTempo,
   parseValorMonetario,
   parseValorPercentual,
+  formatarKgValor,
+  calcularSobraCorte,
   removerCorteDePeca,
   calcularQuebraAmostra,
   calcularProdutividadeKgHora,
@@ -68,11 +70,11 @@ test('REG-005: Suporte dinâmico a 1 amostra isolada (ex: Patinho)', () => {
   assert.equal(resultado.somaPesoTotalEntrada, 5.658);
   assert.equal(resultado.pesoMedioPeca, 5.658);
 
-  assert.equal(resultado.quebraGlobalKg, 0.012);
+  assert.equal(resultado.quebraGlobalKg, 0);
   const patinhoLimpo = resultado.cortes.find((c) => c.nome === 'Patinho Limpo');
   assert.ok(patinhoLimpo);
-  assert.equal(patinhoLimpo.pesoTotal, 3.710);
-  assert.equal(patinhoLimpo.rendimentoMedioPerc, 65.57);
+  assert.equal(patinhoLimpo.pesoTotal, 5.052);
+  assert.equal(patinhoLimpo.rendimentoMedioPerc, 89.29);
 });
 
 test('REG-010: Análise individual da peça (Ficha Técnica individual com quebra e lucro)', () => {
@@ -185,8 +187,41 @@ test('REG-004: Projeção de Compras e Estoque', () => {
   assert.equal(projecao.custoTotalLote, 21450.00);
 });
 
+test('REG-013: Suporte a sistema zerado (0 amostras com retorno limpo sem NaN)', () => {
+  const zerado = calcularRendimentoAmostras([]);
+  assert.equal(zerado.quantidadeAmostras, 0);
+  assert.equal(zerado.somaPesoTotalEntrada, 0);
+  assert.equal(zerado.pesoMedioPeca, 0);
+  assert.equal(zerado.quebraGlobalKg, 0);
+  assert.equal(zerado.quebraGlobalPerc, 0);
+  assert.equal(zerado.produtividadeKgHora, 0);
+  assert.deepEqual(zerado.amostras, []);
+  assert.deepEqual(zerado.cortes, []);
+});
+
+test('REG-014: Cálculo de sobra do corte principal e formatação de 3 casas decimais (0,000 kg e 0,140 kg)', () => {
+  // Exemplo real do usuário: Patinho 5,658 kg com perdas e moídas
+  const pesoTotal = 5.658;
+  const aparasEPerdas = {
+    'Sangue e Líquidos': 0.116,
+    'Cebo e Osso': 0.146,
+    'Moída de Primeira': 0.140,
+    'Moída de Segunda': 0.204
+  };
+  const sobraLimpa = calcularSobraCorte(pesoTotal, aparasEPerdas);
+  assert.equal(sobraLimpa, 5.052);
+
+  // Formatação estrita com 3 casas decimais
+  assert.equal(formatarKgValor(0.14), '0,140');
+  assert.equal(formatarKgValor('0.14'), '0,140');
+  assert.equal(formatarKgValor('0,14'), '0,140');
+  assert.equal(formatarKgValor(0), '0,000');
+  assert.equal(formatarKgValor(''), '0,000');
+  assert.equal(formatarKgValor(5.658), '5,658');
+});
+
 test('Defensividade: Bloqueio de valores negativos e formatos inválidos', () => {
   assert.throws(() => validarNumeroNaoNegativo(-5, 'teste'), TypeError);
   assert.throws(() => parseTempoEmSegundos('invalido:abc'), Error);
-  assert.throws(() => calcularRendimentoAmostras([]), Error);
+  assert.throws(() => calcularRendimentoAmostras('invalido'), TypeError);
 });

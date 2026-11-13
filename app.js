@@ -122,13 +122,13 @@ const PECAS_INICIAIS = [
         id: 'amostra-patinho-1',
         nome: 'Peça 1 (5,658 kg)',
         pesoTotal: 5.658,
-        tempo: '00:05:40',
+        tempo: '00:03:46',
         cortes: {
           'Sangue e Líquidos': 0.116,
-          'Cebo e Osso': 0.720,
-          'Moída de Segunda': 0.450,
-          'Moída de Primeira': 0.650,
-          'Patinho Limpo': 3.710
+          'Cebo e Osso': 0.146,
+          'Moída de Segunda': 0.204,
+          'Moída de Primeira': 0.140,
+          'Patinho Limpo': 5.052
         }
       }
     ],
@@ -187,8 +187,18 @@ function formatarNumeroBR(v, casas = 2) {
   return Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: casas, maximumFractionDigits: casas });
 }
 
+function formatarKgValor(v) {
+  if (v === undefined || v === null || v === '') return '0,000';
+  const num = typeof v === 'number' ? v : (Number.parseFloat(String(v).replace(',', '.')) || 0);
+  return arredondar(Math.max(0, num), 3).toLocaleString('pt-BR', {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3
+  });
+}
+
 function obterPecaAtiva() {
-  return banco.pecas.find((item) => item.id === banco.idPecaAtiva) || banco.pecas[0];
+  if (!banco.pecas || banco.pecas.length === 0) return null;
+  return banco.pecas.find((item) => item.id === banco.idPecaAtiva) || banco.pecas[0] || null;
 }
 
 function avaliarExpressaoNumerica(str) {
@@ -331,7 +341,15 @@ function gerarBadgeQuebraPerc(quebraPerc) {
 
 function renderizarSeletorPecas() {
   const select = document.getElementById('select-peca');
+  if (!select) return;
   select.innerHTML = '';
+  if (!banco.pecas || banco.pecas.length === 0) {
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.innerText = '(Nenhuma peça cadastrada)';
+    select.appendChild(opt);
+    return;
+  }
   banco.pecas.forEach((p) => {
     const opt = document.createElement('option');
     opt.value = p.id;
@@ -353,7 +371,14 @@ function renderizarSubtabsPecas(peca) {
   const container = document.getElementById('container-subtabs-pecas');
   if (!container) return;
   container.innerHTML = '';
-
+  if (!peca.amostras || peca.amostras.length === 0) {
+    const btnAdd = document.createElement('button');
+    btnAdd.className = 'piece-pill piece-pill-btn-add active';
+    btnAdd.innerHTML = '+ Lançar Nova Peça';
+    btnAdd.addEventListener('click', adicionarNovaAmostra);
+    container.appendChild(btnAdd);
+    return;
+  }
   const pillMedia = document.createElement('button');
   pillMedia.className = `piece-pill ${!banco.amostraSelecionadaId ? 'active' : ''}`;
   pillMedia.innerHTML = `📊 Média Geral (${peca.amostras.length} peças)`;
@@ -434,7 +459,7 @@ function renderizarCabecalhoDesossa(peca) {
         </div>
         <div style="font-size:0.75rem; font-weight:normal; margin-top:4px;">
           Total: <input type="text" class="form-input form-input-calc input-amostra-peso" data-idx="${i}"
-                        value="${a.pesoTotal}" style="width: 80px; padding:2px 4px; display:inline;"> kg<br>
+                        value="${formatarKgValor(a.pesoTotal)}" style="width: 80px; padding:2px 4px; display:inline;"> kg<br>
           Tempo: <input type="text" class="form-input input-amostra-tempo" data-idx="${i}"
                         value="${a.tempo}" style="width: 75px; padding:2px 4px; display:inline; margin-top:2px;">
         </div>
@@ -457,32 +482,58 @@ function obterCorColuna(i) {
 function renderizarCorpoDesossa(peca, metricas) {
   const tbody = document.getElementById('corpo-tabela-desossa');
   tbody.innerHTML = '';
+  if (!peca.amostras || peca.amostras.length === 0) {
+    tbody.innerHTML = renderizarAvisoAmostrasVazias();
+    tbody.querySelector('.btn-add-amostra-empty')?.addEventListener('click', adicionarNovaAmostra);
+    return;
+  }
   metricas.cortesConsolidados.forEach((corte) => {
     const tr = document.createElement('tr');
-    let tds = `<td><strong>${corte.nome}</strong></td>`;
-    peca.amostras.forEach((a, i) => {
-      const v = a.cortes[corte.nome] ?? '';
-      tds += `
-        <td class="text-center">
-          <input type="text" class="form-input form-input-calc input-corte-peso" data-idx="${i}" data-corte="${corte.nome}"
-                 value="${v}" style="width: 95px; text-align:right;">
-        </td>
-      `;
-    });
-    tds += `
-      <td class="text-right font-bold">${formatarKg(corte.pesoMedio)}</td>
-      <td class="text-right"><span class="badge badge-neutral font-bold">${formatarPerc(corte.rendimentoPerc)}</span></td>
-      <td class="text-center">
-        <button class="btn btn-sm btn-secondary btn-remover-corte" data-corte="${corte.nome}" style="padding:2px 6px; color:#b91c1c;">✕</button>
-      </td>
-    `;
-    tr.innerHTML = tds;
+    tr.innerHTML = montarHtmlLinhaCorte(peca, corte);
     tbody.appendChild(tr);
   });
 }
 
+function renderizarAvisoAmostrasVazias() {
+  return `<tr><td colspan="4" class="text-center" style="padding: 2.5rem 1rem; color: var(--text-muted);"><div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.35rem;">⚖️ Nenhuma peça lançada no momento</div><div style="font-size: 0.85rem; margin-bottom: 0.85rem;">O sistema está zerado. Clique abaixo para lançar uma peça.</div><button class="btn btn-primary btn-sm btn-add-amostra-empty">+ Adicionar Primeira Peça</button></td></tr>`;
+}
+
+function montarHtmlLinhaCorte(peca, corte) {
+  let tds = `<td><strong>${corte.nome}</strong></td>`;
+  peca.amostras.forEach((a, i) => {
+    const v = a.cortes[corte.nome];
+    const vTexto = (v !== undefined && v !== null && v !== '') ? formatarKgValor(v) : '';
+    tds += `
+      <td class="text-center" style="white-space: nowrap;">
+        <input type="text" class="form-input form-input-calc input-corte-peso" data-idx="${i}" data-corte="${corte.nome}"
+               value="${vTexto}" style="width: 80px; text-align:right; display:inline-block;" placeholder="0,000">
+        <button class="btn-calc-sobra" data-idx="${i}" data-corte="${corte.nome}"
+                title="Calcular sobra: preencher com o que sobrou da peça (Peso Total menos os outros cortes)"
+                style="border:none; background:#e0f2fe; color:#0369a1; border-radius:4px; padding:2px 5px; font-size:0.68rem; font-weight:700; cursor:pointer; margin-left:2px;">
+          ⚡Sobra
+        </button>
+      </td>
+    `;
+  });
+  tds += `
+    <td class="text-right font-bold">${formatarKg(corte.pesoMedio)}</td>
+    <td class="text-right"><span class="badge badge-neutral font-bold">${formatarPerc(corte.rendimentoPerc)}</span></td>
+    <td class="text-center">
+      <button class="btn btn-sm btn-secondary btn-remover-corte" data-corte="${corte.nome}" style="padding:2px 6px; color:#b91c1c;">✕</button>
+    </td>
+  `;
+  return tds;
+}
+
 function renderizarRodapeDesossa(peca, metricas) {
   const tfoot = document.getElementById('rodape-tabela-desossa');
+  if (!peca.amostras || peca.amostras.length === 0) {
+    tfoot.innerHTML = `
+      <tr style="background:#f1f5f9; font-weight:700;"><td>Soma dos Cortes (kg)</td><td class="text-right">0,000 kg</td><td class="text-right">0,00%</td><td></td></tr>
+      <tr style="background:#fff; font-weight:700;"><td>Quebra de Desossa</td><td class="text-right">0,000 kg</td><td class="text-right"><span class="badge badge-success">✓ 0,00%</span></td><td></td></tr>
+    `;
+    return;
+  }
   let trSoma = '<tr style="background:#f1f5f9; font-weight:700;"><td>Soma dos Cortes (kg)</td>';
   let trQuebra = '<tr style="background:#fff; font-weight:700;"><td>Quebra de Desossa</td>';
   metricas.detalhesAmostras.forEach((det) => {
@@ -679,8 +730,13 @@ function carregarDoLocalStorage() {
 
 function atualizarTela() {
   const peca = obterPecaAtiva();
-  sincronizarCamposPecaAtiva(peca);
   renderizarSeletorPecas();
+  if (!peca) {
+    renderizarCatalogoZerado();
+    salvarNoLocalStorage();
+    return;
+  }
+  sincronizarCamposPecaAtiva(peca);
   const metricas = calcularMetricasPeca(peca);
   const custeio = calcularCusteioPecaChave(peca, metricas);
   atualizarMetricasTopGeral(peca, metricas, custeio);
@@ -690,6 +746,18 @@ function atualizarTela() {
   renderizarSimulador(peca, metricas);
   renderizarHistorico(peca);
   salvarNoLocalStorage();
+}
+
+function renderizarCatalogoZerado() {
+  const tbody = document.getElementById('corpo-tabela-desossa');
+  if (tbody) {
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center" style="padding: 2.5rem; color: var(--text-muted);"><div style="font-weight: 700; font-size: 1.15rem; margin-bottom: 0.5rem;">🥩 Catálogo Zerado</div><p style="font-size: 0.9rem; margin-bottom: 1rem;">Nenhuma peça cadastrada. Clique no botão abaixo para cadastrar.</p><button class="btn btn-primary btn-sm" id="btn-criar-primeira-peca">+ Cadastrar Nova Peça</button></td></tr>';
+    document.getElementById('btn-criar-primeira-peca')?.addEventListener('click', abrirModalPeca);
+  }
+  const tfoot = document.getElementById('rodape-tabela-desossa');
+  if (tfoot) tfoot.innerHTML = '';
+  const containerSub = document.getElementById('container-subtabs-pecas');
+  if (containerSub) containerSub.innerHTML = '';
 }
 
 function sincronizarCamposPecaAtiva(peca) {
@@ -750,14 +818,18 @@ function vincularEventosPeca() {
 
 function adicionarNovaAmostra() {
   const peca = obterPecaAtiva();
+  if (!peca) return;
+  if (!peca.amostras) peca.amostras = [];
   const num = peca.amostras.length + 1;
   const novaId = `amostra-${Date.now()}`;
+  const cortesZerados = {};
+  (peca.cortesCatalogo || []).forEach((c) => { cortesZerados[c.nome] = 0; });
   peca.amostras.push({
     id: novaId,
     nome: `Peça ${num}`,
-    pesoTotal: 5.0,
-    tempo: '00:05:00',
-    cortes: {}
+    pesoTotal: 0,
+    tempo: '00:00:00',
+    cortes: cortesZerados
   });
   banco.amostraSelecionadaId = novaId;
   salvarNoLocalStorage();
@@ -766,14 +838,11 @@ function adicionarNovaAmostra() {
 
 function excluirAmostraPorIndice(idx) {
   const peca = obterPecaAtiva();
-  if (peca.amostras.length <= 1) {
-    alert('É necessário manter ao menos 1 peça na amostragem.');
-    return;
-  }
+  if (!peca || !peca.amostras || peca.amostras.length === 0) return;
   const nome = peca.amostras[idx]?.nome || `Peça ${idx + 1}`;
   solicitarConfirmacao(`Deseja realmente excluir a ${nome}?`, () => {
     const removida = peca.amostras.splice(idx, 1)[0];
-    if (banco.amostraSelecionadaId === removida.id) {
+    if (banco.amostraSelecionadaId === removida?.id) {
       banco.amostraSelecionadaId = null;
     }
     salvarNoLocalStorage();
@@ -781,11 +850,28 @@ function excluirAmostraPorIndice(idx) {
   });
 }
 
+function calcularSobraParaCorte(amostraIdx, corteNome) {
+  const peca = obterPecaAtiva();
+  if (!peca || !peca.amostras || !peca.amostras[amostraIdx]) return;
+  const amostra = peca.amostras[amostraIdx];
+  const pesoTotal = amostra.pesoTotal || 0;
+  let somaOutros = 0;
+  Object.entries(amostra.cortes || {}).forEach(([n, p]) => {
+    if (n.toLowerCase().trim() !== corteNome.toLowerCase().trim()) {
+      somaOutros += (Number(p) || 0);
+    }
+  });
+  const sobra = Math.max(0, arredondar(pesoTotal - somaOutros, 3));
+  amostra.cortes[corteNome] = sobra;
+  salvarNoLocalStorage();
+  atualizarTela();
+}
+
 function vincularEventosAmostras() {
   document.getElementById('btn-add-amostra').addEventListener('click', adicionarNovaAmostra);
   document.getElementById('btn-remover-amostra').addEventListener('click', () => {
     const peca = obterPecaAtiva();
-    excluirAmostraPorIndice(peca.amostras.length - 1);
+    if (peca && peca.amostras) excluirAmostraPorIndice(peca.amostras.length - 1);
   });
   document.getElementById('btn-fechar-analise-individual')?.addEventListener('click', () => {
     banco.amostraSelecionadaId = null;
@@ -795,36 +881,45 @@ function vincularEventosAmostras() {
 
 function vincularEventosTabelaDesossa() {
   const tbl = document.getElementById('tabela-desossa-dinamica');
-  tbl.addEventListener('change', (e) => {
-    const peca = obterPecaAtiva();
-    const idx = Number.parseInt(e.target.dataset.idx, 10);
-    if (e.target.classList.contains('input-amostra-peso')) {
-      peca.amostras[idx].pesoTotal = avaliarExpressaoNumerica(e.target.value);
-      atualizarTela();
-    }
-    if (e.target.classList.contains('input-amostra-tempo')) {
-      peca.amostras[idx].tempo = e.target.value;
-      atualizarTela();
-    }
-    if (e.target.classList.contains('input-amostra-nome')) {
-      peca.amostras[idx].nome = e.target.value.trim() || `Peça ${idx + 1}`;
-      atualizarTela();
-    }
-    if (e.target.classList.contains('input-corte-peso')) {
-      const corte = e.target.dataset.corte;
-      peca.amostras[idx].cortes[corte] = avaliarExpressaoNumerica(e.target.value);
-      atualizarTela();
-    }
+  tbl.addEventListener('focusin', (e) => {
+    if (e.target.classList.contains('form-input-calc')) e.target.select();
   });
-  tbl.addEventListener('click', (e) => {
-    if (e.target.classList.contains('btn-remover-corte')) {
-      removerCortePeca(e.target.dataset.corte);
-    }
-    if (e.target.classList.contains('btn-excluir-coluna-amostra')) {
-      const idx = Number.parseInt(e.target.dataset.idx, 10);
-      excluirAmostraPorIndice(idx);
-    }
-  });
+  tbl.addEventListener('change', tratarMudancaTabelaDesossa);
+  tbl.addEventListener('click', tratarCliqueTabelaDesossa);
+}
+
+function tratarMudancaTabelaDesossa(e) {
+  const peca = obterPecaAtiva();
+  if (!peca) return;
+  const idx = Number.parseInt(e.target.dataset.idx, 10);
+  if (e.target.classList.contains('input-amostra-peso')) {
+    peca.amostras[idx].pesoTotal = avaliarExpressaoNumerica(e.target.value);
+    atualizarTela();
+  }
+  if (e.target.classList.contains('input-amostra-tempo')) {
+    peca.amostras[idx].tempo = e.target.value;
+    atualizarTela();
+  }
+  if (e.target.classList.contains('input-amostra-nome')) {
+    peca.amostras[idx].nome = e.target.value.trim() || `Peça ${idx + 1}`;
+    atualizarTela();
+  }
+  if (e.target.classList.contains('input-corte-peso')) {
+    peca.amostras[idx].cortes[e.target.dataset.corte] = avaliarExpressaoNumerica(e.target.value);
+    atualizarTela();
+  }
+}
+
+function tratarCliqueTabelaDesossa(e) {
+  if (e.target.classList.contains('btn-remover-corte')) {
+    removerCortePeca(e.target.dataset.corte);
+  }
+  if (e.target.classList.contains('btn-excluir-coluna-amostra')) {
+    excluirAmostraPorIndice(Number.parseInt(e.target.dataset.idx, 10));
+  }
+  if (e.target.classList.contains('btn-calc-sobra')) {
+    calcularSobraParaCorte(Number.parseInt(e.target.dataset.idx, 10), e.target.dataset.corte);
+  }
 }
 
 function removerCortePeca(corteNome) {
@@ -955,11 +1050,11 @@ function salvarModalPeca() {
 }
 
 function excluirPecaAtiva() {
-  if (banco.pecas.length <= 1) return alert('Você não pode excluir a única peça do catálogo.');
   const peca = obterPecaAtiva();
+  if (!peca) return;
   solicitarConfirmacao(`Deseja realmente excluir a peça '${peca.nome}' e todas as suas análises?`, () => {
     banco.pecas = banco.pecas.filter((p) => p.id !== peca.id);
-    banco.idPecaAtiva = banco.pecas[0].id;
+    banco.idPecaAtiva = banco.pecas[0]?.id || null;
     banco.amostraSelecionadaId = null;
     salvarNoLocalStorage();
     atualizarTela();

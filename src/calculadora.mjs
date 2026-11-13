@@ -50,6 +50,27 @@ export function parseValorMonetario(valor) {
   return Number.parseFloat(limpa) || 0;
 }
 
+export function formatarKgValor(valor) {
+  if (valor === undefined || valor === null || valor === '') return '0,000';
+  const num = typeof valor === 'number' ? valor : (Number.parseFloat(String(valor).replace(',', '.')) || 0);
+  const seguro = Math.max(0, num);
+  return arredondar(seguro, 3).toLocaleString('pt-BR', {
+    minimumFractionDigits: 3,
+    maximumFractionDigits: 3
+  });
+}
+
+export function calcularSobraCorte(pesoTotal, outrosCortes) {
+  validarNumeroNaoNegativo(pesoTotal, 'pesoTotal');
+  let somaOutros = 0;
+  if (Array.isArray(outrosCortes)) {
+    somaOutros = outrosCortes.reduce((acc, v) => acc + (Number(v) || 0), 0);
+  } else if (outrosCortes && typeof outrosCortes === 'object') {
+    somaOutros = Object.values(outrosCortes).reduce((acc, v) => acc + (Number(v) || 0), 0);
+  }
+  return Math.max(0, arredondar(pesoTotal - somaOutros, 3));
+}
+
 export function parseValorPercentual(valor) {
   if (typeof valor === 'number') return Math.max(0, valor);
   if (!valor || typeof valor !== 'string') return 0;
@@ -95,9 +116,23 @@ export function calcularProdutividadeKgHora(pesoTotalKg, tempoTotalSegundos) {
   return arredondar(pesoTotalKg / (tempoTotalSegundos / 3600), 2);
 }
 
-export function calcularRendimentoAmostras(amostras) {
-  if (!Array.isArray(amostras) || amostras.length === 0) {
-    throw new Error('É necessário fornecer pelo menos uma amostra.');
+export function calcularRendimentoAmostras(amostras = []) {
+  if (!Array.isArray(amostras)) {
+    throw new TypeError('O parâmetro amostras deve ser um array.');
+  }
+  if (amostras.length === 0) {
+    return {
+      quantidadeAmostras: 0,
+      somaPesoTotalEntrada: 0,
+      pesoMedioPeca: 0,
+      tempoTotalSegundos: 0,
+      tempoMedioSegundos: 0,
+      produtividadeKgHora: 0,
+      quebraGlobalKg: 0,
+      quebraGlobalPerc: 0,
+      amostras: [],
+      cortes: []
+    };
   }
   const nomesCortes = extrairNomesCortesUnicos(amostras);
   const totaisCortes = inicializarMapa(nomesCortes);

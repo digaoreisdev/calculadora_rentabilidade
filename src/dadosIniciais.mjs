@@ -121,13 +121,13 @@ export const PECAS_PADRAO = [
         id: 'amostra-patinho-1',
         nome: 'Peça 1 (5,658 kg)',
         pesoTotal: 5.658,
-        tempo: '00:05:40',
+        tempo: '00:03:46',
         cortes: {
           'Sangue e Líquidos': 0.116,
-          'Cebo e Osso': 0.720,
-          'Moída de Segunda': 0.450,
-          'Moída de Primeira': 0.650,
-          'Patinho Limpo': 3.710
+          'Cebo e Osso': 0.146,
+          'Moída de Segunda': 0.204,
+          'Moída de Primeira': 0.140,
+          'Patinho Limpo': 5.052
         }
       }
     ],

@@ -46,6 +46,8 @@
 | REG-010 | 2026-11-13 | Análise individual de cada peça de rendimento (Ficha Técnica individual com quebra e lucro) | Necessidade de analisar cada peça lançada separadamente além da média geral | Implementação de `calcularAnaliseIndividualAmostra` | `test/calculadora.test.mjs` | PASS |
 | REG-011 | 2026-11-13 | Parser e formatação de valores monetários e percentuais aceitando vírgula e ponto | `input type="number"` bloqueava tecla ponto e rejeitava vírgula no Windows PT-BR | Implementação de `parseValorMonetario` e `parseValorPercentual` universais | `test/calculadora.test.mjs` | PASS |
 | REG-012 | 2026-11-13 | Exclusão confiável de Peças Principais e Cortes sem depender de `window.confirm()` | `window.confirm()` bloqueado silenciosamente pelo navegador | Substituição por Modal de Confirmação customizado e exclusão em cascata | `test/calculadora.test.mjs` | PASS |
+| REG-013 | 2026-11-13 | Suporte a sistema zerado (0 amostras e exclusão da última peça sem NaN) | Trava `peca.amostras.length <= 1` impedia o usuário de zerar a tela para novo lançamento | Remoção da trava com tratamento defensivo e estado vazio limpo | `test/calculadora.test.mjs` | PASS |
+| REG-014 | 2026-11-13 | Cálculo de sobra do corte principal e formatação de 3 casas decimais (ex: 0,000 kg e 0,140 kg) | Herança indevida de dados antigos de outros templates e exibição de decimais incompletos | Função `calcularSobraCorte` (botão ⚡Sobra) e `formatarKgValor` estrito com 3 decimais | `test/calculadora.test.mjs` | PASS |
 
 ---
 
@@ -55,3 +57,4 @@
 - **v1.2.0 (2026-11-12):** Painel visual de distribuição da composição da carcaça e balanço financeiro gráfico da desossa.
 - **v1.3.0 (2026-11-13):** Fichas técnicas individuais por peça lançada com análise isolada (quebra, custo, lucro) e exclusão/edição individual de qualquer peça da amostragem.
 - **v1.4.0 (2026-11-13):** Correção da digitação de decimais (vírgula/ponto), formatação com máscara automática em moeda (R$) e percentual (%), e modal próprio de confirmação de exclusão.
+- **v1.5.0 (2026-11-13):** Suporte completo a sistema zerado (0 peças ou amostras), cálculo inteligente de sobra/saldo para corte principal (botão ⚡Sobra) e formatação estrita de pesos em Kg com 3 casas decimais (`0,000 kg`, `0,140 kg`).
