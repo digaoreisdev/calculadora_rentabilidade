@@ -572,74 +572,9 @@ function renderizarSeletorPecas() {
 }
 
 function renderizarTabelaDesossa(peca, metricas) {
-  renderizarSubtabsPecas(peca);
-  renderizarPainelAnaliseIndividual(peca);
   renderizarCabecalhoDesossa(peca);
   renderizarCorpoDesossa(peca, metricas);
   renderizarRodapeDesossa(peca, metricas);
-}
-
-function criarBotaoPillAmostra(a, i) {
-  const pill = document.createElement('button');
-  pill.className = `piece-pill ${banco.amostraSelecionadaId === a.id ? 'active' : ''}`;
-  pill.innerHTML = `🥩 ${a.nome || `Limpeza ${i + 1}`} (${formatarKg(a.pesoTotal)})`;
-  pill.addEventListener('click', () => { banco.amostraSelecionadaId = a.id; atualizarTela(); });
-  return pill;
-}
-
-function renderizarSubtabsPecas(peca) {
-  const container = document.getElementById('container-subtabs-pecas');
-  if (!container) return;
-  container.innerHTML = '';
-  const btnAdd = document.createElement('button');
-  btnAdd.className = 'piece-pill piece-pill-btn-add';
-  btnAdd.innerHTML = '+ Nova Transformação/Limpeza';
-  btnAdd.addEventListener('click', adicionarNovaAmostra);
-
-  if (!peca.amostras || peca.amostras.length === 0) {
-    btnAdd.classList.add('active');
-    container.appendChild(btnAdd);
-    return;
-  }
-  const pillMedia = document.createElement('button');
-  pillMedia.className = `piece-pill ${!banco.amostraSelecionadaId ? 'active' : ''}`;
-  pillMedia.innerHTML = `📊 Média Geral (${peca.amostras.length} transformações)`;
-  pillMedia.addEventListener('click', () => { banco.amostraSelecionadaId = null; atualizarTela(); });
-  container.appendChild(pillMedia);
-
-  peca.amostras.forEach((a, i) => container.appendChild(criarBotaoPillAmostra(a, i)));
-  container.appendChild(btnAdd);
-}
-
-function renderizarPainelAnaliseIndividual(peca) {
-  const painel = document.getElementById('painel-analise-individual-peca');
-  if (!painel) return;
-  if (!banco.amostraSelecionadaId) {
-    painel.style.display = 'none';
-    return;
-  }
-  const amostra = peca.amostras.find((a) => a.id === banco.amostraSelecionadaId);
-  if (!amostra) {
-    painel.style.display = 'none';
-    banco.amostraSelecionadaId = null;
-    return;
-  }
-  const analise = calcularAnaliseIndividualAmostra(amostra, peca.custoKgEntrada, peca.precosVendaSugeridos, peca.modoCusto !== 'livre');
-  preencherDadosPainelIndividual(amostra, analise);
-  painel.style.display = 'flex';
-}
-
-function preencherDadosPainelIndividual(amostra, analise) {
-  document.getElementById('ind-titulo-peca').innerText = `Análise Individual: ${amostra.nome || 'Limpeza'}`;
-  document.getElementById('ind-sub-peca').innerText = `Tempo: ${amostra.tempo || '00:00:00'} | Cortes: ${formatarKg(analise.somaCortes)}`;
-  document.getElementById('ind-badge-quebra').innerHTML = gerarBadgeQuebra(analise.quebraKg, analise.quebraPerc);
-  document.getElementById('ind-peso-bruto').innerText = formatarKg(analise.pesoTotal);
-  document.getElementById('ind-tempo-desossa').innerText = `Tempo: ${amostra.tempo || '00:00:00'}`;
-  document.getElementById('ind-quebra-kg').innerText = formatarKg(analise.quebraKg);
-  document.getElementById('ind-quebra-perc').innerText = `${formatarPerc(analise.quebraPerc)} de quebra`;
-  document.getElementById('ind-custo-total').innerText = formatarMoeda(analise.custoTotal);
-  document.getElementById('ind-lucro-liquido').innerText = formatarMoeda(analise.lucroLiquido);
-  document.getElementById('ind-margem-peca').innerText = `Margem Real: ${formatarPerc(analise.margemPerc)}`;
 }
 
 function calcularAnaliseIndividualAmostra(amostra, custoKg, precosVenda, usarPecaChave) {
@@ -661,10 +596,9 @@ function renderizarCabecalhoDesossa(peca) {
   const thead = document.getElementById('cabecalho-tabela-desossa');
   let html = `<tr><th style="min-width: 170px;">Corte / Rendimento / Perda</th>`;
   peca.amostras.forEach((a, i) => {
-    const isFocused = banco.amostraSelecionadaId === a.id;
     const nomePadrao = a.nome || `Transformação/Limpeza ${i + 1}`;
     html += `
-      <th class="text-center" style="background:${obterCorColuna(i)}; min-width: 185px; ${isFocused ? 'outline: 3px solid var(--primary);' : ''}">
+      <th class="text-center" style="background:${obterCorColuna(i)}; min-width: 185px;">
         <div class="col-header-actions">
           <input type="text" class="form-input input-amostra-nome" data-idx="${i}" value="${nomePadrao}"
                  style="font-size:0.8rem; font-weight:700; width:125px; padding:2px 4px; display:inline;" title="Nome da transformação/limpeza">
@@ -1013,8 +947,6 @@ function renderizarCatalogoZerado() {
   }
   const tfoot = document.getElementById('rodape-tabela-desossa');
   if (tfoot) tfoot.innerHTML = '';
-  const containerSub = document.getElementById('container-subtabs-pecas');
-  if (containerSub) containerSub.innerHTML = '';
 }
 
 function sincronizarCamposPecaAtiva(peca) {
@@ -1134,10 +1066,6 @@ function vincularEventosAmostras() {
   document.getElementById('btn-remover-amostra').addEventListener('click', () => {
     const peca = obterPecaAtiva();
     if (peca && peca.amostras) excluirAmostraPorIndice(peca.amostras.length - 1);
-  });
-  document.getElementById('btn-fechar-analise-individual')?.addEventListener('click', () => {
-    banco.amostraSelecionadaId = null;
-    atualizarTela();
   });
 }
 
