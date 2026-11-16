@@ -12,7 +12,9 @@ const PECAS_INICIAIS = [
     modoCusto: 'peca_chave',
     modoMargem: 'individual',
     cortesCatalogo: [
+      { nome: 'Dianteiro Bovino (Corte Principal / Balcão)', tipo: 'nobre', precoVendaPadrao: 32.90 },
       { nome: 'Cebo e Osso', tipo: 'subproduto', precoVendaPadrao: 1.48 },
+      { nome: 'Sangue e Líquidos', tipo: 'perda_liquida', precoVendaPadrao: 0.00 },
       { nome: 'Agulha C/ Osso', tipo: 'com_osso', precoVendaPadrao: 24.90 },
       { nome: 'Agulha S/ Osso', tipo: 'nobre', precoVendaPadrao: 32.90 },
       { nome: 'Agulha Especial', tipo: 'nobre', precoVendaPadrao: 36.90 },
@@ -28,11 +30,13 @@ const PECAS_INICIAIS = [
     amostras: [
       {
         id: 'amostra-1',
-        nome: 'Peça 1 (Média - 43,4 kg)',
+        nome: 'Transformação/Limpeza 1 (43,4 kg)',
         pesoTotal: 43.396,
         tempo: '00:27:02',
         cortes: {
+          'Dianteiro Bovino (Corte Principal / Balcão)': 0.000,
           'Cebo e Osso': 8.318,
+          'Sangue e Líquidos': 0.000,
           'Agulha C/ Osso': 6.045,
           'Agulha S/ Osso': 3.984,
           'Agulha Especial': 1.768,
@@ -48,11 +52,13 @@ const PECAS_INICIAIS = [
       },
       {
         id: 'amostra-2',
-        nome: 'Peça 2 (Grande - 44,3 kg)',
+        nome: 'Transformação/Limpeza 2 (44,3 kg)',
         pesoTotal: 44.338,
         tempo: '00:25:35',
         cortes: {
+          'Dianteiro Bovino (Corte Principal / Balcão)': 0.000,
           'Cebo e Osso': 8.862,
+          'Sangue e Líquidos': 0.000,
           'Agulha C/ Osso': 5.592,
           'Agulha S/ Osso': 3.812,
           'Agulha Especial': 1.696,
@@ -68,11 +74,13 @@ const PECAS_INICIAIS = [
       },
       {
         id: 'amostra-3',
-        nome: 'Peça 3 (Pequena - 32,2 kg)',
+        nome: 'Transformação/Limpeza 3 (32,2 kg)',
         pesoTotal: 32.178,
         tempo: '00:23:15',
         cortes: {
+          'Dianteiro Bovino (Corte Principal / Balcão)': 0.000,
           'Cebo e Osso': 4.874,
+          'Sangue e Líquidos': 0.000,
           'Agulha C/ Osso': 4.828,
           'Agulha S/ Osso': 3.344,
           'Agulha Especial': 1.582,
@@ -88,7 +96,9 @@ const PECAS_INICIAIS = [
       }
     ],
     precosVendaSugeridos: {
+      'Dianteiro Bovino (Corte Principal / Balcão)': 32.90,
       'Cebo e Osso': 1.48,
+      'Sangue e Líquidos': 0.00,
       'Agulha C/ Osso': 24.90,
       'Agulha S/ Osso': 32.90,
       'Agulha Especial': 36.90,
@@ -102,7 +112,9 @@ const PECAS_INICIAIS = [
       'Moída de Segunda': 26.90
     },
     custosSistema: {
+      'Dianteiro Bovino (Corte Principal / Balcão)': 21.45,
       'Cebo e Osso': 1.48,
+      'Sangue e Líquidos': 0.00,
       'Agulha C/ Osso': 18.50,
       'Agulha S/ Osso': 24.00,
       'Agulha Especial': 27.00,
@@ -119,46 +131,72 @@ const PECAS_INICIAIS = [
   },
   {
     id: 'patinho-bovino',
-    nome: 'Patinho Bovino (Peça Bruta)',
+    nome: 'Patinho Bovino',
     custoKgEntrada: 28.50,
     margemPadraoPerc: 30.0,
     modoCusto: 'peca_chave',
     modoMargem: 'individual',
     cortesCatalogo: [
-      { nome: 'Sangue e Líquidos', tipo: 'perda_liquida', precoVendaPadrao: 0.00 },
+      { nome: '1285 - Patinho Bovino (Corte Principal / Balcão)', tipo: 'nobre', precoVendaPadrao: 42.90 },
       { nome: 'Cebo e Osso', tipo: 'subproduto', precoVendaPadrao: 1.48 },
-      { nome: 'Moída de Segunda', tipo: 'comum', precoVendaPadrao: 26.90 },
-      { nome: 'Moída de Primeira', tipo: 'nobre', precoVendaPadrao: 37.90 },
-      { nome: 'Patinho Limpo', tipo: 'nobre', precoVendaPadrao: 42.90 }
+      { nome: 'Sangue e Líquidos', tipo: 'perda_liquida', precoVendaPadrao: 0.00 },
+      { nome: '1274 - Moida Bovina de Primeira', tipo: 'nobre', precoVendaPadrao: 37.90 },
+      { nome: '12745 - Moida Bovina de Segunda', tipo: 'comum', precoVendaPadrao: 26.90 }
     ],
     amostras: [
       {
         id: 'amostra-patinho-1',
-        nome: 'Peça 1 (5,658 kg)',
+        nome: 'Transformação/Limpeza 1 (5,658 kg)',
         pesoTotal: 5.658,
         tempo: '00:03:46',
         cortes: {
-          'Sangue e Líquidos': 0.116,
+          '1285 - Patinho Bovino (Corte Principal / Balcão)': 5.040,
           'Cebo e Osso': 0.146,
-          'Moída de Segunda': 0.204,
-          'Moída de Primeira': 0.140,
-          'Patinho Limpo': 5.052
+          'Sangue e Líquidos': 0.116,
+          '1274 - Moida Bovina de Primeira': 0.140,
+          '12745 - Moida Bovina de Segunda': 0.204
+        }
+      },
+      {
+        id: 'amostra-patinho-2',
+        nome: 'Transformação/Limpeza 2 (4,334 kg)',
+        pesoTotal: 4.334,
+        tempo: '00:03:32',
+        cortes: {
+          '1285 - Patinho Bovino (Corte Principal / Balcão)': 3.614,
+          'Cebo e Osso': 0.094,
+          'Sangue e Líquidos': 0.150,
+          '1274 - Moida Bovina de Primeira': 0.222,
+          '12745 - Moida Bovina de Segunda': 0.232
+        }
+      },
+      {
+        id: 'amostra-patinho-3',
+        nome: 'Transformação/Limpeza 3 (5,472 kg)',
+        pesoTotal: 5.472,
+        tempo: '00:03:54',
+        cortes: {
+          '1285 - Patinho Bovino (Corte Principal / Balcão)': 4.502,
+          'Cebo e Osso': 0.124,
+          'Sangue e Líquidos': 0.180,
+          '1274 - Moida Bovina de Primeira': 0.380,
+          '12745 - Moida Bovina de Segunda': 0.264
         }
       }
     ],
     precosVendaSugeridos: {
-      'Sangue e Líquidos': 0.00,
+      '1285 - Patinho Bovino (Corte Principal / Balcão)': 42.90,
       'Cebo e Osso': 1.48,
-      'Moída de Segunda': 26.90,
-      'Moída de Primeira': 37.90,
-      'Patinho Limpo': 42.90
+      'Sangue e Líquidos': 0.00,
+      '1274 - Moida Bovina de Primeira': 37.90,
+      '12745 - Moida Bovina de Segunda': 26.90
     },
     custosSistema: {
-      'Sangue e Líquidos': 0.00,
+      '1285 - Patinho Bovino (Corte Principal / Balcão)': 28.50,
       'Cebo e Osso': 1.48,
-      'Moída de Segunda': 20.00,
-      'Moída de Primeira': 28.00,
-      'Patinho Limpo': 32.00
+      'Sangue e Líquidos': 0.00,
+      '1274 - Moida Bovina de Primeira': 27.23,
+      '12745 - Moida Bovina de Segunda': 20.00
     },
     historicoDesossas: []
   },
@@ -170,66 +208,66 @@ const PECAS_INICIAIS = [
     modoCusto: 'peca_chave',
     modoMargem: 'individual',
     cortesCatalogo: [
-      { nome: 'Sangue e Líquidos de Perda', tipo: 'perda_liquida', precoVendaPadrao: 0.00 },
+      { nome: '1241 - Alcatra Bovina (Corte Principal / Balcão)', tipo: 'nobre', precoVendaPadrao: 49.90 },
       { nome: 'Cebo de Perda', tipo: 'subproduto', precoVendaPadrao: 1.48 },
-      { nome: '1275 - Moída de Segunda', tipo: 'comum', precoVendaPadrao: 27.49 },
-      { nome: '1274 - Moída de Primeira', tipo: 'nobre', precoVendaPadrao: 47.99 },
-      { nome: '1241 - Alcatra Bovina (Corte Principal)', tipo: 'nobre', precoVendaPadrao: 49.90 }
+      { nome: 'Sangue e Líquidos de Perda', tipo: 'perda_liquida', precoVendaPadrao: 0.00 },
+      { nome: '1274 - Moida Bovina de Primeira', tipo: 'nobre', precoVendaPadrao: 47.99 },
+      { nome: '1275 - Moida Bovina de Segunda', tipo: 'comum', precoVendaPadrao: 27.49 }
     ],
     amostras: [
       {
         id: 'amostra-alcatra-1',
-        nome: 'Peça 1 (4,316 kg)',
+        nome: 'Transformação/Limpeza 1 (4,316 kg)',
         pesoTotal: 4.316,
         tempo: '00:03:58',
         cortes: {
-          'Sangue e Líquidos de Perda': 0.136,
+          '1241 - Alcatra Bovina (Corte Principal / Balcão)': 3.450,
           'Cebo de Perda': 0.250,
-          '1275 - Moída de Segunda': 0.288,
-          '1274 - Moída de Primeira': 0.192,
-          '1241 - Alcatra Bovina (Corte Principal)': 3.450
+          'Sangue e Líquidos de Perda': 0.136,
+          '1274 - Moida Bovina de Primeira': 0.192,
+          '1275 - Moida Bovina de Segunda': 0.288
         }
       },
       {
         id: 'amostra-alcatra-2',
-        nome: 'Peça 2 (3,762 kg)',
+        nome: 'Transformação/Limpeza 2 (3,762 kg)',
         pesoTotal: 3.762,
         tempo: '00:03:31',
         cortes: {
-          'Sangue e Líquidos de Perda': 0.206,
+          '1241 - Alcatra Bovina (Corte Principal / Balcão)': 2.980,
           'Cebo de Perda': 0.114,
-          '1275 - Moída de Segunda': 0.234,
-          '1274 - Moída de Primeira': 0.228,
-          '1241 - Alcatra Bovina (Corte Principal)': 2.980
+          'Sangue e Líquidos de Perda': 0.206,
+          '1274 - Moida Bovina de Primeira': 0.228,
+          '1275 - Moida Bovina de Segunda': 0.234
         }
       },
       {
         id: 'amostra-alcatra-3',
-        nome: 'Peça 3 (3,564 kg)',
+        nome: 'Transformação/Limpeza 3 (3,564 kg)',
         pesoTotal: 3.564,
         tempo: '00:03:16',
         cortes: {
-          'Sangue e Líquidos de Perda': 0.176,
+          '1241 - Alcatra Bovina (Corte Principal / Balcão)': 3.068,
           'Cebo de Perda': 0.072,
-          '1275 - Moída de Segunda': 0.134,
-          '1274 - Moída de Primeira': 0.114,
-          '1241 - Alcatra Bovina (Corte Principal)': 3.068
+          'Sangue e Líquidos de Perda': 0.176,
+          '1274 - Moida Bovina de Primeira': 0.114,
+          '1275 - Moida Bovina de Segunda': 0.134
         }
       }
     ],
     precosVendaSugeridos: {
-      'Sangue e Líquidos de Perda': 0.00,
+      '1241 - Alcatra Bovina (Corte Principal / Balcão)': 49.90,
       'Cebo de Perda': 1.48,
-      '1275 - Moída de Segunda': 27.49,
-      '1274 - Moída de Primeira': 47.99,
-      '1241 - Alcatra Bovina (Corte Principal)': 49.90
+      'Sangue e Líquidos de Perda': 0.00,
+      '1274 - Moida Bovina de Primeira': 47.99,
+      '1275 - Moida Bovina de Segunda': 27.49
     },
     custosSistema: {
-      'Sangue e Líquidos de Perda': 0.00,
+      '1241 - Alcatra Bovina (Corte Principal / Balcão)': 37.78,
       'Cebo de Perda': 1.04,
-      '1275 - Moída de Segunda': 24.51,
-      '1274 - Moída de Primeira': 27.23,
-      '1241 - Alcatra Bovina (Corte Principal)': 37.78
+      'Sangue e Líquidos de Perda': 0.00,
+      '1274 - Moida Bovina de Primeira': 27.23,
+      '1275 - Moida Bovina de Segunda': 24.51
     },
     historicoDesossas: []
   }
@@ -237,7 +275,7 @@ const PECAS_INICIAIS = [
 
 const banco = {
   pecas: JSON.parse(JSON.stringify(PECAS_INICIAIS)),
-  idPecaAtiva: 'dianteiro-bovino',
+  idPecaAtiva: 'patinho-bovino',
   amostraSelecionadaId: null,
   volumeSimuladoKg: 1000,
   custoSimuladoKg: 21.45
@@ -352,34 +390,69 @@ function formatarSegundosEmTempo(seg) {
   return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
-function obterListaCortesPeca(peca) {
-  const setNomes = new Set();
-  (peca.cortesCatalogo || []).forEach((c) => setNomes.add(c.nome));
-  (peca.amostras || []).forEach((a) => {
-    Object.keys(a.cortes || {}).forEach((n) => setNomes.add(n));
+function garantirCortesEssenciais(peca) {
+  const nomePrincipal = `${peca.nome} (Corte Principal / Balcão)`;
+  const temPrincipal = peca.cortesCatalogo.some((c) => c.nome.toLowerCase().includes('corte principal') || c.nome.toLowerCase().includes('balcão') || c.nome.toLowerCase().includes('limpo'));
+  if (!temPrincipal) {
+    peca.cortesCatalogo.unshift({ nome: nomePrincipal, tipo: 'nobre', precoVendaPadrao: arredondar(peca.custoKgEntrada * 1.4, 2), custoAtualSistema: peca.custoKgEntrada, margemAtualSistema: peca.margemPadraoPerc });
+  }
+  const temCebo = peca.cortesCatalogo.some((c) => c.nome.toLowerCase().includes('cebo') || c.nome.toLowerCase().includes('sebo'));
+  if (!temCebo) {
+    peca.cortesCatalogo.push({ nome: 'Cebo e Osso', tipo: 'subproduto', precoVendaPadrao: 1.48, custoAtualSistema: 1.48, margemAtualSistema: 0 });
+  }
+  const temLiquidos = peca.cortesCatalogo.some((c) => c.nome.toLowerCase().includes('sangue') || c.nome.toLowerCase().includes('líquido') || c.nome.toLowerCase().includes('liquido'));
+  if (!temLiquidos) {
+    peca.cortesCatalogo.push({ nome: 'Sangue e Líquidos', tipo: 'perda_liquida', precoVendaPadrao: 0.00, custoAtualSistema: 0, margemAtualSistema: -100 });
+  }
+}
+
+function sincronizarCortesPeca(peca) {
+  if (!peca) return [];
+  if (!peca.cortesCatalogo) peca.cortesCatalogo = [];
+  if (!peca.amostras) peca.amostras = [];
+  garantirCortesEssenciais(peca);
+
+  peca.amostras.forEach((a) => {
+    Object.keys(a.cortes || {}).forEach((k) => {
+      if (!peca.cortesCatalogo.some((c) => c.nome.toLowerCase() === k.toLowerCase())) {
+        peca.cortesCatalogo.push({ nome: k, tipo: 'comum', precoVendaPadrao: 25.00, custoAtualSistema: peca.custoKgEntrada, margemAtualSistema: peca.margemPadraoPerc });
+      }
+    });
+    if (!a.cortes) a.cortes = {};
+    peca.cortesCatalogo.forEach((c) => {
+      if (a.cortes[c.nome] === undefined) a.cortes[c.nome] = 0;
+    });
   });
-  return Array.from(setNomes);
+
+  return peca.cortesCatalogo.map((c) => c.nome);
+}
+
+function obterListaCortesPeca(peca) {
+  return sincronizarCortesPeca(peca);
 }
 
 function calcularMetricasPeca(peca) {
-  const cortes = obterListaCortesPeca(peca);
+  const cortes = sincronizarCortesPeca(peca);
   const totaisCortes = {};
   cortes.forEach((c) => { totaisCortes[c] = 0; });
   let somaPesoTotal = 0, somaTempoSegundos = 0;
 
-  const detalhesAmostras = (peca.amostras || []).map((a) => {
-    somaPesoTotal += a.pesoTotal;
+  const detalhesAmostras = (peca.amostras || []).map((a, idx) => {
+    const pesoTotal = Number(a.pesoTotal) || 0;
+    somaPesoTotal += pesoTotal;
     const seg = parseTempoEmSegundos(a.tempo);
     somaTempoSegundos += seg;
     let somaCortes = 0;
     cortes.forEach((nome) => {
-      const p = a.cortes[nome] || 0;
+      const p = Number(a.cortes?.[nome]) || 0;
       somaCortes += p;
       totaisCortes[nome] += p;
     });
-    const quebraKg = arredondar(a.pesoTotal - somaCortes, 3);
-    const quebraPerc = a.pesoTotal > 0 ? arredondar((quebraKg / a.pesoTotal) * 100, 2) : 0;
-    return { ...a, somaCortes, quebraKg, quebraPerc, tempoSegundos: seg };
+    somaCortes = arredondar(somaCortes, 3);
+    const quebraKg = pesoTotal >= somaCortes ? arredondar(pesoTotal - somaCortes, 3) : 0;
+    const quebraPerc = pesoTotal > 0 ? arredondar((quebraKg / pesoTotal) * 100, 2) : 0;
+    const excessoKg = somaCortes > pesoTotal ? arredondar(somaCortes - pesoTotal, 3) : 0;
+    return { ...a, idx, pesoTotal, somaCortes, quebraKg, quebraPerc, excessoKg, tempoSegundos: seg };
   });
 
   return consolidarMetricasFinais(peca, cortes, totaisCortes, detalhesAmostras, somaPesoTotal, somaTempoSegundos);
@@ -390,31 +463,29 @@ function consolidarMetricasFinais(peca, cortes, totaisCortes, detalhesAmostras, 
   const pesoMedioPeca = arredondar(somaPeso / qtd, 3);
   const tempoMedioSeg = Math.round(somaTempo / qtd);
   const produtividadeKgHora = somaTempo > 0 ? arredondar(somaPeso / (somaTempo / 3600), 2) : 0;
-  const somaCortesGeral = Object.values(totaisCortes).reduce((a, b) => a + b, 0);
-  const quebraGlobalKg = arredondar(somaPeso - somaCortesGeral, 3);
-  const quebraGlobalPerc = somaPeso > 0 ? arredondar((quebraGlobalKg / somaPeso) * 100, 2) : 0;
 
   const cortesConsolidados = cortes.map((nome) => ({
     nome,
-    pesoTotal: totaisCortes[nome],
-    pesoMedio: arredondar(totaisCortes[nome] / qtd, 3),
-    rendimentoPerc: somaPeso > 0 ? arredondar((totaisCortes[nome] / somaPeso) * 100, 2) : 0,
+    pesoTotal: arredondar(totaisCortes[nome] || 0, 3),
+    pesoMedio: arredondar((totaisCortes[nome] || 0) / qtd, 3),
+    rendimentoPerc: somaPeso > 0 ? arredondar(((totaisCortes[nome] || 0) / somaPeso) * 100, 2) : 0,
     tipo: peca.cortesCatalogo?.find((c) => c.nome === nome)?.tipo || 'comum',
     isAuto: false
   }));
 
-  if (quebraGlobalKg > 0 && somaPeso > 0) {
-    cortesConsolidados.push({
-      nome: 'Perda Técnica (Manejo / Serra)',
-      pesoTotal: quebraGlobalKg,
-      pesoMedio: arredondar(quebraGlobalKg / qtd, 3),
-      rendimentoPerc: quebraGlobalPerc,
-      tipo: 'perda_tecnica',
-      isAuto: true
-    });
-  }
+  const somaPerdaTecnicaKg = arredondar(detalhesAmostras.reduce((acc, d) => acc + d.quebraKg, 0), 3);
+  const rendPerdaTecnicaPerc = somaPeso > 0 ? arredondar((somaPerdaTecnicaKg / somaPeso) * 100, 2) : 0;
 
-  return { somaPesoTotal: somaPeso, pesoMedioPeca, tempoMedioSeg, produtividadeKgHora, quebraGlobalKg, quebraGlobalPerc, detalhesAmostras, cortesConsolidados };
+  cortesConsolidados.push({
+    nome: 'Perda Técnica (Manejo / Serra)',
+    pesoTotal: somaPerdaTecnicaKg,
+    pesoMedio: arredondar(somaPerdaTecnicaKg / qtd, 3),
+    rendimentoPerc: rendPerdaTecnicaPerc,
+    tipo: 'perda_tecnica',
+    isAuto: true
+  });
+
+  return { somaPesoTotal: somaPeso, pesoMedioPeca, tempoMedioSeg, produtividadeKgHora, quebraGlobalKg: somaPerdaTecnicaKg, quebraGlobalPerc: rendPerdaTecnicaPerc, detalhesAmostras, cortesConsolidados };
 }
 
 function calcularCusteioPecaChave(peca, metricas) {
@@ -433,6 +504,13 @@ function calcularCusteioPecaChave(peca, metricas) {
   return { custoTotalPeca, faturamentoTotal, lucroLiquidoPeca, margemGlobalPerc, cortes: cortesProcessados };
 }
 
+function determinarDiagnosticoCusteio(precoVenda, custoItemKg, isAuto, margemReal, meta) {
+  if ((precoVenda === 0 && custoItemKg > 0) || isAuto) return 'perda';
+  if (precoVenda < custoItemKg) return 'prejuizo_oculto';
+  if (margemReal < meta) return 'abaixo_meta';
+  return 'saudavel';
+}
+
 function processarItemCusteio(c, peca, pesoBase, custoBaseKg, usarPecaChave) {
   const isAuto = c.isAuto || c.tipo === 'perda_tecnica';
   const precoVenda = isAuto ? 0 : (peca.precosVendaSugeridos?.[c.nome] ?? 0);
@@ -446,26 +524,11 @@ function processarItemCusteio(c, peca, pesoBase, custoBaseKg, usarPecaChave) {
   const margemERPPerc = precoVenda > 0 ? arredondar(((precoVenda - custoAtualERP) / precoVenda) * 100, 2) : 0;
   const fatorMeta = peca.margemPadraoPerc < 100 ? (1 - (peca.margemPadraoPerc / 100)) : 0.01;
   const precoSugerido = arredondar(custoItemKg / (fatorMeta > 0 ? fatorMeta : 0.01), 2);
-
-  let diag = 'saudavel';
-  if ((precoVenda === 0 && custoItemKg > 0) || isAuto) diag = 'perda';
-  else if (precoVenda < custoItemKg) diag = 'prejuizo_oculto';
-  else if (margemRealPerc < peca.margemPadraoPerc) diag = 'abaixo_meta';
+  const diag = determinarDiagnosticoCusteio(precoVenda, custoItemKg, isAuto, margemRealPerc, peca.margemPadraoPerc);
 
   return {
-    ...c,
-    pesoEst,
-    precoVenda,
-    custoAtualERP,
-    custoItemKg,
-    fat,
-    custoEst,
-    lucroKg,
-    lucroEst: arredondar(fat - custoEst, 2),
-    margemPerc: margemRealPerc,
-    margemERPPerc,
-    precoSugerido,
-    diagnostico: diag
+    ...c, pesoEst, precoVenda, custoAtualERP, custoItemKg, fat, custoEst, lucroKg,
+    lucroEst: arredondar(fat - custoEst, 2), margemPerc: margemRealPerc, margemERPPerc, precoSugerido, diagnostico: diag
   };
 }
 
@@ -516,36 +579,35 @@ function renderizarTabelaDesossa(peca, metricas) {
   renderizarRodapeDesossa(peca, metricas);
 }
 
+function criarBotaoPillAmostra(a, i) {
+  const pill = document.createElement('button');
+  pill.className = `piece-pill ${banco.amostraSelecionadaId === a.id ? 'active' : ''}`;
+  pill.innerHTML = `🥩 ${a.nome || `Limpeza ${i + 1}`} (${formatarKg(a.pesoTotal)})`;
+  pill.addEventListener('click', () => { banco.amostraSelecionadaId = a.id; atualizarTela(); });
+  return pill;
+}
+
 function renderizarSubtabsPecas(peca) {
   const container = document.getElementById('container-subtabs-pecas');
   if (!container) return;
   container.innerHTML = '';
+  const btnAdd = document.createElement('button');
+  btnAdd.className = 'piece-pill piece-pill-btn-add';
+  btnAdd.innerHTML = '+ Nova Transformação/Limpeza';
+  btnAdd.addEventListener('click', adicionarNovaAmostra);
+
   if (!peca.amostras || peca.amostras.length === 0) {
-    const btnAdd = document.createElement('button');
-    btnAdd.className = 'piece-pill piece-pill-btn-add active';
-    btnAdd.innerHTML = '+ Lançar Nova Peça';
-    btnAdd.addEventListener('click', adicionarNovaAmostra);
+    btnAdd.classList.add('active');
     container.appendChild(btnAdd);
     return;
   }
   const pillMedia = document.createElement('button');
   pillMedia.className = `piece-pill ${!banco.amostraSelecionadaId ? 'active' : ''}`;
-  pillMedia.innerHTML = `📊 Média Geral (${peca.amostras.length} peças)`;
+  pillMedia.innerHTML = `📊 Média Geral (${peca.amostras.length} transformações)`;
   pillMedia.addEventListener('click', () => { banco.amostraSelecionadaId = null; atualizarTela(); });
   container.appendChild(pillMedia);
 
-  peca.amostras.forEach((a, i) => {
-    const pill = document.createElement('button');
-    pill.className = `piece-pill ${banco.amostraSelecionadaId === a.id ? 'active' : ''}`;
-    pill.innerHTML = `🥩 ${a.nome || `Peça ${i + 1}`} (${formatarKg(a.pesoTotal)})`;
-    pill.addEventListener('click', () => { banco.amostraSelecionadaId = a.id; atualizarTela(); });
-    container.appendChild(pill);
-  });
-
-  const btnAdd = document.createElement('button');
-  btnAdd.className = 'piece-pill piece-pill-btn-add';
-  btnAdd.innerHTML = '+ Lançar Nova Peça';
-  btnAdd.addEventListener('click', adicionarNovaAmostra);
+  peca.amostras.forEach((a, i) => container.appendChild(criarBotaoPillAmostra(a, i)));
   container.appendChild(btnAdd);
 }
 
@@ -568,7 +630,7 @@ function renderizarPainelAnaliseIndividual(peca) {
 }
 
 function preencherDadosPainelIndividual(amostra, analise) {
-  document.getElementById('ind-titulo-peca').innerText = `Análise Individual: ${amostra.nome || 'Peça'}`;
+  document.getElementById('ind-titulo-peca').innerText = `Análise Individual: ${amostra.nome || 'Limpeza'}`;
   document.getElementById('ind-sub-peca').innerText = `Tempo: ${amostra.tempo || '00:00:00'} | Cortes: ${formatarKg(analise.somaCortes)}`;
   document.getElementById('ind-badge-quebra').innerHTML = gerarBadgeQuebra(analise.quebraKg, analise.quebraPerc);
   document.getElementById('ind-peso-bruto').innerText = formatarKg(analise.pesoTotal);
@@ -581,11 +643,12 @@ function preencherDadosPainelIndividual(amostra, analise) {
 }
 
 function calcularAnaliseIndividualAmostra(amostra, custoKg, precosVenda, usarPecaChave) {
-  const pesoTotal = amostra.pesoTotal || 0;
+  const pesoTotal = Number(amostra.pesoTotal) || 0;
   let somaCortes = 0, fatTotal = 0;
   Object.entries(amostra.cortes || {}).forEach(([n, p]) => {
-    somaCortes += p;
-    fatTotal += p * (precosVenda[n] ?? 0);
+    const pesoNum = Number(p) || 0;
+    somaCortes += pesoNum;
+    fatTotal += pesoNum * (precosVenda[n] ?? 0);
   });
   const quebra = calcularQuebraAmostra(pesoTotal, somaCortes);
   const custoTotal = arredondar(pesoTotal * custoKg, 2);
@@ -599,18 +662,19 @@ function renderizarCabecalhoDesossa(peca) {
   let html = `<tr><th style="min-width: 170px;">Corte / Rendimento / Perda</th>`;
   peca.amostras.forEach((a, i) => {
     const isFocused = banco.amostraSelecionadaId === a.id;
+    const nomePadrao = a.nome || `Transformação/Limpeza ${i + 1}`;
     html += `
       <th class="text-center" style="background:${obterCorColuna(i)}; min-width: 185px; ${isFocused ? 'outline: 3px solid var(--primary);' : ''}">
         <div class="col-header-actions">
-          <input type="text" class="form-input input-amostra-nome" data-idx="${i}" value="${a.nome || `Peça ${i + 1}`}"
-                 style="font-size:0.8rem; font-weight:700; width:100px; padding:2px 4px; display:inline;" title="Clique para renomear esta peça">
-          <button class="btn-del-col btn-excluir-coluna-amostra" data-idx="${i}" title="Excluir esta peça">✕ Excluir</button>
+          <input type="text" class="form-input input-amostra-nome" data-idx="${i}" value="${nomePadrao}"
+                 style="font-size:0.8rem; font-weight:700; width:125px; padding:2px 4px; display:inline;" title="Nome da transformação/limpeza">
+          <button class="btn-del-col btn-excluir-coluna-amostra" data-idx="${i}" title="Excluir esta transformação">✕ Excluir</button>
         </div>
         <div style="font-size:0.75rem; font-weight:normal; margin-top:4px;">
           Total: <input type="text" class="form-input form-input-calc input-amostra-peso" data-idx="${i}"
                         value="${formatarKgValor(a.pesoTotal)}" style="width: 80px; padding:2px 4px; display:inline;"> kg<br>
           Tempo: <input type="text" class="form-input input-amostra-tempo" data-idx="${i}"
-                        value="${a.tempo}" style="width: 75px; padding:2px 4px; display:inline; margin-top:2px;">
+                        value="${a.tempo || '00:05:00'}" style="width: 75px; padding:2px 4px; display:inline; margin-top:2px;">
         </div>
       </th>
     `;
@@ -644,45 +708,32 @@ function renderizarCorpoDesossa(peca, metricas) {
 }
 
 function renderizarAvisoAmostrasVazias() {
-  return `<tr><td colspan="4" class="text-center" style="padding: 2.5rem 1rem; color: var(--text-muted);"><div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.35rem;">⚖️ Nenhuma peça lançada no momento</div><div style="font-size: 0.85rem; margin-bottom: 0.85rem;">O sistema está zerado. Clique abaixo para lançar uma peça.</div><button class="btn btn-primary btn-sm btn-add-amostra-empty">+ Adicionar Primeira Peça</button></td></tr>`;
+  return `<tr><td colspan="4" class="text-center" style="padding: 2.5rem 1rem; color: var(--text-muted);"><div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.35rem;">⚖️ Nenhuma transformação/limpeza lançada</div><div style="font-size: 0.85rem; margin-bottom: 0.85rem;">O sistema está zerado. Clique abaixo para lançar uma limpeza.</div><button class="btn btn-primary btn-sm btn-add-amostra-empty">+ Adicionar Primeira Limpeza</button></td></tr>`;
+}
+
+function montarCelulaCorteAmostra(a, i, corte, metricas, isAuto, corteCod) {
+  if (isAuto) {
+    const det = metricas.detalhesAmostras?.[i];
+    const pesoAuto = Math.max(0, det?.quebraKg || 0);
+    return `<td class="text-center" style="white-space: nowrap;"><span class="badge" style="background:#fee2e2; color:#991b1b; font-weight:700; font-size:0.75rem; padding:3px 6px;" title="Perda técnica automática de manejo e serra">⚡ ${formatarKgValor(pesoAuto)}</span></td>`;
+  }
+  const v = a.cortes ? a.cortes[corte.nome] : 0;
+  const vTexto = (v !== undefined && v !== null && v !== '') ? formatarKgValor(v) : '';
+  return `<td class="text-center" style="white-space: nowrap;"><input type="text" class="form-input form-input-calc input-corte-peso" data-idx="${i}" data-corte="${corteCod}" value="${vTexto}" style="width: 80px; text-align:right; display:inline-block;" placeholder="0,000"><button class="btn-calc-sobra" data-idx="${i}" data-corte="${corteCod}" title="Preencher sobra" style="border:none; background:#e0f2fe; color:#0369a1; border-radius:4px; padding:2px 5px; font-size:0.68rem; font-weight:700; cursor:pointer; margin-left:2px;">⚡Sobra</button></td>`;
 }
 
 function montarHtmlLinhaCorte(peca, corte, metricas) {
   const isAuto = corte.isAuto || corte.tipo === 'perda_tecnica';
+  const corteCod = encodeURIComponent(corte.nome);
   let tds = `<td><strong>${corte.nome}</strong> ${isAuto ? '<span class="badge" style="background:#fee2e2; color:#991b1b; font-size:0.65rem; margin-left:4px;">⚡ AUTO</span>' : ''}</td>`;
   peca.amostras.forEach((a, i) => {
-    if (isAuto) {
-      const det = metricas.detalhesAmostras?.[i];
-      const pesoAuto = Math.max(0, det?.quebraKg || 0);
-      tds += `
-        <td class="text-center" style="white-space: nowrap;">
-          <span class="badge" style="background:#fee2e2; color:#991b1b; font-weight:700; font-size:0.75rem; padding:3px 6px;"
-                title="Perda técnica automática de manejo e corte da serra desta peça">
-            ⚡ ${formatarKgValor(pesoAuto)}
-          </span>
-        </td>
-      `;
-    } else {
-      const v = a.cortes[corte.nome];
-      const vTexto = (v !== undefined && v !== null && v !== '') ? formatarKgValor(v) : '';
-      tds += `
-        <td class="text-center" style="white-space: nowrap;">
-          <input type="text" class="form-input form-input-calc input-corte-peso" data-idx="${i}" data-corte="${corte.nome}"
-                 value="${vTexto}" style="width: 80px; text-align:right; display:inline-block;" placeholder="0,000">
-          <button class="btn-calc-sobra" data-idx="${i}" data-corte="${corte.nome}"
-                  title="Calcular sobra: preencher com o que sobrou da peça (Peso Total menos os outros cortes)"
-                  style="border:none; background:#e0f2fe; color:#0369a1; border-radius:4px; padding:2px 5px; font-size:0.68rem; font-weight:700; cursor:pointer; margin-left:2px;">
-            ⚡Sobra
-          </button>
-        </td>
-      `;
-    }
+    tds += montarCelulaCorteAmostra(a, i, corte, metricas, isAuto, corteCod);
   });
   tds += `
     <td class="text-right font-bold">${formatarKg(corte.pesoMedio)}</td>
     <td class="text-right"><span class="badge ${isAuto ? 'badge-danger' : 'badge-neutral'} font-bold">${formatarPerc(corte.rendimentoPerc)}</span></td>
     <td class="text-center">
-      ${isAuto ? '' : `<button class="btn btn-sm btn-secondary btn-remover-corte" data-corte="${corte.nome}" style="padding:2px 6px; color:#b91c1c;">✕</button>`}
+      ${isAuto ? '' : `<button class="btn btn-sm btn-secondary btn-remover-corte" data-corte="${corteCod}" style="padding:2px 6px; color:#b91c1c;">✕</button>`}
     </td>
   `;
   return tds;
@@ -692,17 +743,21 @@ function renderizarRodapeDesossa(peca, metricas) {
   const tfoot = document.getElementById('rodape-tabela-desossa');
   if (!peca.amostras || peca.amostras.length === 0) {
     tfoot.innerHTML = `
-      <tr style="background:#f1f5f9; font-weight:700;"><td>Soma dos Cortes (kg)</td><td class="text-right">0,000 kg</td><td class="text-right">0,00%</td><td></td></tr>
-      <tr style="background:#fff; font-weight:700;"><td>Quebra Restante</td><td class="text-right">0,000 kg</td><td class="text-right"><span class="badge badge-success">✓ 0,00%</span></td><td></td></tr>
+      <tr style="background:#f1f5f9; font-weight:700;"><td>Total Alocado + Perdas (kg)</td><td class="text-right">0,000 kg</td><td class="text-right">0,00%</td><td></td></tr>
+      <tr style="background:#fff; font-weight:700;"><td>Rendimento Fechado</td><td class="text-right">-</td><td class="text-right"><span class="badge badge-success">✓ 0,00%</span></td><td></td></tr>
     `;
     return;
   }
   let trSoma = '<tr style="background:#f1f5f9; font-weight:700;"><td>Total Alocado + Perdas (kg)</td>';
   let trQuebra = '<tr style="background:#fff; font-weight:700;"><td>Rendimento Fechado</td>';
   metricas.detalhesAmostras.forEach((det) => {
-    const totalAlocado = arredondar(det.somaCortes + Math.max(0, det.quebraKg), 3);
-    trSoma += `<td class="text-center font-bold" style="color:var(--primary);">${formatarKg(totalAlocado)}</td>`;
-    trQuebra += `<td class="text-center"><span class="badge badge-success" title="Rendimento 100% fechado (cortes + perdas técnicas)">✓ 100,00%</span></td>`;
+    if (det.excessoKg > 0) {
+      trSoma += `<td class="text-center font-bold text-danger" title="Soma dos cortes excedeu o peso inicial da peça em +${formatarKg(det.excessoKg)}">${formatarKg(det.somaCortes)}</td>`;
+      trQuebra += `<td class="text-center"><span class="badge badge-danger">⚠️ +${formatarKg(det.excessoKg)}</span></td>`;
+    } else {
+      trSoma += `<td class="text-center font-bold" style="color:var(--primary);">${formatarKg(det.pesoTotal)}</td>`;
+      trQuebra += `<td class="text-center"><span class="badge badge-success" title="Rendimento 100% fechado (cortes + perdas técnicas)">✓ 100,00%</span></td>`;
+    }
   });
   const somaMedia = arredondar(metricas.cortesConsolidados.reduce((acc, c) => acc + c.pesoMedio, 0), 3);
   const somaRend = arredondar(metricas.cortesConsolidados.reduce((acc, c) => acc + c.rendimentoPerc, 0), 2);
@@ -784,33 +839,29 @@ function gerarBadgeDiagnostico(diag) {
   return '<span class="badge badge-success" title="Margem real igual ou superior à meta">🟢 Saudável</span>';
 }
 
+function montarBadgeNomeCusteio(c, isAuto) {
+  if (isAuto) return '<span class="badge" style="background:#fee2e2; color:#991b1b; margin-left:4px; font-size:0.65rem;">PERDA TÉCNICA</span>';
+  if (c.diagnostico === 'perda') return '<span class="badge" style="background:#f3e8ff; color:#7e22ce; margin-left:4px; font-size:0.65rem;">PERDA</span>';
+  return '';
+}
+
 function montarHtmlLinhaCusteio(c, peca) {
   const isPrej = c.lucroKg < 0;
   const isAuto = c.isAuto || c.tipo === 'perda_tecnica';
+  const badgeNome = montarBadgeNomeCusteio(c, isAuto);
+  const inputCusto = isAuto ? '<span class="text-muted">-</span>' : `<input type="text" class="form-input form-input-moeda input-custo-erp-custeio" data-corte="${c.nome}" value="${formatarNumeroBR(c.custoAtualERP, 2)}" style="width: 70px; text-align:right; font-size:0.8rem;">`;
+  const inputPreco = isAuto ? '<span class="text-muted">R$ 0,00</span>' : `<input type="text" class="form-input form-input-moeda input-preco-venda-custeio" data-corte="${c.nome}" value="${formatarNumeroBR(c.precoVenda, 2)}" style="width: 70px; text-align:right; font-weight:700; font-size:0.8rem;">`;
+  const badgeMargem = `<span class="badge ${isPrej ? 'badge-danger' : (c.margemPerc < peca.margemPadraoPerc ? 'badge-warning' : 'badge-success')} font-bold">${formatarPerc(c.margemPerc)}</span>`;
+
   return `
-    <td>
-      <strong>${c.nome}</strong>
-      ${isAuto ? '<span class="badge" style="background:#fee2e2; color:#991b1b; margin-left:4px; font-size:0.65rem;">PERDA TÉCNICA</span>' : (c.diagnostico === 'perda' ? '<span class="badge" style="background:#f3e8ff; color:#7e22ce; margin-left:4px; font-size:0.65rem;">PERDA</span>' : '')}
-    </td>
+    <td><strong>${c.nome}</strong> ${badgeNome}</td>
     <td class="text-right font-bold">${formatarPerc(c.rendimentoPerc)}</td>
     <td class="text-right text-muted">${formatarKg(c.pesoEst)}</td>
-    <td class="text-right">
-      ${isAuto ? '<span class="text-muted">-</span>' : `
-      <input type="text" class="form-input form-input-moeda input-custo-erp-custeio" data-corte="${c.nome}"
-             value="${formatarNumeroBR(c.custoAtualERP, 2)}" style="width: 70px; text-align:right; font-size:0.8rem;" title="Custo cadastrado no seu sistema ERP">`}
-    </td>
+    <td class="text-right">${inputCusto}</td>
     <td class="text-right font-bold" style="background:#fef3c7; color:var(--primary); font-size:0.85rem;">${formatarMoeda(c.custoItemKg)}</td>
-    <td class="text-right">
-      ${isAuto ? '<span class="text-muted">R$ 0,00</span>' : `
-      <input type="text" class="form-input form-input-moeda input-preco-venda-custeio" data-corte="${c.nome}"
-             value="${formatarNumeroBR(c.precoVenda, 2)}" style="width: 70px; text-align:right; font-weight:700; font-size:0.8rem;" title="Preço atual de venda">`}
-    </td>
+    <td class="text-right">${inputPreco}</td>
     <td class="text-right text-muted" style="font-size:0.8rem;">${isAuto ? '-' : formatarPerc(c.margemERPPerc)}</td>
-    <td class="text-right">
-      <span class="badge ${isPrej ? 'badge-danger' : (c.margemPerc < peca.margemPadraoPerc ? 'badge-warning' : 'badge-success')} font-bold">
-        ${formatarPerc(c.margemPerc)}
-      </span>
-    </td>
+    <td class="text-right">${badgeMargem}</td>
     <td class="text-right font-bold" style="color:#0369a1; font-size:0.85rem;">${isAuto ? '-' : formatarMoeda(c.precoSugerido)}</td>
     <td class="text-center">${gerarBadgeDiagnostico(c.diagnostico)}</td>
     <td class="text-right font-bold ${c.lucroEst >= 0 ? 'text-success' : 'text-danger'}">${formatarMoeda(c.lucroEst)}</td>
@@ -828,51 +879,40 @@ function atualizarTotaisCusteio(custeio) {
   document.getElementById('custo-total-lucro-liquido').innerText = formatarMoeda(custeio.lucroLiquidoPeca);
 }
 
-function renderizarSimulador(peca, metricas) {
-  const volCompra = Number.parseFloat(document.getElementById('input-volume-compra')?.value) || banco.volumeSimuladoKg;
-  const custoKg = Number.parseFloat(document.getElementById('input-custo-simulado')?.value) || peca.custoKgEntrada;
-  const propDesossa = (Number.parseFloat(document.getElementById('select-destino-lote')?.value) || 100) / 100;
-  const precoInteira = parseValorMonetario(document.getElementById('input-preco-venda-inteira')?.value || (peca.custoKgEntrada * 1.3));
-
-  const volDesossa = arredondar(volCompra * propDesossa, 3);
-  const volInteiro = arredondar(volCompra * (1 - propDesossa), 3);
-  const fatInteiro = arredondar(volInteiro * precoInteira, 2);
-  const custoTotalLote = arredondar(volCompra * custoKg, 2);
-
-  const tbody = document.getElementById('corpo-tabela-estoque');
-  tbody.innerHTML = '';
+function renderizarLinhasEstoqueSimulador(peca, metricas, volDesossa, tbody) {
   let fatCortes = 0;
-
-  if (volInteiro > 0) {
-    const trInteiro = document.createElement('tr');
-    trInteiro.style.background = '#f0fdf4';
-    trInteiro.innerHTML = `
-      <td><strong>🥩 ${peca.nome} (Peça Inteira Fechada / Atacado)</strong> <span class="badge badge-success" style="font-size:0.65rem;">ESTOQUE BRUTO</span></td>
-      <td class="text-right">${formatarPerc((1 - propDesossa) * 100)}</td>
-      <td class="text-right font-bold text-success">${formatarKg(volInteiro)}</td>
-      <td class="text-right text-muted">${formatarMoeda(precoInteira)}</td>
-      <td class="text-right font-bold text-success">${formatarMoeda(fatInteiro)}</td>
-    `;
-    tbody.appendChild(trInteiro);
-  }
-
   metricas.cortesConsolidados.forEach((c) => {
     const preco = peca.precosVendaSugeridos[c.nome] || 0;
     const pesoEstoque = arredondar((volDesossa * c.rendimentoPerc) / 100, 3);
     const fat = arredondar(pesoEstoque * preco, 2);
     fatCortes += fat;
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><strong>${c.nome}</strong></td>
-      <td class="text-right">${formatarPerc(c.rendimentoPerc)}</td>
-      <td class="text-right font-bold">${formatarKg(pesoEstoque)}</td>
-      <td class="text-right text-muted">${formatarMoeda(preco)}</td>
-      <td class="text-right font-bold">${formatarMoeda(fat)}</td>
-    `;
+    tr.innerHTML = `<td><strong>${c.nome}</strong></td><td class="text-right">${formatarPerc(c.rendimentoPerc)}</td><td class="text-right font-bold">${formatarKg(pesoEstoque)}</td><td class="text-right text-muted">${formatarMoeda(preco)}</td><td class="text-right font-bold">${formatarMoeda(fat)}</td>`;
     tbody.appendChild(tr);
   });
-  const faturamentoTotal = arredondar(fatCortes + fatInteiro, 2);
-  atualizarCardsSimulacao(volCompra, custoTotalLote, faturamentoTotal, volInteiro, volDesossa);
+  return fatCortes;
+}
+
+function renderizarSimulador(peca, metricas) {
+  const volCompra = Number.parseFloat(document.getElementById('input-volume-compra')?.value) || banco.volumeSimuladoKg;
+  const custoKg = Number.parseFloat(document.getElementById('input-custo-simulado')?.value) || peca.custoKgEntrada;
+  const propDesossa = (Number.parseFloat(document.getElementById('select-destino-lote')?.value) || 100) / 100;
+  const precoInteira = parseValorMonetario(document.getElementById('input-preco-venda-inteira')?.value || (peca.custoKgEntrada * 1.3));
+  const volDesossa = arredondar(volCompra * propDesossa, 3);
+  const volInteiro = arredondar(volCompra * (1 - propDesossa), 3);
+  const fatInteiro = arredondar(volInteiro * precoInteira, 2);
+  const custoTotalLote = arredondar(volCompra * custoKg, 2);
+  const tbody = document.getElementById('corpo-tabela-estoque');
+  tbody.innerHTML = '';
+
+  if (volInteiro > 0) {
+    const trInteiro = document.createElement('tr');
+    trInteiro.style.background = '#f0fdf4';
+    trInteiro.innerHTML = `<td><strong>🥩 ${peca.nome} (Peça Inteira Fechada)</strong> <span class="badge badge-success" style="font-size:0.65rem;">ESTOQUE BRUTO</span></td><td class="text-right">${formatarPerc((1 - propDesossa) * 100)}</td><td class="text-right font-bold text-success">${formatarKg(volInteiro)}</td><td class="text-right text-muted">${formatarMoeda(precoInteira)}</td><td class="text-right font-bold text-success">${formatarMoeda(fatInteiro)}</td>`;
+    tbody.appendChild(trInteiro);
+  }
+  const fatCortes = renderizarLinhasEstoqueSimulador(peca, metricas, volDesossa, tbody);
+  atualizarCardsSimulacao(volCompra, custoTotalLote, arredondar(fatCortes + fatInteiro, 2), volInteiro, volDesossa);
 }
 
 function atualizarCardsSimulacao(vol, custo, fat, volInteiro = 0, volDesossa = 0) {
@@ -997,16 +1037,12 @@ function vincularEventosAbas() {
       document.querySelectorAll('.tab-content').forEach((c) => c.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById(btn.dataset.tab).classList.add('active');
+      atualizarTela();
     });
   });
 }
 
-function vincularEventosPeca() {
-  document.getElementById('select-peca').addEventListener('change', (e) => {
-    banco.idPecaAtiva = e.target.value;
-    banco.amostraSelecionadaId = null;
-    atualizarTela();
-  });
+function vincularInputsCustoMargem() {
   const inputCusto = document.getElementById('input-custo-compra-kg');
   inputCusto.addEventListener('input', (e) => {
     const peca = obterPecaAtiva();
@@ -1019,16 +1055,23 @@ function vincularEventosPeca() {
   });
   const inputMargem = document.getElementById('input-margem-padrao-peca');
   inputMargem.addEventListener('input', (e) => {
-    const peca = obterPecaAtiva();
-    peca.margemPadraoPerc = parseValorPercentual(e.target.value);
+    obterPecaAtiva().margemPadraoPerc = parseValorPercentual(e.target.value);
   });
   inputMargem.addEventListener('blur', (e) => {
     e.target.value = formatarNumeroBR(obterPecaAtiva().margemPadraoPerc, 2);
     atualizarTela();
   });
+}
+
+function vincularEventosPeca() {
+  document.getElementById('select-peca').addEventListener('change', (e) => {
+    banco.idPecaAtiva = e.target.value;
+    banco.amostraSelecionadaId = null;
+    atualizarTela();
+  });
+  vincularInputsCustoMargem();
   document.getElementById('check-custo-peca-chave').addEventListener('change', (e) => {
-    const peca = obterPecaAtiva();
-    peca.modoCusto = e.target.checked ? 'peca_chave' : 'livre';
+    obterPecaAtiva().modoCusto = e.target.checked ? 'peca_chave' : 'livre';
     atualizarTela();
   });
 }
@@ -1037,15 +1080,16 @@ function adicionarNovaAmostra() {
   const peca = obterPecaAtiva();
   if (!peca) return;
   if (!peca.amostras) peca.amostras = [];
+  const cortes = sincronizarCortesPeca(peca);
   const num = peca.amostras.length + 1;
   const novaId = `amostra-${Date.now()}`;
   const cortesZerados = {};
-  (peca.cortesCatalogo || []).forEach((c) => { cortesZerados[c.nome] = 0; });
+  cortes.forEach((nome) => { cortesZerados[nome] = 0; });
   peca.amostras.push({
     id: novaId,
-    nome: `Peça ${num}`,
+    nome: `Transformação/Limpeza ${num}`,
     pesoTotal: 0,
-    tempo: '00:00:00',
+    tempo: '00:05:00',
     cortes: cortesZerados
   });
   banco.amostraSelecionadaId = novaId;
@@ -1056,7 +1100,7 @@ function adicionarNovaAmostra() {
 function excluirAmostraPorIndice(idx) {
   const peca = obterPecaAtiva();
   if (!peca || !peca.amostras || peca.amostras.length === 0) return;
-  const nome = peca.amostras[idx]?.nome || `Peça ${idx + 1}`;
+  const nome = peca.amostras[idx]?.nome || `Transformação/Limpeza ${idx + 1}`;
   solicitarConfirmacao(`Deseja realmente excluir a ${nome}?`, () => {
     const removida = peca.amostras.splice(idx, 1)[0];
     if (banco.amostraSelecionadaId === removida?.id) {
@@ -1067,11 +1111,12 @@ function excluirAmostraPorIndice(idx) {
   });
 }
 
-function calcularSobraParaCorte(amostraIdx, corteNome) {
+function calcularSobraParaCorte(amostraIdx, corteNomeCodificado) {
   const peca = obterPecaAtiva();
   if (!peca || !peca.amostras || !peca.amostras[amostraIdx]) return;
+  const corteNome = decodeURIComponent(corteNomeCodificado);
   const amostra = peca.amostras[amostraIdx];
-  const pesoTotal = amostra.pesoTotal || 0;
+  const pesoTotal = Number(amostra.pesoTotal) || 0;
   let somaOutros = 0;
   Object.entries(amostra.cortes || {}).forEach(([n, p]) => {
     if (n.toLowerCase().trim() !== corteNome.toLowerCase().trim()) {
@@ -1101,35 +1146,65 @@ function vincularEventosTabelaDesossa() {
   tbl.addEventListener('focusin', (e) => {
     if (e.target.classList.contains('form-input-calc')) e.target.select();
   });
-  tbl.addEventListener('change', tratarMudancaTabelaDesossa);
+  tbl.addEventListener('input', tratarInputTabelaDesossa);
+  tbl.addEventListener('change', tratarChangeTabelaDesossa);
   tbl.addEventListener('click', tratarCliqueTabelaDesossa);
 }
 
-function tratarMudancaTabelaDesossa(e) {
+function tratarInputTabelaDesossa(e) {
   const peca = obterPecaAtiva();
   if (!peca) return;
   const idx = Number.parseInt(e.target.dataset.idx, 10);
   if (e.target.classList.contains('input-amostra-peso')) {
     peca.amostras[idx].pesoTotal = avaliarExpressaoNumerica(e.target.value);
+    atualizarApenasCalculosTabela(peca);
+  }
+  if (e.target.classList.contains('input-corte-peso')) {
+    const corteNome = decodeURIComponent(e.target.dataset.corte);
+    peca.amostras[idx].cortes[corteNome] = avaliarExpressaoNumerica(e.target.value);
+    atualizarApenasCalculosTabela(peca);
+  }
+}
+
+function atualizarApenasCalculosTabela(peca) {
+  const metricas = calcularMetricasPeca(peca);
+  const custeio = calcularCusteioPecaChave(peca, metricas);
+  atualizarMetricasTopGeral(peca, metricas, custeio);
+  renderizarRodapeDesossa(peca, metricas);
+}
+
+function tratarChangeTabelaDesossa(e) {
+  const peca = obterPecaAtiva();
+  if (!peca) return;
+  const idx = Number.parseInt(e.target.dataset.idx, 10);
+  if (e.target.classList.contains('input-amostra-peso')) {
+    peca.amostras[idx].pesoTotal = avaliarExpressaoNumerica(e.target.value);
+    e.target.value = formatarKgValor(peca.amostras[idx].pesoTotal);
+    salvarNoLocalStorage();
     atualizarTela();
   }
   if (e.target.classList.contains('input-amostra-tempo')) {
     peca.amostras[idx].tempo = e.target.value;
+    salvarNoLocalStorage();
     atualizarTela();
   }
   if (e.target.classList.contains('input-amostra-nome')) {
-    peca.amostras[idx].nome = e.target.value.trim() || `Peça ${idx + 1}`;
+    peca.amostras[idx].nome = e.target.value.trim() || `Transformação/Limpeza ${idx + 1}`;
+    salvarNoLocalStorage();
     atualizarTela();
   }
   if (e.target.classList.contains('input-corte-peso')) {
-    peca.amostras[idx].cortes[e.target.dataset.corte] = avaliarExpressaoNumerica(e.target.value);
+    const corteNome = decodeURIComponent(e.target.dataset.corte);
+    peca.amostras[idx].cortes[corteNome] = avaliarExpressaoNumerica(e.target.value);
+    e.target.value = formatarKgValor(peca.amostras[idx].cortes[corteNome]);
+    salvarNoLocalStorage();
     atualizarTela();
   }
 }
 
 function tratarCliqueTabelaDesossa(e) {
   if (e.target.classList.contains('btn-remover-corte')) {
-    removerCortePeca(e.target.dataset.corte);
+    removerCortePeca(decodeURIComponent(e.target.dataset.corte));
   }
   if (e.target.classList.contains('btn-excluir-coluna-amostra')) {
     excluirAmostraPorIndice(Number.parseInt(e.target.dataset.idx, 10));
@@ -1141,7 +1216,7 @@ function tratarCliqueTabelaDesossa(e) {
 
 function removerCortePeca(corteNome) {
   const peca = obterPecaAtiva();
-  solicitarConfirmacao(`Deseja realmente remover o rendimento/perda '${corteNome}' desta peça?`, () => {
+  solicitarConfirmacao(`Deseja realmente remover o corte/perda '${corteNome}' desta peça?`, () => {
     const nomeAlvo = corteNome.trim().toLowerCase();
     peca.cortesCatalogo = (peca.cortesCatalogo || []).filter((c) => c.nome.trim().toLowerCase() !== nomeAlvo);
     peca.amostras.forEach((a) => {
@@ -1198,6 +1273,19 @@ function aplicarMargemGeralCortes() {
   exibirToast('Preços de venda atualizados com base na margem padrão!', 'success');
 }
 
+function vincularEventosModalCorteAux() {
+  document.getElementById('modal-input-custo-atual-corte')?.addEventListener('input', sincronizarMargemModalCorte);
+  document.getElementById('modal-input-preco-venda-corte')?.addEventListener('input', sincronizarMargemModalCorte);
+  document.getElementById('modal-select-tipo-corte')?.addEventListener('change', (e) => {
+    if (e.target.value === 'perda_liquida') {
+      document.getElementById('modal-input-custo-atual-corte').value = '0,00';
+      document.getElementById('modal-input-preco-venda-corte').value = '0,00';
+      document.getElementById('modal-input-margem-atual-corte').value = '-100,00';
+    }
+  });
+  document.getElementById('btn-novo-corte-tab2')?.addEventListener('click', abrirModalCorte);
+}
+
 function vincularEventosModais() {
   document.getElementById('btn-abrir-nova-peca').addEventListener('click', () => abrirModalPeca(false));
   document.getElementById('btn-editar-peca').addEventListener('click', () => abrirModalPeca(true));
@@ -1220,16 +1308,7 @@ function vincularEventosModais() {
       document.querySelectorAll('.modal-overlay').forEach((m) => m.classList.remove('active'));
     });
   });
-  document.getElementById('modal-input-custo-atual-corte')?.addEventListener('input', sincronizarMargemModalCorte);
-  document.getElementById('modal-input-preco-venda-corte')?.addEventListener('input', sincronizarMargemModalCorte);
-  document.getElementById('modal-select-tipo-corte')?.addEventListener('change', (e) => {
-    if (e.target.value === 'perda_liquida') {
-      document.getElementById('modal-input-custo-atual-corte').value = '0,00';
-      document.getElementById('modal-input-preco-venda-corte').value = '0,00';
-      document.getElementById('modal-input-margem-atual-corte').value = '-100,00';
-    }
-  });
-  document.getElementById('btn-novo-corte-tab2')?.addEventListener('click', abrirModalCorte);
+  vincularEventosModalCorteAux();
 }
 
 function abrirModalPeca(isEdicao) {
@@ -1240,13 +1319,13 @@ function abrirModalPeca(isEdicao) {
   const inputMargem = document.getElementById('modal-input-margem-peca');
   if (isEdicao) {
     const peca = obterPecaAtiva();
-    titulo.innerText = 'Editar Peça Inteira';
+    titulo.innerText = 'Editar Peça Principal';
     inputNome.value = peca.nome;
     inputCusto.value = formatarNumeroBR(peca.custoKgEntrada, 2);
     inputMargem.value = formatarNumeroBR(peca.margemPadraoPerc, 2);
     modal.dataset.edicao = 'true';
   } else {
-    titulo.innerText = 'Cadastrar Nova Peça Inteira';
+    titulo.innerText = 'Cadastrar Nova Peça Principal';
     inputNome.value = '';
     inputCusto.value = '25,00';
     inputMargem.value = '30,00';
@@ -1255,44 +1334,44 @@ function abrirModalPeca(isEdicao) {
   modal.classList.add('active');
 }
 
+function cadastrarNovaPecaBanco(nome, custo, margem) {
+  const id = `peca-${Date.now()}`;
+  const nomePrincipal = `${nome} (Corte Principal / Balcão)`;
+  const precoEstimado = margem < 100 ? arredondar(custo / (1 - (margem / 100)), 2) : custo * 1.4;
+  const novosCortes = { [nomePrincipal]: 0, 'Cebo e Osso': 0, 'Sangue e Líquidos': 0 };
+
+  banco.pecas.push({
+    id, nome, custoKgEntrada: custo, margemPadraoPerc: margem, modoCusto: 'peca_chave',
+    cortesCatalogo: [
+      { nome: nomePrincipal, tipo: 'nobre', precoVendaPadrao: precoEstimado, custoAtualSistema: custo, margemAtualSistema: margem },
+      { nome: 'Cebo e Osso', tipo: 'subproduto', precoVendaPadrao: 1.48, custoAtualSistema: 1.48, margemAtualSistema: 0 },
+      { nome: 'Sangue e Líquidos', tipo: 'perda_liquida', precoVendaPadrao: 0.00, custoAtualSistema: 0, margemAtualSistema: -100 }
+    ],
+    amostras: [{ id: `amostra-${Date.now()}`, nome: 'Transformação/Limpeza 1', pesoTotal: 0, tempo: '00:05:00', cortes: novosCortes }],
+    precosVendaSugeridos: { [nomePrincipal]: precoEstimado, 'Cebo e Osso': 1.48, 'Sangue e Líquidos': 0.00 },
+    custosSistema: { [nomePrincipal]: custo, 'Cebo e Osso': 1.48, 'Sangue e Líquidos': 0.00 },
+    historicoDesossas: []
+  });
+  banco.idPecaAtiva = id;
+  banco.amostraSelecionadaId = null;
+}
+
 function salvarModalPeca() {
   const modal = document.getElementById('modal-peca');
   const nome = document.getElementById('modal-input-nome-peca').value.trim();
   const custo = parseValorMonetario(document.getElementById('modal-input-custo-peca').value);
   const margem = parseValorPercentual(document.getElementById('modal-input-margem-peca').value);
-  if (!nome) return exibirToast('Informe o nome da peça.', 'warning');
+  if (!nome) return exibirToast('Informe o nome da peça principal.', 'warning');
 
   if (modal.dataset.edicao === 'true') {
     const peca = obterPecaAtiva();
     peca.nome = nome;
     peca.custoKgEntrada = custo;
     peca.margemPadraoPerc = margem;
-    exibirToast(`Peça '${nome}' atualizada com sucesso!`, 'success');
+    exibirToast(`Peça Principal '${nome}' atualizada com sucesso!`, 'success');
   } else {
-    const id = `peca-${Date.now()}`;
-    const nomePrincipal = `${nome} (Corte Principal / Balcão)`;
-    const precoEstimado = margem < 100 ? arredondar(custo / (1 - (margem / 100)), 2) : custo * 1.4;
-    const novosCortes = { [nomePrincipal]: 0, 'Cebo e Osso': 0, 'Sangue e Líquidos': 0 };
-
-    banco.pecas.push({
-      id,
-      nome,
-      custoKgEntrada: custo,
-      margemPadraoPerc: margem,
-      modoCusto: 'peca_chave',
-      cortesCatalogo: [
-        { nome: nomePrincipal, tipo: 'nobre', precoVendaPadrao: precoEstimado, custoAtualSistema: custo, margemAtualSistema: margem },
-        { nome: 'Cebo e Osso', tipo: 'subproduto', precoVendaPadrao: 1.48, custoAtualSistema: 1.48, margemAtualSistema: 0 },
-        { nome: 'Sangue e Líquidos', tipo: 'perda_liquida', precoVendaPadrao: 0.00, custoAtualSistema: 0, margemAtualSistema: -100 }
-      ],
-      amostras: [{ id: `amostra-${Date.now()}`, nome: 'Peça 1', pesoTotal: 0, tempo: '00:05:00', cortes: novosCortes }],
-      precosVendaSugeridos: { [nomePrincipal]: precoEstimado, 'Cebo e Osso': 1.48, 'Sangue e Líquidos': 0.00 },
-      custosSistema: { [nomePrincipal]: custo, 'Cebo e Osso': 1.48, 'Sangue e Líquidos': 0.00 },
-      historicoDesossas: []
-    });
-    banco.idPecaAtiva = id;
-    banco.amostraSelecionadaId = null;
-    exibirToast(`Peça '${nome}' cadastrada com sucesso!`, 'success');
+    cadastrarNovaPecaBanco(nome, custo, margem);
+    exibirToast(`Peça Principal '${nome}' cadastrada com sucesso!`, 'success');
   }
   salvarNoLocalStorage();
   modal.classList.remove('active');
@@ -1302,7 +1381,7 @@ function salvarModalPeca() {
 function excluirPecaAtiva() {
   const peca = obterPecaAtiva();
   if (!peca) return;
-  solicitarConfirmacao(`Deseja realmente excluir a peça '${peca.nome}' e todas as suas análises?`, () => {
+  solicitarConfirmacao(`Deseja realmente excluir a peça principal '${peca.nome}' e todas as suas análises?`, () => {
     banco.pecas = banco.pecas.filter((p) => p.id !== peca.id);
     banco.idPecaAtiva = banco.pecas[0]?.id || null;
     banco.amostraSelecionadaId = null;
@@ -1354,7 +1433,7 @@ function salvarModalCorte() {
   salvarNoLocalStorage();
   document.getElementById('modal-corte').classList.remove('active');
   atualizarTela();
-  exibirToast(`Corte '${nome}' adicionado com sucesso!`, 'success');
+  exibirToast(`Corte '${nome}' adicionado com sucesso a todas as limpezas!`, 'success');
 }
 
 function abrirModalHistorico() {
@@ -1389,32 +1468,33 @@ function confirmarGravarHistorico() {
   exibirToast('Desossa gravada com sucesso no histórico auditável!', 'success');
 }
 
+function executarAcaoLinhaHistorico(e) {
+  const peca = obterPecaAtiva();
+  if (e.target.classList.contains('btn-carregar-hist')) {
+    const idx = Number.parseInt(e.target.dataset.idx, 10);
+    const reg = peca.historicoDesossas[idx];
+    solicitarConfirmacao(`Carregar os dados desta pesagem realizada em ${reg.data}?`, () => {
+      peca.amostras = JSON.parse(JSON.stringify(reg.amostrasSnapshot));
+      banco.amostraSelecionadaId = null;
+      salvarNoLocalStorage();
+      atualizarTela();
+      document.querySelector('.tab-btn[data-tab="tab-desossa"]').click();
+      exibirToast(`Pesagem de ${reg.data} carregada com sucesso!`, 'info');
+    }, 'Carregar Histórico');
+  }
+  if (e.target.classList.contains('btn-excluir-hist')) {
+    const idx = Number.parseInt(e.target.dataset.idx, 10);
+    solicitarConfirmacao('Excluir este registro do histórico?', () => {
+      peca.historicoDesossas.splice(idx, 1);
+      salvarNoLocalStorage();
+      atualizarTela();
+      exibirToast('Registro excluído do histórico.', 'info');
+    });
+  }
+}
+
 function vincularAcoesHistorico() {
-  const tbody = document.getElementById('corpo-tabela-historico');
-  tbody.addEventListener('click', (e) => {
-    const peca = obterPecaAtiva();
-    if (e.target.classList.contains('btn-carregar-hist')) {
-      const idx = Number.parseInt(e.target.dataset.idx, 10);
-      const reg = peca.historicoDesossas[idx];
-      solicitarConfirmacao(`Carregar os dados desta pesagem realizada em ${reg.data}?`, () => {
-        peca.amostras = JSON.parse(JSON.stringify(reg.amostrasSnapshot));
-        banco.amostraSelecionadaId = null;
-        salvarNoLocalStorage();
-        atualizarTela();
-        document.querySelector('.tab-btn[data-tab="tab-desossa"]').click();
-        exibirToast(`Pesagem de ${reg.data} carregada com sucesso!`, 'info');
-      }, 'Carregar Histórico');
-    }
-    if (e.target.classList.contains('btn-excluir-hist')) {
-      const idx = Number.parseInt(e.target.dataset.idx, 10);
-      solicitarConfirmacao('Excluir este registro do histórico?', () => {
-        peca.historicoDesossas.splice(idx, 1);
-        salvarNoLocalStorage();
-        atualizarTela();
-        exibirToast('Registro excluído do histórico.', 'info');
-      });
-    }
-  });
+  document.getElementById('corpo-tabela-historico').addEventListener('click', executarAcaoLinhaHistorico);
   document.getElementById('btn-limpar-historico').addEventListener('click', () => {
     const peca = obterPecaAtiva();
     solicitarConfirmacao(`Limpar todo o histórico de recebimentos de ${peca.nome}?`, () => {

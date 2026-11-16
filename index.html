@@ -42,14 +42,14 @@
     <!-- Seletor e Gerenciador de Peças Inteiras -->
     <section class="config-bar">
       <div class="form-group" style="flex: 2; min-width: 260px;">
-        <label for="select-peca">Peça Inteira Ativa</label>
+        <label for="select-peca">Peça Principal Ativa</label>
         <div style="display: flex; gap: 0.5rem;">
           <select id="select-peca" class="form-input" style="flex:1; font-weight:700; font-size:1rem; cursor:pointer;">
             <!-- Opções inseridas dinamicamente -->
           </select>
-          <button id="btn-abrir-nova-peca" class="btn btn-primary btn-sm" title="Cadastrar nova peça inteira">+ Peça</button>
-          <button id="btn-editar-peca" class="btn btn-secondary btn-sm" title="Editar nome e custo padrão da peça">✏️</button>
-          <button id="btn-excluir-peca" class="btn btn-danger btn-sm" title="Excluir peça selecionada">🗑️</button>
+          <button id="btn-abrir-nova-peca" class="btn btn-primary btn-sm" title="Cadastrar nova peça principal">+ Peça Principal</button>
+          <button id="btn-editar-peca" class="btn btn-secondary btn-sm" title="Editar nome e custo padrão da peça principal">✏️</button>
+          <button id="btn-excluir-peca" class="btn btn-danger btn-sm" title="Excluir peça principal selecionada">🗑️</button>
         </div>
       </div>
 
@@ -79,7 +79,7 @@
 
     <!-- Navegação em Abas -->
     <nav class="tabs-nav">
-      <button class="tab-btn active" data-tab="tab-desossa">🔪 1. Lançamento da Desossa (1 a N Peças)</button>
+      <button class="tab-btn active" data-tab="tab-desossa">🔪 1. Lançamento da Desossa / Limpeza</button>
       <button class="tab-btn" data-tab="tab-custeio">💰 2. Custo Real da Peça-Chave & Margens</button>
       <button class="tab-btn" data-tab="tab-simulador">📦 3. Simulador de Compras & Estoque</button>
       <button class="tab-btn" data-tab="tab-historico">📜 4. Histórico de Recebimentos (<span id="badge-historico-count">0</span>)</button>
@@ -88,8 +88,8 @@
     <!-- Linha de Métricas Globais da Peça Ativa -->
     <section class="metrics-row">
       <div class="metric-card">
-        <div class="metric-title">Peças na Amostragem</div>
-        <div class="metric-value" id="metrica-qtd-pecas">0 peças</div>
+        <div class="metric-title">Transformações / Limpezas</div>
+        <div class="metric-value" id="metrica-qtd-pecas">0 limpezas</div>
         <div class="metric-sub" id="metrica-peso-total">Total: 0,000 kg</div>
       </div>
       <div class="metric-card accent">
@@ -103,7 +103,7 @@
         <div class="metric-sub" id="metrica-tempo-medio">Tempo médio: 00:00:00</div>
       </div>
       <div class="metric-card success">
-        <div class="metric-title">Balanço Médio / Peça</div>
+        <div class="metric-title">Balanço Médio / Limpeza</div>
         <div class="metric-value" id="metrica-lucro-peca">R$ 0,00</div>
         <div class="metric-sub" id="metrica-margem-global">Margem Geral: 0,00%</div>
       </div>
@@ -114,14 +114,14 @@
       <section class="card">
         <div class="card-header">
           <div class="card-title">
-            <span>⚖️ Pesagem Dinâmica da Desossa (Pode lançar de 1 a quantas peças quiser)</span>
+            <span>⚖️ Pesagem Dinâmica da Desossa / Limpeza (Lance 1 a quantas transformações precisar)</span>
           </div>
           <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <button id="btn-add-amostra" class="btn btn-primary btn-sm" title="Adicionar mais uma coluna de peça para a média">
-              + Adicionar Peça
+            <button id="btn-add-amostra" class="btn btn-primary btn-sm" title="Adicionar mais uma coluna de transformação/limpeza para a média">
+              + Nova Transformação/Limpeza
             </button>
-            <button id="btn-remover-amostra" class="btn btn-secondary btn-sm" title="Remover a última coluna de peça">
-              - Remover Peça
+            <button id="btn-remover-amostra" class="btn btn-secondary btn-sm" title="Remover a última coluna de transformação/limpeza">
+              - Remover Transformação
             </button>
             <button id="btn-novo-corte" class="btn btn-secondary btn-sm" title="Adicionar novo corte ou perda líquida">
               + Novo Corte/Perda
@@ -428,17 +428,17 @@
 
   </main>
 
-  <!-- MODAL: NOVA / EDITAR PEÇA -->
+  <!-- MODAL: NOVA / EDITAR PEÇA PRINCIPAL -->
   <div id="modal-peca" class="modal-overlay">
     <div class="modal-box">
       <div class="modal-header">
-        <h3 id="modal-peca-titulo" style="font-size:1.1rem; color:var(--secondary);">Cadastrar Peça Inteira</h3>
+        <h3 id="modal-peca-titulo" style="font-size:1.1rem; color:var(--secondary);">Cadastrar Peça Principal</h3>
         <button class="btn btn-secondary btn-sm btn-fechar-modal">✕</button>
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label for="modal-input-nome-peca">Nome da Peça Inteira</label>
-          <input type="text" id="modal-input-nome-peca" class="form-input" placeholder="Ex: Traseiro Especial, Patinho, Paleta...">
+          <label for="modal-input-nome-peca">Nome da Peça Principal</label>
+          <input type="text" id="modal-input-nome-peca" class="form-input" placeholder="Ex: Traseiro Especial, Patinho, Paleta, Alcatra...">
         </div>
         <div class="form-group">
           <label for="modal-input-custo-peca">Custo de Compra Padrão (R$/kg com osso)</label>
@@ -451,7 +451,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary btn-fechar-modal">Cancelar</button>
-        <button id="btn-salvar-modal-peca" class="btn btn-primary">Salvar Peça</button>
+        <button id="btn-salvar-modal-peca" class="btn btn-primary">Salvar Peça Principal</button>
       </div>
     </div>
   </div>

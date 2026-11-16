@@ -292,6 +292,104 @@ test('REG-016: Fechamento de rendimento em 100% com Perda Técnica Automática (
   assert.equal(arredondar(somaTodosRendimentos, 1), 100.0);
 });
 
+test('REG-017: Multi-amostragem de desossa/limpeza com médias ponderadas exatas e fechamento de rendimento em 100%', () => {
+  // Cenário real do Patinho Bovino com 3 transformações/limpezas sucessivas
+  const amostrasPatinho = [
+    {
+      id: 'limpeza-1',
+      nome: 'Transformação/Limpeza 1',
+      pesoTotal: 5.658,
+      tempo: '00:03:46',
+      cortes: {
+        'Patinho Limpo': 5.040,
+        'Cebo e Osso': 0.146,
+        'Sangue e Líquidos': 0.116,
+        'Moída de Primeira': 0.140,
+        'Moída de Segunda': 0.204
+      }
+    },
+    {
+      id: 'limpeza-2',
+      nome: 'Transformação/Limpeza 2',
+      pesoTotal: 4.334,
+      tempo: '00:03:32',
+      cortes: {
+        'Patinho Limpo': 3.614,
+        'Cebo e Osso': 0.094,
+        'Sangue e Líquidos': 0.150,
+        'Moída de Primeira': 0.222,
+        'Moída de Segunda': 0.232
+      }
+    },
+    {
+      id: 'limpeza-3',
+      nome: 'Transformação/Limpeza 3',
+      pesoTotal: 5.472,
+      tempo: '00:03:54',
+      cortes: {
+        'Patinho Limpo': 4.502,
+        'Cebo e Osso': 0.124,
+        'Sangue e Líquidos': 0.180,
+        'Moída de Primeira': 0.380,
+        'Moída de Segunda': 0.264
+      }
+    }
+  ];
+
+  const resultado = calcularRendimentoAmostras(amostrasPatinho, { incluirPerdaTecnica: true });
+
+  assert.equal(resultado.quantidadeAmostras, 3);
+  assert.equal(resultado.somaPesoTotalEntrada, 15.464);
+  assert.equal(resultado.pesoMedioPeca, 5.155);
+
+  // Verificação exata da Média e Rendimento de Cebo e Osso
+  // (0.146 + 0.094 + 0.124) = 0.364 / 3 = 0.121 kg (e não 0.080 kg do erro relatado)
+  const cebo = resultado.cortes.find((c) => c.nome === 'Cebo e Osso');
+  assert.ok(cebo);
+  assert.equal(cebo.pesoTotal, 0.364);
+  assert.equal(cebo.pesoMedio, 0.121);
+  assert.equal(cebo.rendimentoMedioPerc, 2.35);
+
+  // Verificação de Patinho Limpo
+  const patinho = resultado.cortes.find((c) => c.nome === 'Patinho Limpo');
+  assert.ok(patinho);
+  assert.equal(patinho.pesoTotal, 13.156);
+  assert.equal(patinho.pesoMedio, 4.385);
+  assert.equal(patinho.rendimentoMedioPerc, 85.08);
+
+  // Verificação de Sangue e Líquidos
+  const sangue = resultado.cortes.find((c) => c.nome === 'Sangue e Líquidos');
+  assert.ok(sangue);
+  assert.equal(sangue.pesoTotal, 0.446);
+  assert.equal(sangue.pesoMedio, 0.149);
+  assert.equal(sangue.rendimentoMedioPerc, 2.88);
+
+  // Verificação de Moída 1ª
+  const moida1 = resultado.cortes.find((c) => c.nome === 'Moída de Primeira');
+  assert.ok(moida1);
+  assert.equal(moida1.pesoTotal, 0.742);
+  assert.equal(moida1.pesoMedio, 0.247);
+  assert.equal(moida1.rendimentoMedioPerc, 4.80);
+
+  // Verificação de Moída 2ª
+  const moida2 = resultado.cortes.find((c) => c.nome === 'Moída de Segunda');
+  assert.ok(moida2);
+  assert.equal(moida2.pesoTotal, 0.700);
+  assert.equal(moida2.pesoMedio, 0.233);
+  assert.equal(moida2.rendimentoMedioPerc, 4.53);
+
+  // Verificação da Perda Técnica Automática (0.012 + 0.022 + 0.022 = 0.056 kg)
+  const perdaTec = resultado.cortes.find((c) => c.nome === 'Perda Técnica (Manejo / Serra)');
+  assert.ok(perdaTec);
+  assert.equal(perdaTec.pesoTotal, 0.056);
+  assert.equal(perdaTec.pesoMedio, 0.019);
+  assert.equal(perdaTec.rendimentoMedioPerc, 0.36);
+
+  // Fechamento exato de 100.00% no somatório de rendimentos
+  const somaRendimentos = resultado.cortes.reduce((acc, c) => acc + c.rendimentoMedioPerc, 0);
+  assert.equal(arredondar(somaRendimentos, 2), 100.00);
+});
+
 test('Defensividade: Bloqueio de valores negativos e formatos inválidos', () => {
   assert.throws(() => validarNumeroNaoNegativo(-5, 'teste'), TypeError);
   assert.throws(() => parseTempoEmSegundos('invalido:abc'), Error);
