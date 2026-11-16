@@ -902,12 +902,43 @@ function atualizarMetricasTopGeral(peca, metricas, custeio) {
   document.getElementById('metrica-margem-global').innerText = `Margem Geral: ${formatarPerc(custeio.margemGlobalPerc)}`;
 }
 
+let timerSyncDisco = null;
+
+function atualizarBadgePersistenciaDisco(ativo) {
+  const badge = document.getElementById('badge-status-disco');
+  if (!badge) return;
+  if (ativo) {
+    badge.className = 'badge-status-disco online';
+    badge.innerHTML = '💾 Salvo no Disco';
+    badge.title = 'Banco gravado em dados_desossa.json na máquina';
+  } else {
+    badge.className = 'badge-status-disco offline';
+    badge.innerHTML = '⚡ Cache Local';
+    badge.title = 'Servidor local offline: dados salvos no LocalStorage';
+  }
+}
+
+async function persistirBancoNoDisco() {
+  try {
+    const res = await fetch('/api/banco', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(banco)
+    });
+    atualizarBadgePersistenciaDisco(res.ok);
+  } catch (err) {
+    atualizarBadgePersistenciaDisco(false);
+  }
+}
+
 function salvarNoLocalStorage() {
   try {
     localStorage.setItem('acougue_pro_multibi_v2', JSON.stringify(banco));
   } catch (e) {
     console.error('Erro LocalStorage:', e);
   }
+  clearTimeout(timerSyncDisco);
+  timerSyncDisco = setTimeout(persistirBancoNoDisco, 400);
 }
 
 function carregarDoLocalStorage() {
@@ -917,6 +948,26 @@ function carregarDoLocalStorage() {
   } catch (e) {
     console.warn('Erro ao carregar LocalStorage:', e);
   }
+}
+
+async function carregarBancoDoDiscoOuLocal() {
+  carregarDoLocalStorage();
+  try {
+    const res = await fetch('/api/banco');
+    if (res.ok) {
+      const dados = await res.json();
+      if (dados?.pecas && dados.pecas.length > 0) {
+        Object.assign(banco, dados);
+        localStorage.setItem('acougue_pro_multibi_v2', JSON.stringify(banco));
+        atualizarTela();
+      }
+      atualizarBadgePersistenciaDisco(true);
+      return;
+    }
+  } catch (err) {
+    console.info('[Disco] Servidor offline. Dados em LocalStorage.');
+  }
+  atualizarBadgePersistenciaDisco(false);
 }
 
 function atualizarTela() {
@@ -1492,7 +1543,7 @@ function importarJSON(e) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  carregarDoLocalStorage();
+  carregarBancoDoDiscoOuLocal();
   vincularEventosAbas();
   vincularEventosPeca();
   vincularEventosAmostras();

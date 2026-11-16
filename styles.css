@@ -586,3 +586,26 @@ body {
   .tab-content { display: flex !important; }
   .card { border: none; box-shadow: none; padding: 0; }
 }
+
+.badge-status-disco {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  user-select: none;
+}
+.badge-status-disco.online {
+  background: rgba(22, 163, 74, 0.25);
+  border-color: #22c55e;
+  color: #86efac;
+}
+.badge-status-disco.offline {
+  background: rgba(234, 179, 8, 0.2);
+  border-color: #eab308;
+  color: #fde047;
+}
