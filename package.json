@@ -2,11 +2,39 @@
   "name": "calculadora-rentabilidade-acougue",
   "version": "1.0.0",
   "description": "Calculadora Web de Rendimento, Desossa, Custo Real e Controle de Estoque para Açougues",
-  "main": "src/calculadora.mjs",
+  "main": "electron-main.cjs",
   "type": "module",
   "scripts": {
     "test": "node --test test/*.test.mjs",
-    "start": "node server.mjs"
+    "start": "node server.mjs",
+    "app": "electron electron-main.cjs",
+    "dist": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "com.acouguepro.calculadora",
+    "productName": "AcouguePro",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "index.html",
+      "styles.css",
+      "app.js",
+      "server.mjs",
+      "electron-main.cjs",
+      "src/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Açougue Pro"
+    }
   },
   "keywords": [
     "acougue",
@@ -17,6 +45,9 @@
     "estoque"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^45.3.3",
+    "electron-builder": "^26.18.0"
+  }
 }
-

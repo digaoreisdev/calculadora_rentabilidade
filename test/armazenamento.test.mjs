@@ -61,3 +61,4 @@ test('REG-018: Persistência física em arquivo no disco com validação e backu
   // Limpeza
   fs.rmSync(tempDir, { recursive: true, force: true });
 });
+

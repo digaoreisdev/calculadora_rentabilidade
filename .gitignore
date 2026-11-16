@@ -1,0 +1,7 @@
+node_modules/
+dist/
+dados_desossa.json
+dados_desossa.backup.json
+*.tmp
+.DS_Store
+Thumbs.db
